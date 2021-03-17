@@ -1,4 +1,4 @@
-#!/usr/bin/env /data/mta/Script/Python3.6/envs/ska3/bin/python
+#!/usr/bin/env /data/mta/Script/Python3.8/envs/ska3-shiny/bin/python
 
 #################################################################################################
 #                                                                                               #
@@ -6,7 +6,7 @@
 #                                                                                               #
 #               author: t. isobe (tisobe@cfa.harvard.edu)                                       #
 #                                                                                               #
-#               last update: Jan 12, 2021                                                       #
+#               last update: Mar 17, 2021                                                       #
 #                                                                                               #
 #################################################################################################
 
@@ -34,7 +34,7 @@ for ent in data:
 #
 sys.path.append(bin_dir)
 sys.path.append(mta_dir)
-sys.path.append('/data/mta/Script/Python3.6/Sybase/')
+sys.path.append('/data/mta/Script/Python3.8/Sybase/')
 #
 #--- mta common functions
 #

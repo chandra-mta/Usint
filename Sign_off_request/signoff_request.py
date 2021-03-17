@@ -1,4 +1,4 @@
-#!/usr/bin/env /data/mta/Script/Python3.6/envs/ska3/bin/python
+#!/usr/bin/env /data/mta/Script/Python3.8/envs/ska3-shiny/bin/python
 
 #################################################################################################
 #                                                                                               #
@@ -6,7 +6,7 @@
 #                                                                                               #
 #               author: t. isobe (tisobe@cfa.harvard.edu)                                       #
 #                                                                                               #
-#               last update: Jan 27, 2021                                                       #
+#               last update: Mar 17, 2021                                                       #
 #                                                                                               #
 #################################################################################################
 
@@ -317,14 +317,14 @@ def create_email(obs, catg):
         subject = subject + '(General sign-off)'
         tline   = tline   + 'general (non-ACIS) changes:\n\n'
         #email   = 'wink@head.cfa.harvard.edu arots@head.cfa.harvard.edu mccolml@head.cfa.harvard.edu'
-        email   = 'wink@head.cfa.harvard.edu arcops@head.cfa.harvard.edu'
+        email   = 'arcops@cfa.harvard.edu'
 #
 #--- acis sign off
 #
     elif catg == 'a':
         subject = subject + '(ACIS sign-off)'
         tline   = tline   + 'ACIS-specific changes:\n\n'
-        email   = 'arcops@head.cfa.harvard.edu'
+        email   = 'arcops@cfa.harvard.edu'
 #
 #--- acis si sign off
 #
