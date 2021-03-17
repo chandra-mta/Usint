@@ -1,0 +1,89 @@
+
+This perl cgi script lets USINT to approve multiple observation at the same time.
+
+Dir: /data/mta4/CUS/www/Usint/ 
+See also: https://cxc.cfa.harvard.edu/mta_days/mta_script_list/USINT/ti_express_sgin_off.html
+
+Script:
+------
+express_signoff.cgi
+
+Data:
+-----
+syBase access
+/data/mta4/CUS/www/Usint/ocat/approved
+/data/mta4/CUS/www/Usint/ocat/updates_table.list
+/data/mta4/CUS/www/Usint/ocat/updates/<obsid>.<ver#>
+/data/mta4/CUS/www/Usint/ocat/Info_save/name_list
+/data/mta4/CUS/www/Usint/ocat/Info_save/ocat_values
+/data/mta4/CUS/www/Usint/Pass_dir/usint_users
+/data/mta4/CUS/www/Usint/Pass_dir/user_email_list
+/data/mta4/CUS/www/Usint/Pass_dir/.htpasswd
+/data/mta4/CUS/www/Usint/Pass_dir/.htgroup
+/data/mta4/obs_ss/scheduled_obs_list
+/data/mta4/obs_ss/mp_long_term
+
+
+Web:
+----
+https://icxc.cfa.harvard.edu/mta/CUS/Usint/express_signoff.cgi 
+
+---------
+sub list
+---------
+
+password_check:     open a user - a password input page
+
+match_user:         check a user and a password matches
+
+input_obsid:        a page to write in list of obsids
+
+read_databases:     read out values from databases
+
+prep_submit:        preparing the data for submission
+
+read_user_name:     reading authorized user names
+
+user_warning:       warning a user, a user name mistake
+
+submit_entry:       check and submitting the modified input values
+
+read_name:      read descriptive name of database name
+
+find_name:      match database name to descriptive name
+
+oredit:         update approved list, updates_list, updates data, and send out email
+
+mod_time_format:    convert and devide input data format
+
+lts_date_check:     check ltd_date is in 30 days or not
+
+series_rev:         getting mointoring observation things
+
+series_fwd:         getting monitoring observation things
+
+find_planned_roll:  get planned roll from mp web page
+
+----------------------------------
+data/files needed for this script
+----------------------------------
+
+/data/mta4/CUS/www/Usint/ocat/approved
+
+/data/mta4/CUS/www/Usint/Pass_dir/usint_users
+
+/data/mta4/CUS/www/Usint/Pass_dir/.htpasswd
+
+/data/mta4/CUS/www/Usint/Pass_dir/.htgroup
+
+/data/mta4/CUS/www/Usint/ocat/approved
+
+/data/mta4/CUS/www/Usint/ocat/updates_table.list
+
+/data/mta4/obs_ss/mp_long_term
+
+
+The following directory is needed to process temporary files
+
+/data/mta4/www/CUS/Usint/Temp/
+

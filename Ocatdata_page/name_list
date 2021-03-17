@@ -1,0 +1,95 @@
+#
+# web name		# database name
+#
+SI Mode			si_mode
+Instrument		instrument
+Grating			grating
+Type			type
+Exposrue time		approved_exposure_time
+RA			ra
+DEC			dec
+Roll Observed		roll_obsr
+Offset: Y		y_det_offset
+Offset: Z		z_det_offset
+Z-Sim			trans_offset
+Sim-Focus		focus_offset
+Focus			defocus
+Raster Scan		raster_scan
+Dither			dither_flag
+Uninterrupted Obs	uninterrupt
+Solar System Object	obj_flag
+Object			object
+Photometry		photometry_flag
+V Mag			vmagnitude
+Count Rate		est_cnt_rate
+1st Order Rate		forder_cnt_rate
+Roll Angle Constraints	roll_constraint
+Roll Angle		roll
+Roll Tolerance		roll_tolerance
+Temporal Window		window_constraint
+Temporal Start 		tstart
+Temporal End 		tstop
+Phase Constraint	phase_constraint_flag
+Phase Epoch 		phase_epoch
+Phase Period		phase_period
+Phase Min 		phase_start
+Phase Min Err		phase_start_margin
+Phase Max 		phase_end
+Phase Max Err 		phase_end_margin
+Follows ObsID#		pre_id_group
+Follows Obs Min Int 	pre_min_lead_group
+Follows Obs Max Int 	pre_max_lead_group
+Follows ObsID#		pre_id
+Follows Obs Min Int 	pre_min_lead
+Follows Obs Max Int 	pre_max_lead
+Coordinated Observation	multitelescope
+Observatories		observatories
+Max Coordination Offset	multitelescope_interval
+HRC Configuration	hrc_config
+Zero Block		hrc_zero_block
+ACIS Exposure Mode	exp_mode
+Event TM Format		bep_pack
+Frame Time		frame_time
+Most Efficient		most_efficient
+Standard Chips		standard_chips
+I0			ccdi0_on
+I1			ccdi1_on
+I2			ccdi2_on
+I3			ccdi3_on
+S0			ccds0_on
+S1			ccds1_on
+S2			ccds2_on
+S3			ccds3_on
+S4			ccds4_on
+S5			ccds5_on
+Subarray Type		subarray
+Subarray Start		subarray_start_row
+Subarray Rows 		subarray_row_count
+Subarray Frame Time 	subarray_frame_time
+Duty Cycle		duty_cycle
+Number			secondary_exp_count
+Tprimary		primary_exp_time
+Tsecondary		secondary_exp_time
+Onchip Summing		onchip_sum
+Onchip Rows 		onchip_row_count
+onchip Columns 		onchip_column_count
+Event Filter		eventfilter
+Event Filter Lower 	eventfilter_lower
+Event Filter Range 	eventfilter_higher
+Multi Spectral Lines	multiple_spectral_lines
+Spectra Max Count	spectra_max_count
+Window Filter		spwindow
+Rank			ordr
+Chip			chip
+Photon Type		include_flag
+START ROW		start_row
+Start Column		start_column
+Height			height
+Width			width
+Lower Energy		lower_threshold
+Energy Range		pha_range
+Sample Rate		sample
+Bias			bias_request
+Frequency		frequency
+Bias After		bias_after
+Roll Flagr  oll_flag

@@ -1,0 +1,26 @@
+
+This perl script sends out POC duty notification.
+
+Dir: /data/mta4/CUS/www/Usint/ 
+See also: https://cxc.cfa.harvard.edu/mta_days/mta_script_list/USINT/ti_send_tpoc_duty.html
+
+Script:
+-------
+send_tpoc_duty.perl
+
+Data:
+-----
+
+/data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/personal_list
+/data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/schedule
+
+Output:
+-------
+email sent out
+
+
+Cron job:
+---------
+r2d2-v as cus
+0 16 * * * cd /data/mta4/CUS/www/Usint; /usr/local/bin/perl /data/mta4/CUS/www/Usint/send_tpoc_duty.perl >> $HOME/Logs/send_tpoc_duty.cron
+

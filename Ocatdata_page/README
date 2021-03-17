@@ -1,0 +1,117 @@
+
+##############
+Ocat Data Page
+##############
+
+This perl cgi script let USINT to update observational parameters. 
+
+Dir: /data/mta4/CUS/www/Usint/ 
+See also: https://cxc.cfa.harvard.edu/mta_days/mta_script_list/USINT/ti_ocat_data_page.html
+
+Scripts:
+--------
+ocatdata2html_full.cgi      full version
+ocatdata2html.cgi           short version
+ocatdata2html_lite.cgi      the same as the short version
+
+
+web addres:
+------------
+https://cxc.cfa.harvard.edu/mta/CUS/Usint/ocatdata2html.cgi?<obsid>
+https://cxc.cfa.harvard.edu/mta/CUS/Usint/ocatdata2html_full.cgi?<obsid>
+https://icxc.cfa.harvard.edu/mta/CUS/Usint/ocatdata2html.cgi?<obsid>
+https://icxc.cfa.harvard.edu/mta/CUS/Usint/ocatdata2html_full.cgi?<obsid> 
+
+---------
+  sub list:
+---------
+password_check:     open a user - a password input page
+
+match_user:         check a user and a password matches
+
+special_user:       check whether the user is a special user
+
+pi_check:           check whether pi has an access to the datau
+
+pass_param:         passing cgi parameter values to the next window
+
+read_databases:     read out values from databases
+
+data_close_page:    display data for closed observation
+
+data_input_page:    create data input page--- Ocat Data Page
+
+pre_submit:         preparing the data for submission
+
+chk_entry:          calling entry_test to check input value range and restrictions
+
+entry_test:         check input value range and restrictions
+
+restriction_check:  check special restrictions for input
+
+print_clone_page:   print comment entry for clone case
+
+read_range:         read conditions for values
+
+read_user_name:     reading authorized user names
+
+user_warning:       warning a user, a user name mistake
+
+submit_entry:       check and submitting the modified input values
+
+read_name:          read descriptive name of database name
+
+find_name:          match database name to descriptive name
+
+oredit:             update approved list, updates_list, updates data, and send out email
+
+mod_time_format:    convert and devide input data format
+
+lts_date_check:     check ltd_date is in 30 days or not
+
+series_rev:         getting mointoring observation things
+
+series_fwd:         getting monitoring observation things
+
+find_planned_roll:  get planned roll from mp web page
+
+rm_from_approved_list:  remove entry from approved list
+
+send_mail_to_usint:     sending out full support request email to USINT
+
+mail_out_to_usint:      sending email to USINT
+
+send_email_to_mp:       sending email to MP if the obs is in an active OR list
+
+keep_ccd_selection_record: keep ccd selectionin record.
+
+find_usint:             find an appropriate usint email address for a given obs.
+
+----------------------------------
+data/files needed for this script
+----------------------------------
+
+/data/mta4/CUS/www/Usint/Pass_dir/.htpasswd:           user/password list.
+
+/data/mta4/CUS/www/Usint/Pass_dir/.htgroup:            read user names
+
+/data/mta4/CUS/www/Usint/Pass_dir/cxc_user:            cxc user list
+
+/data/mta4/CUS/www/Usint/Pass_dir/user_email_list:     list of user/usint list
+
+/data/mta4/CUS/www/Usint/Pass_dir/usint_users:         list of usint persons
+
+/data/mta4/CUS/www/Usint/obs_ss/access_list:                   list of scheduled/unobserved list
+
+./ocat_values:                       a file contains codtion/restriction for the param
+
+./name_list:                         a file contains descritive names for params
+
+/data/mta4/CUS/www/Usint/ocat/approved:           an approved obsid list
+
+/data/mta4/CUS/www/Usint/ocat/updates_table.list  a file contains updated file list
+
+/data/mta4/CUS/www/Usint/ocat/updates/$obsid.*    database to save updated information
+
+sql database
+

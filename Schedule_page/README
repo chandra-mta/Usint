@@ -1,0 +1,39 @@
+
+A perl cgi script lets USINT to choose when they want to assume POC responsibility,
+and a perl script creates a html page from a given schedule.
+----------------------------------------------------------
+
+Dir: /data/mta4/CUS/www/Usint/ 
+See also: https://cxc.cfa.harvard.edu/mta_days/mta_script_list/USINT/ti_create_schedule_table.html
+          https://cxc.cfa.harvard.edu/mta_days/mta_script_list/USINT/ti_schedule_submitter.html
+
+Script:
+-------
+schedule_submitter.cgi
+create_schedule_table.perl  
+
+Data:
+-----
+/data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/personal_list
+/data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/schedule
+/data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/this_week_person_in_charge
+
+Output:
+-------
+/data/mta4/CUS/www/Usint/too_contact_schedule.html
+
+Web:
+----
+https://icxc.cfa.harvard.edu/mta/CUS/Usint/schedule_submitter.cgi 
+https://icxc.cfa.harvard.edu/mta/CUS/Usint/too_contact_schedule.html
+
+Cron job:
+---------
+r2d2-v as cus
+1 0 * * * cd /data/mta4/CUS/www/Usint/; /usr/local/bin/perl /data/mta4/CUS/www/Usint/create_schedule_table.perl >> $HOME/Logs/too_contact.cron 
+
+Web:
+-----
+https://icxc.cfa.harvard.edu/mta/CUS/Usint/too_contact_schedule.html 
+
+

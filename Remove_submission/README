@@ -1,0 +1,55 @@
+
+This perl cgi script lets USINT user to remove an accidental submission. 
+
+Dir: /data/mta4/CUS/www/Usint/ 
+See also: https://cxc.cfa.harvard.edu/mta_days/mta_script_list/USINT/ti_rm_submission.html
+
+Script:
+-------
+rm_submission.cgi
+ 
+
+Data:
+-----
+/data/mta4/CUS/www/Usint/ocat/updates_table.list
+/data/mta4/CUS/www/Usint/Pass_dir/usint_users
+/data/mta4/CUS/www/Usint/Pass_dir/user_email_list
+/data/mta4/CUS/www/Usint/Pass_dir/.htgroup
+/data/mta4/obs_ss/sot_ocat.out
+/data/mta4/obs_ss/access_list
+
+
+Web:
+----
+https://icxc.cfa.harvard.edu/mta/CUS/Usint/rm_submission.cgi 
+
+--------
+sub list
+--------
+
+password_check:     open a user - a password input page
+
+match_user:         check a user and a password matches
+
+special_user:       check whether the user is a special user
+
+pi_check:           check whether pi has an access to the data
+
+remve_submission:   remove an submitted obsid from database
+
+update_info:        will perform updates to table
+
+----------------------------------
+data/files needed for this script
+----------------------------------
+
+/data/mta4/CUS/www/Usint/Pass_dir/Pass_dir/usint_users
+
+/data/mta4/CUS/www/Usint/Pass_dir/Pass_dir/.htpasswd
+
+/data/mta4/CUS/www/Usint/Pass_dir/Pass_dir/user_email_list
+
+/data/mta4/obs_ss/access_list
+
+/data/mta4/CUS/www/Usint/Pass_dir/ocat/updates_table.list
+

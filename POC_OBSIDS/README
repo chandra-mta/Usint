@@ -1,0 +1,31 @@
+
+A perl cgi script lists approved TOO/DDT and thier POC 
+a perl cgi script lists observations handled by a given POC 
+and 
+a perl cgi scriptdisplays who is in charge for a give obsid/seq
+
+Dir: /data/mta4/CUS/www/Usint/ 
+See also: https://cxc.cfa.harvard.edu/mta_days/mta_script_list/USINT/ti_obsid_usint_list.html
+          https://cxc.cfa.harvard.edu/mta_days/mta_script_list/USINT/ti_poc_obsid_list.html
+
+Script:
+-------
+obsid_usint_list.cgi
+poc_obsid_list.cgi  
+obsid_poc_list.cgi
+
+Data:
+-----
+syBase access
+/data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/usint_personal
+/data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/ddt_list
+/data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/too_list
+/data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/new_obs_list
+/data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/obs_in_30days
+http://acis.mit.edu/cgi-bin/get-obsid
+
+Web:
+----
+https://icxc.cfa.harvard.edu/mta/CUS/Usint/obsid_usint_list 
+https://icxc.cfa.harvard.edu/mta/CUS/Usint/poc_obsid_list.cgi
+

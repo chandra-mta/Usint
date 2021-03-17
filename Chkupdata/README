@@ -1,0 +1,51 @@
+
+This perl cgi script lets USINT to inspect changes made on the parameters of observation. 
+You can choose a verson.
+
+Dir:  /data/mta4/CUS/www/Usint/ 
+See also: https://cxc.cfa.harvard.edu/mta_days/mta_script_list/USINT/ti_chkupdata.html
+
+
+Script: 
+-------
+chkupdata.cgi   
+
+
+Data:
+-----
+syBase access
+/data/mta4/CUS/www/Usint/ocat/approved
+/data/mta4/CUS/www/Usint/ocat/updates_table.list
+/data/mta4/CUS/www/Usint/ocat/updates/<obsid>.<ver#>
+
+
+Web:
+----
+https://icxc.cfa.harvard.edu/mta/CUS/Usint/chkupdata.cgi?<obsid>.<ver#> 
+
+--------
+sub list
+--------
+check_update_database:  find a newest entry for obsid
+
+html_print:         printing html page
+
+match_param:        comparing parameters to determine whether it is different from
+                    that of database
+
+chk_frac:       check fraction so that you can round number
+
+color_coding:       html print with color code
+
+mod_time_format:    convert and devide input data format
+
+read_databases:     read out values from databases
+
+
+----------------------------------
+data/files needed for this script
+----------------------------------
+
+/data/mta4/CUS/www/Usint/ocat/updates/$dat       data file name, something like 5432.001
+
+

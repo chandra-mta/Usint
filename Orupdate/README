@@ -1,0 +1,61 @@
+
+This form contains all requested updates which have either not been verified or have been verified in the last 24 hours. 
+
+Dir: /data/mta4/CUS/www/Usint/ 
+See also: https://cxc.cfa.harvard.edu/mta_days/mta_script_list/USINT/ti_orupdate_page.html
+
+
+Script:
+-------
+orupdate.cgi
+
+Data:
+-----
+syBase access
+/data/mta4/CUS/www/Usint/ocat/approved
+/data/mta4/CUS/www/Usint/ocat/updates_table.list
+/data/mta4/CUS/www/Usint/ocat/updates/<obsid>.<ver#>
+/data/mta4/CUS/www/Usint/Pass_dir/usint_users
+/data/mta4/CUS/www/Usint/Pass_dir/user_email_list
+/data/mta4/CUS/www/Usint/Pass_dir/.htpasswd
+/data/mta4/CUS/www/Usint/Pass_dir/.htgroup
+/data/mta4/obs_ss/acess_list
+/data/mta4/obs_ss/cdo_warning_list
+
+Web:
+----
+https://icxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi 
+
+--------
+sub list
+--------
+
+password_check:     open a user - a password input page
+
+match_user:         check a user and a password matches
+
+special_user:       check whether the user is a special user
+
+pi_check:       check whether pi has an access to the data
+
+get_database_values:    get a few database values for checking
+
+orupdate_main:      printing a verification page
+
+update_info:        will perform updates to table
+
+----------------------------------
+data/files needed for this script
+----------------------------------
+
+/data/mta4/CUS/www/Usint/Pass_dir/usint_users
+
+/data/mta4/CUS/www/Usint/Pass_dir/.htpasswd
+
+/data/mta4/CUS/www/Usint/Pass_dir/user_email_list
+
+/data/mta4/obs_ss/access_list
+
+/data/mta4/CUS/www/Usint/ocat/updates_table.list
+
+

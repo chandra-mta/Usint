@@ -1,0 +1,19 @@
+
+This perl cgi script lets USINT to update contact information. 
+
+Dir: /data/mta4/CUS/www/Usint/ 
+See also: https://cxc.cfa.harvard.edu/mta_days/mta_script_list/USINT/ti_inset_usnint_person.html
+
+Script:
+-------
+insert_person.cgi   
+
+Data:
+-----
+/data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/personal_list
+
+Web:
+-----
+https://icxc.cfa.harvard.edu/mta/CUS/Usint/insert_person.cgi
+
+

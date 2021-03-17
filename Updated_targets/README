@@ -1,0 +1,17 @@
+
+This perl cgi script lists all targets which have been verified as updated. 
+
+Dir:  /data/mta4/CUS/www/Usint/ 
+See also: https://cxc.cfa.harvard.edu/mta_days/mta_script_list/USINT/ti_orupdated_page.html
+
+Script:
+-------
+orupdated.cgi
+
+Data:
+-----
+/data/mta4/CUS/www/Usint/ocat/updates_table.list 
+
+Web:
+----
+https://icxc.cfa.harvard.edu/mta/CUS/Usint/orupdated.cgi 

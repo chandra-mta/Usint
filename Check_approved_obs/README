@@ -1,0 +1,30 @@
+
+Check updates_table.list and send out email
+-------------------------------------------
+
+Dir: /data/mta4/obs_ss/ 
+See also: https://cxc.cfa.harvard.edu/mta_days/mta_script_list/USINT/ti_chk_arcops.html
+
+Scripts:
+--------
+chk_arcops_wrap_script 
+chk_arcops_main_script
+chk_arcops.perl  
+
+Data:
+-----
+
+/data/mta4/CUS/www/Usint/ocat/updates_table.list
+/data/mta4/CUS/www/Usint/ocat/arcops_list
+
+Output:
+-------
+email
+
+
+Cron job
+---------
+c3po-v as mta
+0 4 * * * cd /data/mta4/obs_ss/; perl /data/mta4/obs_ss/chk_arcops.perl >> $HOME/Logs/chk_arcops.cron 
+
+

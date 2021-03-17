@@ -1,0 +1,36 @@
+
+Check whether any of the users listed changed her/his passwoard and update the password list. 
+
+Dir:  /proj/web-cxc-secure/htpasswd/mta/ 
+See also: https://cxc.cfa.harvard.edu/mta_days/mta_script_list/USINT/ti_makepasswordfile.html
+
+
+Script:
+-------
+makepasswordfile.pl
+
+Data:
+----
+head system access
+
+Output:
+-------
+/proj/web-cxc-secure/htpasswd/mta/.htgroup
+/proj/web-cxc-secure/htpasswd/mta/.htpasswd
+
+Cron job:
+---------
+c3po-v as mta
+0 * * * * cd /proj/web-cxc-secure/htpasswd/mta; perl makepasswordfile.pl 
+
+Memo
+----
+
+If you are adding the person to access USINT related scripts, you may also want to add her/him to:
+
+/data/mta4/CUS/www/Usint/Pass_dir/usint_users
+
+If she/he needs to be a POC, add her/his name to :
+
+/data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/usint_personal
+/data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/personal_list

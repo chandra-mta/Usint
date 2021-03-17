@@ -1,0 +1,42 @@
+
++++++++++++++++++++++++++++
+Split Observation Notifier 
++++++++++++++++++++++++++++
+
+This script check whether a newly added obsid is a split observation, and
+send notify to POC. 
+
+Dir: /data/mta4/CUS/www/Usint/TOO_Obs/Split_check
+See also: https://cxc.cfa.harvard.edu/mta_days/mta_script_list/USINT/ti_split_obs_notifier.html
+
+Script
+------
+
+check_added_obsid.py
+
+Environment Setting
+--------------------
+
+None, but must be able to access to: /proj/sot/ska/bin/python
+
+Data Needed
+------------
+
+prop_obsid_list                 --- a dictionary of proposal number  <---> obsid list
+
+/data/mta4/obs_ss/sot_ocat.out  --- updated sot data
+
+sql database (see /data/mta4/CUS/www/Usint/TOO_Obs/readSQL.py)
+
+Output
+------
+
+prop_obsid_list
+
+email to POC and a proposer/observer
+
+
+Cron Job
+--------
+0 8,12,16 * * * cd /data/mta4/CUS/www/Usint/TOO_Obs/Split_check; /data/mta4/CUS/www/Usint/TOO_Obs/Split_check/check_added_obsid.py >> /data/mta4/CUS/www/Usint/TOO_Obs/Split_check/test_log 2>&1
+

@@ -1,0 +1,213 @@
+<HTML>
+<HEAD>
+<TITLE>Chandra Uplink Support Observation Search Form</TITLE>
+</HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+
+  <!--
+  function validate()
+	{
+
+	str = document.orform.ra.value
+	re = /-?\d\d/
+	found = str.match(re)
+
+	if ((found>23)||(found<0))
+		{
+		alert ("RA must be between 0 and 360.")
+		return false
+		}
+		else	   
+		{	   
+		return true
+		}	
+		}	
+  //-->		   
+</SCRIPT>
+
+<BR>
+<H1 align="center">Chandra Uplink Support Observation Search Form </H1>
+<P>
+Use this form to find your observation(s).  You can search by PI,
+sequence number, observation type and perform a cone search.  <A
+HREF="https://icxc.harvard.edu/mta/CUS/Usint/search_help.html#RANGE">Range</A>
+and comma separated <A
+HREF="https://icxc.harvard.edu/mta/CUS/Usint/search_help.html#LIST"> list</A> as well as <a href="https://icxc.harvard.edu/mta/CUS/Usint/search_help.html#WILDCARD">wildcard</a>
+searches can also be performed on the Sequence Number, Proposal
+Number, and Obs ID fields. <A HREF="https://icxc.harvard.edu/mta/CUS/Usint/search_help.html">Click here for
+additional information.</A> <a href="https://icxc.harvard.edu/mta/CUS/Usint/newfeature.html">Click
+here for new search features</a>.<P>
+
+
+<b>Note:</b> Cycle 1 DDT observations may be classified as TOOs.<BR>
+
+<!----
+<FORM NAME="orform" ACTION="https://icxc.harvard.edu/mta/CUS/Usint/sot_answer.cgi" METHOD="post" onSubmit="return validate()">
+--->
+<FORM NAME="orform" ACTION="https://icxc.harvard.edu/mta/CUS/Usint/sot_answer.cgi" METHOD="post" onSubmit="return validate()">
+<CENTER><TABLE cellpadding="6" width="95%" border>
+<TR align="center"><TD colspan="6">
+ <A HREF="https://icxc.harvard.edu/mta/CUS/Usint/search_help.html#SORT">Sort
+ by</A>:
+ <SELECT NAME="sorted">
+     <OPTION>Sequence Number
+     <OPTION>RA
+     </SELECT>
+     <INPUT TYPE="submit" value="Search">
+     <INPUT TYPE="reset" value="Clear-Form">
+</TD></TR>
+<TR><TD colspan="3">
+     <A HREF="https://icxc.harvard.edu/mta/CUS/Usint/search_help.html#SEQUENCE">Sequence Number</A>: <INPUT TYPE="text" NAME="seqnbr" MAXLENGTH="100"
+     SIZE="20"></TD>
+<TD colspan="3">
+     <A HREF="https://icxc.harvard.edu/mta/CUS/Usint/search_help.html#PROPOSAL">Proposal Number</A>: <INPUT TYPE="text" NAME="pronbr" MAXLENGTH="100"
+     SIZE="25"></TD></TR>
+<TR><TD colspan="3">
+     <A HREF="https://icxc.harvard.edu/mta/CUS/Usint/search_help.html#PINAME">PI Name</A>: <INPUT TYPE="text" NAME="piname" MAXLENGTH="30"
+     SIZE="30"></TD>
+<TD colspan="3">
+     <A HREF="https://icxc.harvard.edu/mta/CUS/Usint/search_help.html#OBSERVER">Observer</A>: <INPUT TYPE="text" NAME="observ" MAXLENGTH="30"
+     SIZE="30"></TD></TR>
+<TR><TD colspan="3">
+     <A HREF="https://icxc.harvard.edu/mta/CUS/Usint/search_help.html#TARGET">Target</A>: <INPUT TYPE="text" NAME="target" MAXLENGTH="100"
+     SIZE="20">&nbsp&nbsp&nbsp<a href="https://icxc.harvard.edu/mta/CUS/Usint/search_help.html#SIMBAD">Use
+     Simbad?</a>&nbsp&nbsp<INPUT type="checkbox" name="simbad"
+     value="useSimbad">&nbsp&nbsp&nbsp<font size="-1">Note: default
+     search radius is 4 arcmin; this may be changed by
+     entering "Radius" and "Units" below.</font></TD>
+<TD colspan="3">
+     <A HREF="https://icxc.harvard.edu/mta/CUS/Usint/search_help.html#CATEGORY">Science Category</A>: <SELECT name="category">
+         <OPTION value="">ALL</OPTION>
+         <OPTION value="10">Solar System and Misc</OPTION>
+         <OPTION value="20">Normal Stars and WD</OPTION>
+         <OPTION value="30">WD Binaries and CVs</OPTION>
+         <OPTION value="40">BH and NS Binaries</OPTION>
+         <OPTION value="50">SN, SNR, and Isolated NS</OPTION>
+         <OPTION value="60">Normal Galaxies</OPTION>
+         <OPTION value="70">Active Galaxies and Quasars</OPTION>
+         <OPTION value="80">Clusters of Galaxies</OPTION>
+         <OPTION value="90">Extragalactic Diffuse Emission & Surveys</OPTION>
+         <OPTION value="91">Galactic Diffuse Emission & Surveys</OPTION>
+    </SELECT></TD>
+</TR>
+<TR>
+<TD colspan="3">
+     <A HREF="https://icxc.harvard.edu/mta/CUS/Usint/search_help.html#OBSID">Obs ID</A>: <INPUT TYPE="text" NAME="obsid" MAXLENGTH="100"
+     SIZE="20"></TD>
+<TD colspan="2">
+     Observing Cycle: <SELECT name="cycle">
+<!-- for future cycles, add a line following this example.  -->
+<!-- It is not necessary to modify the source -->
+         <OPTION value="">ALL</OPTION>
+         <OPTION value="01">AO1</OPTION>
+         <OPTION value="02">AO2</OPTION>
+         <OPTION value="03">AO3</OPTION>
+	 <OPTION value="04">AO4</OPTION>
+	 <OPTION value="05">AO5</OPTION>
+	 <OPTION value="06">AO6</OPTION>
+	 <OPTION value="07">AO7</OPTION>
+	 <OPTION value="08">AO8</OPTION>
+	 <OPTION value="09">AO9</OPTION>
+	 <OPTION value="10">AO10</OPTION>
+	 <OPTION value="11">AO11</OPTION>
+	 <OPTION value="12">AO12</OPTION>
+	 <OPTION value="13">AO13</OPTION>
+    </SELECT></TD></TR>
+<TR><TD colspan="6">
+     <A HREF="https://icxc.harvard.edu/mta/CUS/Usint/search_help.html#COORDINATES">Coordinate Search</A>: <A HREF="https://icxc.harvard.edu/mta/CUS/Usint/search_help.html#RA">RA</A>: <INPUT TYPE="text" NAME="ra" MAXLENGTH="15"
+     SIZE="15"> <A HREF="https://icxc.harvard.edu/mta/CUS/Usint/search_help.html#DEC">Dec</A>: <INPUT TYPE="text" NAME="dec" MAXLENGTH="15"
+     SIZE="15"> 
+
+     <A HREF="https://icxc.harvard.edu/mta/CUS/Usint/search_help.html#RADIUS">Radius</A>: <INPUT TYPE="text" NAME="radius" MAXLENGTH="5"
+     SIZE="5"> <A HREF="https://icxc.harvard.edu/mta/CUS/Usint/search_help.html#UNITS">Units</A>: <SELECT NAME="radcho">
+     <OPTION>
+     <OPTION>degrees
+     <OPTION>arcmin
+     </SELECT>
+</TR></TD>
+<TR align="center"><TD colspan="6">
+     The above option performs a cone search.  Coordinates are J2000
+     in the following format ##:##:##.## or ## ## ##.##<BR>
+     Example of format for coordinate search: 09:34:56.80
+     -40:23:18.18 or 23 17 26.80 -40 23 18.18<BR>
+     For exact searches leave Units pull down menu
+     blank.
+</TD></TR>
+<TR><TD align="center" valign="top" colspan="1">
+     <A HREF="https://icxc.harvard.edu/mta/CUS/Usint/search_help.html#SCIENCE">Science Instrument</A><BR>
+     <INPUT type="checkbox" name="sciins1" value="ACIS-I">ACIS-I<BR>
+     <INPUT type="checkbox" name="sciins2" value="ACIS-S">ACIS-S<BR>
+     <INPUT type="checkbox" name="sciins3" value="HRC-I">HRC-I<BR>
+     <INPUT type="checkbox" name="sciins4" value="HRC-S">HRC-S<BR></TD>
+
+<TD align="center" valign="top" colspan="1"><A HREF="https://icxc.harvard.edu/mta/CUS/Usint/search_help.html#ACISMODE">ACIS Mode</A><BR>
+     <INPUT type="checkbox" name="mode1" value="TE">Timed Exposure<BR>
+     <INPUT type="checkbox" name="mode2" value="CC">Continuous Clocking<BR></TD>
+
+     <TD align="center" valign="top" colspan="1"><A HREF="https://icxc.harvard.edu/mta/CUS/Usint/search_help.html#GRATING">Grating</A><BR>
+     <INPUT type="checkbox" name="gratin1" value="HETG">HETG<BR>
+     <INPUT type="checkbox" name="gratin2" value="LETG">LETG<BR>
+     <INPUT type="checkbox" name="gratin3" value="NONE">NONE<BR></TD>
+
+     <TD align="center" valign="top" colspan="1"><A HREF="https://icxc.harvard.edu/mta/CUS/Usint/search_help.html#TYPE">Observation Type</A><BR>
+     <INPUT type="checkbox" name="type1" value="GO">GO<BR>
+     <INPUT type="checkbox" name="type2" value="GTO">GTO<BR>
+     <INPUT type="checkbox" name="type3" value="CAL">CAL<BR>
+     <INPUT type="checkbox" name="type4" value="TOO">TOO<BR>
+     <INPUT type="checkbox" name="type5" value="DDT">DDT<BR></TD>
+
+     <TD align="center" valign="top" colspan="1"><A HREF="https://icxc.harvard.edu/mta/CUS/Usint/search_help.html#STATUS">Status</A><BR>
+     <INPUT type="checkbox" name="status1" value="Unobserved">Unobserved<BR>
+     <INPUT type="checkbox" name="status2" value="Scheduled">Scheduled<BR>
+     <INPUT type="checkbox" name="status3" value="Partially Observed">Partially Observed<BR>
+     <INPUT type="checkbox" name="status4" value="Observed">Observed<BR>
+     <INPUT type="checkbox" name="status5" value="Archived">Archived<BR>
+     <INPUT type="checkbox" name="status6" value="Canceled">Canceled<BR>
+     <INPUT type="checkbox" name="status7" value="Discarded">Discarded<BR>
+     <TD align="center" valign="top" colspan="1"><A HREF="https://icxc.harvard.edu/mta/CUS/Usint/search_help.html#JOINT">Joint Proposals</A><BR> 
+     <INPUT type="checkbox" name="joint1" value="NOAO">NOAO<BR>
+     <INPUT type="checkbox" name="joint2" value="HST-CXO">HST-CXO<BR>
+<INPUT type="checkbox" name="joint3" value="HST-HST">HST-HST<BR>
+<INPUT type="checkbox" name="joint4" value="NOAO+HST">NOAO+HST<BR>
+<INPUT type="checkbox" name="joint5" value="XMM-CXO">XMM-CXO<BR>
+<INPUT type="checkbox" name="joint6" value="XMM-XMM">XMM-XMM<BR>
+</TD>
+
+</TD></TR>
+
+
+
+<TR align="center"><TD colspan="6">
+     <INPUT TYPE="submit" value="Search">
+     <INPUT TYPE="reset" value="Clear-Form">
+</TD></TR>
+</TABLE></CENTER>
+</FORM>
+<HR>
+<h3 align="center"> Target Lists</h3>
+Targets ordered by
+<OL>
+<LI><a href="http://cxc.cfa.harvard.edu/targets/seq.html">sequence number</a>
+<LI><a href="http://cxc.cfa.harvard.edu/targets/ra.html">right ascension</a>.
+</OL>
+<hr>
+
+
+<!--PLEASE DO NOT MODIFY THIS LINE OR ANYTHING BELOW!-->
+<BR><BR>
+<!-- Optional -->
+<P ALIGN="RIGHT">
+Last modified:
+<!--#CONFIG TIMEFMT="%x"-->
+<!--#flastmod file="$DOCUMENT_NAME"-->
+</P>
+</BODY>
+</HTML>
+
+
+
+
+
+
+
+

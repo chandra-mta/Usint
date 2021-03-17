@@ -1,0 +1,75 @@
+<!-- input.html -->
+<HTML>
+<HEAD>
+<TITLE>Cycle 15 Letter Generator</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<center><H1>Cycle 15 Letter Generator</H1></center><P>
+
+To generate a GO letter, please enter the following information:<P>
+
+<FORM action="cycle15.cgi">
+
+<input type=hidden name="stage" value="preview">
+<TABLE>
+<TR>
+<TD>
+<B>4 or 5 digit *ObsID*: </b> 
+</TD>
+<TD>
+<input type=text name="seqnum">
+</TD>
+</TR>
+<TR>
+<TD>
+<B>Your last name: </B>
+</TD>
+<TD>
+<input type=text name="cxcname">
+</TD>
+</TR>
+<TR>
+<TD colspan=2>&nbsp;</TD></TR>
+<TR>
+<TD>
+<B>Choose your form letter: </B>
+</TD>
+<TD>
+<input type=radio name="letter" value="hrc">HRC (I or S, w/o grating)<BR>
+<input type=radio name="letter" value="acis" checked="true">ACIS<br>
+<input type=radio name="letter" value="letg">LETG (w/ HRC or ACIS)<BR>
+<input type=radio name="letter" value="hetg">HETG [a static page from AO1]
+</TD>
+</TR>
+<TR>
+<TD colspan=2>&nbsp;</TD></TR>
+<TR>
+<TD>
+<B>Deadline for response: </B>
+</TD>
+<TD>
+<input type=radio name="datetype" value="auto" checked="true"> Auto deadline (32 days
+before obs if assigned, 14 days from today if pooled)<BR>
+<input type=radio name="datetype" value="setdate"> Assign the following
+deadline (e.g. 18-Sep-2006): <input type=text name="deadline"><br>
+<input type=radio name="datetype" value="unscheduled">Observation is
+not yet in LTS (deadline will be 14 days
+from today)<br>
+</TD>
+</TR>
+</TABLE>
+<input type="submit" value="Generate Draft for Review">
+<input type="reset" value="Clear Form">
+</form>
+
+<HR>
+<small><i>Updated for Cycle 15 by <a href=mailto:isobe@.head.cfa.harvard.edu>T. Isobe</a></i></small>
+<P>
+Letter generators from previous observing cycles:<br>
+<a href="AO14.html">AO-14</a><br>
+<a href="AO13.html">AO-13</a><br>
+<br>
+<P>
+</body>
+</html>
+
