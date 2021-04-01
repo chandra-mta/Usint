@@ -130,6 +130,9 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 # T. Isobe Jan 26, 2021                                                                 #
 # mailx subject line change                                                             #
 #                                                                                       #
+# T. Isobe Mar 31, 2021                                                                 #
+# TOO/DDT si mode email: send to hrcdude if the instrument is hrc                       #
+#                                                                                       #
 #########################################################################################
 
 ###############################################################################
@@ -1784,10 +1787,16 @@ sub update_info {
 								system($cmd);
 
 							}else{
+                                $inst = find_value('instrument', $obsid);
+
                                 $cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
                                 $cmd = "$cmd"."Subject: TOO SI Status Signed Off Request: OBSID: ";
                                 $cmd = "$cmd"."  $newobsid\"  -ccus\@head.cfa.harvard.edu ";
-                                $cmd = "$cmd"." acisdude\@head.cfa.harvard.edu";
+                                if($inst =~ /ACIS/i){
+                                    $cmd = "$cmd"." acisdude\@head.cfa.harvard.edu";
+                                }else{
+                                    $cmd = "$cmd"." hrcdude\@head.cfa.harvard.edu";
+                                }
 								system($cmd);
 
                                 $cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
@@ -2086,10 +2095,17 @@ sub update_info {
                                 system($cmd);
 
 							}else{
+
+                                $inst = find_value('instrument', $obsid);
+                                    
 								$cmd ="cat $temp_dir/ddt_gen_change|mailx -s\"";
                                 $cmd = "$cmd"."Subject: DDT SI Status Signed Off Request: OBSID: ";
                                 $cmd = "$cmd"."$newobsid\"  -ccus\@head.cfa.harvard.edu ";
-                                $cmd = "$cmd"."acisdude\@head.cfa.harvard.edu";
+                                if($inst =~/ACIS/i){
+                                    $cmd = "$cmd"."acisdude\@head.cfa.harvard.edu";
+                                }else{
+                                    $cmd = "$cmd"."hrcdude\@head.cfa.harvard.edu";
+                                }
                                 system($cmd);
 
 								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
@@ -5017,3 +5033,48 @@ sub find_highest_rev{
     }
 }
 
+###################################################################################
+###################################################################################
+###################################################################################
+
+sub find_value{
+    my $cname, $obsid;
+    ($cname, $obsid) = @_;
+    $web = $ENV{'HTTP_REFERER'};
+    if($web =~ /icxc/){
+        $db_user   = "mtaops_internal_web";
+        $db_passwd =`cat $pass_dir/.targpass_internal`;
+    }else{
+        $db_user = "mtaops_public_web";
+        $db_passwd =`cat $pass_dir/.targpass_public`;
+    }
+    chop $db_passwd;
+    $server  = "ocatsqlsrv";
+
+    my $db = "server=$server;database=axafocat";
+    $dsn1  = "DBI:Sybase:$db";
+    $dbh1  = DBI->connect($dsn1, $db_user, $db_passwd, { PrintError => 0, RaiseError => 1});
+
+    $sqlh1 = $dbh1->prepare(qq(select remarks  from target where obsid=$obsid));
+    $sqlh1->execute();
+    ($remarks) = $sqlh1->fetchrow_array;
+    $sqlh1->finish;
+
+    $sqlh1 = $dbh1->prepare(qq(select mp_remarks  from target where obsid=$obsid));
+    $sqlh1->execute();
+    ($mp_remarks) = $sqlh1->fetchrow_array;
+    $sqlh1->finish;
+
+    $sqlh1 = $dbh1->prepare(qq(select $cname from target where obsid=$obsid));
+
+    $sqlh1->execute();
+    @targetdata = $sqlh1->fetchrow_array;
+    $sqlh1->finish;
+    
+    $out  = $targetdata[0];
+    $out  =~ s/\s+//g;
+
+    $dbh1->disconnect();
+
+    return $out;
+}
