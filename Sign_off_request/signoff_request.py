@@ -6,7 +6,7 @@
 #                                                                                               #
 #               author: t. isobe (tisobe@cfa.harvard.edu)                                       #
 #                                                                                               #
-#               last update: Mar 17, 2021                                                       #
+#               last update: Jul 27, 2021                                                       #
 #                                                                                               #
 #################################################################################################
 
@@ -169,7 +169,7 @@ def signoff_status():
         chk    = 0
         atemp  = re.split('\t+', ent)
 
-        if len(atemp) < 7:
+        if len(atemp) < 8:
             continue
 
         btemp  = re.split('\.', atemp[0])
@@ -179,10 +179,10 @@ def signoff_status():
 #
 #--- check each signoff status; if it is already verified, go to the next one
 #
-        if atemp[4] != 'NA':
+        if atemp[5] != 'NA':
             continue 
 
-        for k in range(0, 4):
+        for k in range(0, 5):
             pos = k + 1
             if atemp[pos] == 'NA':
                 status[k] = 1
@@ -407,7 +407,7 @@ def warning(wline):
     input:  wline   --- clue of failure
     output: email sent out
     """
-    line = 'Something wront with: ' + wline + ' in signoff_request.py.'
+    line = 'Something wrong with: ' + wline + ' in signoff_request.py.'
     with open(zspace, 'w') as fo:
         fo.write(line)
 
