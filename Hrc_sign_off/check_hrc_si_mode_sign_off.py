@@ -6,7 +6,7 @@
 #                                                                                           #
 #           author: t. isobe (tisobe@cfa.harvard.edu)                                       #
 #                                                                                           #
-#           last update: Mar 17, 2021                                                       #
+#           last update: Jul 27, 2021                                                       #
 #                                                                                           #
 #############################################################################################
 
@@ -53,12 +53,12 @@ def check_hrc_si_status():
     warning = []
     for ent in data:
         atemp = re.split('\t+', ent)
-        if len(atemp) < 6:
+        if len(atemp) < 8:
             continue
 #
 #--- check the observation is already signed off
 #
-        if atemp[4] != 'NA':
+        if atemp[5] != 'NA':
             continue
         btemp = re.split('\.', atemp[0])
         obsid = int(float(btemp[0]))
@@ -71,7 +71,7 @@ def check_hrc_si_status():
 #
         mc = re.search('HRC', inst)
         if mc is not None:
-            if atemp[3] == 'NA':
+            if atemp[4] == 'NA':
                 warning.append(atemp[0])
 #
 #--- if there are hrc si mode which are not signed offm, send out warning email
