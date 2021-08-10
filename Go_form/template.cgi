@@ -1,9 +1,9 @@
-#!/usr/bin/perl
+#!/usr/bin/env /soft/ascds/DS.release/ots/bin/perl
 
 BEGIN
   {
-    $ENV{SYBASE} = "/soft/SYBASE15.7";
 #    $ENV{SYBASE} = "/soft/sybase";
+    $ENV{SYBASE} = "/soft/SYBASE16.0";
 #    $ENV{PATH} = "/soft/sybase:/usr/bin:/usr/local/bin";
   }
 
@@ -11,18 +11,18 @@ use DBI;
 use DBD::Sybase;
 use CGI ':standard';
 
-#############################################################################################################
-#                                                                                                           #
-#   cycle<#>.cgi: template of cycle<#>.cgi page.                                                            #
-#                                                                                                           #
-#       author: Jennifer Posson-Brown (jpbrown@head.cfa.harvard.edu)                                        #
-#               updated/maintained by t. isobe (tisobe@cfa.harvard.edu)                                     #
-#                                                                                                           #
-#       also works if it is used with /data/mpcrit1/bin/perl with no .htaccess file                         #
-#                                                                                                           #
-#       Last Update: Oct 21, 2013                                                                           #
-#                                                                                                           #
-#############################################################################################################
+#################################################################################################
+#                                                                                               #
+#   cycle<#>.cgi: template of cycle<#>.cgi page.                                                #
+#                                                                                               #
+#       author: Jennifer Posson-Brown (jpbrown@head.cfa.harvard.edu)                            #
+#               updated/maintained by t. isobe (tisobe@cfa.harvard.edu)                         #
+#                                                                                               #
+#       also works if it is used with /data/mpcrit1/bin/perl with no .htaccess file             #
+#                                                                                               #
+#       Last Update: Jun 28, 2021                                                               #
+#                                                                                               #
+#################################################################################################
 
 print "Content-type: text/html\n\n";
 
@@ -30,12 +30,10 @@ print "Content-type: text/html\n\n";
 #
 #--- for the test, set "$test" to yes
 #
-$test   = 'yes';
-#$test   = 'no';
+#$test   = 'yes';
+$test   = 'no';
 $tester = 'isobe@head.cfa.harvard.edu';
 #$tester = 'swolk@head.cfa.harvard.edu';
-#
-$cycle_name = 'vvv.cgi';        #--- this should be cycle15.cgi (for the test vvv.cgi)
 #
 #----------------------------------------------------------
 
@@ -72,11 +70,17 @@ if ($stage eq "mailit") {
 #
 #--- create an appropriate letter
 #
-    if ($which_letter eq "hrc") {
+    if ($which_letter eq "hrc_23") {
 	    make_hrc_letter(); 
 
-    } elsif ($which_letter eq "acis") {
+    } elsif ($which_letter eq "acis_23") {
 	    make_acis_letter();
+
+    } elsif ($which_letter eq "acis_st_23") {
+	    make_acis_st_letter();
+
+    } elsif ($which_letter eq "acis_st_early_23") {
+	    make_acis_st_early_letter();
 
     } elsif ($which_letter eq "letg") {
 	    make_letg_letter();
@@ -202,11 +206,17 @@ if ($stage eq "mailit") {
 #
 #--- everything seems OK, print the result
 #
-	        if ($which_letter eq "hrc") {
+	        if ($which_letter eq "hrc_23") {
 		        make_hrc_letter(); 		
 
-	        } elsif ($which_letter eq "acis") {
+	        } elsif ($which_letter eq "acis_23") {
 		        make_acis_letter();
+
+	        } elsif ($which_letter eq "acis_st_23") {
+		        make_acis_st_letter();
+
+	        } elsif ($which_letter eq "acis_st_early_23") {
+		        make_acis_st_early_letter();
 
 	        } elsif ($which_letter eq "letg") {
 		        make_letg_letter();
@@ -284,7 +294,7 @@ sub html_email_header {
 sub html_footer { 
 
     print "<hr />\n\n";
-    print "<form action=\"$cycle_name\">\n";
+    print "<form action=\"cycle23.cgi\">\n";
 #
 #-- passing parameters
 #
@@ -329,9 +339,10 @@ sub html_footer {
 #--- sendmail: Calls the UNIX program "sendmail" to send the message            ---
 #----------------------------------------------------------------------------------
 
-sub sendmail {
+sub sendmail{
 
     my($to, $from, $cc, $bcc, $subject, $msg) = @_; 
+
     open(SENDMAIL, "|/usr/lib/sendmail $to $cc $bcc") || return;
     print SENDMAIL <<"EOD";
 From:     $from
@@ -409,11 +420,14 @@ sub get_values {
 #--- /usr/local/bin/sqsh -S ocatsqlsrv -D axafocat -U browser -P newuser
 #--- see /proj/web-cxc/cgi-gen/target_param.cgi
 #
-    $usr   = "browser";
+    #$usr   = "browser";
+    $usr   = "mtaops_internal_web";
     $srv   = "ocatsqlsrv";
     $dbase = "axafocat";
  
-    $pwd   = "newuser";
+    #$pwd   = "newuser";
+    $pwd   = `cat /data/mta4/CUS/www/Usint/Pass_dir/.targpass_internal`;
+    chomp $pwd;
 
     $db    = "server=$srv;database=$dbase";
     $dsn1  = "DBI:Sybase:$db";
@@ -527,12 +541,12 @@ sub get_values {
     }
 
     if ($date_type eq "auto") {
-	    if ($obs_type eq "P") {
+##	    if ($obs_type eq "P") {
 #
-#--- pooled observations default to a deadline 2 weeks from the day the
+#--- pooled observations default to a deadline 1 week from the day the
 #--- email is sent.
 #
-	        $delta=14;
+	        $delta=7;
 	        $date=`/bin/date`;
 	        chomp($date);
 	        @temp=split(/ +/,$date);
@@ -558,34 +572,34 @@ sub get_values {
 	        }
 	        $deadline = $day ."-". $month ."-". $year;
 
-	    } elsif ($obs_type eq "S") {      # not pooled but auto date
+##	    } elsif ($obs_type eq "S") {      # not pooled but auto date
 #
 #--- Explicitly scheduled observations default to a deadline 32 days
 #--- before observation.
 #
-	        $delta = 32;
-	        @temp  = split(/-/,$obs_date);
-	        $year  = $temp[2];
-	        $day   = $temp[0];
-	        $month = $temp[1];
-	        $count = $day;
-
-	        for ($count=$day; $count-$delta < 1; $count+=$days{$month}) {
-		        $month=$months{$month};
-
-		        if ($month eq "Dec") {
-		            $year--;
-		        } elsif (($month eq "Feb") && (($year % 4) == 0)) {
+##	        $delta = 32;
+##	        @temp  = split(/-/,$obs_date);
+##	        $year  = $temp[2];
+##	        $day   = $temp[0];
+##	        $month = $temp[1];
+##	        $count = $day;
+##
+##	        for ($count=$day; $count-$delta < 1; $count+=$days{$month}) {
+##		        $month=$months{$month};
+##
+##		        if ($month eq "Dec") {
+##		            $year--;
+##		        } elsif (($month eq "Feb") && (($year % 4) == 0)) {
 #
 #--- This handles leap years, but not the absence of a leap year every
 #--- year divisible by 100 but not 400.
 #
-		            $count++;
-		        }
-	        }
-	        $day      = $count - $delta;
-	        $deadline = $day ."-". $month ."-". $year;
-	    }
+##		            $count++;
+##		        }
+##	        }
+##	        $day      = $count - $delta;
+##	        $deadline = $day ."-". $month ."-". $year;
+##	    }
 
     } elsif ($date_type eq "setdate") {    #custom assigned deadline
 
@@ -630,13 +644,23 @@ sub get_values {
     $gotit = 0;
     while (!$gotit && ($temp=<CXCDATA>)) {
 	    chomp ($temp);
-	    @temp = split(/\t/,$temp);
+        if($temp =~ /::/){
+	        @temp = split(/::/,$temp);
+        }else{
+	        @temp = split(/\t/,$temp);
+        }
 	    if ($temp[0] eq $cxc_last) {
 	        $gotit     = 1;
 	        $cxc_name  = $temp[1];
 	        $cxc_email = $temp[2];
 	        $cxc_phone = $temp[3];
 	        $cxc_fax   = $temp[4];
+#
+#--- COVID closure temporally suspended --------------------------
+##
+            $cxc_phone = '000-000-0000 (temporally suspended)';
+            $cxc_fax   = '000-000-0000 (temporally suspended)';
+#------------------------------------------------------------------
 	    }
     }
     close (CXCDATA) || die "couldn't close cxc_data.txt";
@@ -702,7 +726,7 @@ sub make_hrc_letter {
 #--- read hrc template and substitute values
 #
     local(*INPUT, $/);
-    open(INPUT, "/proj/web-icxc/htdocs/cal/go_form/Letters/hrc");
+    open(INPUT, "/data/mta4/CUS/www/Usint/go_form/Letters/hrc");
     $the_letter = <INPUT>;
     close(INPUT);
 
@@ -791,7 +815,7 @@ sub make_acis_letter {
 #--- read acis template and substitues 
 #
     local(*INPUT, $/);
-    open(INPUT, "/proj/web-icxc/htdocs/cal/go_form/Letters/acis");
+    open(INPUT, "/data/mta4/CUS/www/Usint/go_form/Letters/acis_23");
     $the_letter = <INPUT>;
     close(INPUT);
 
@@ -805,7 +829,68 @@ sub make_acis_letter {
     $the_letter =~ s/#prop_title#/$prop_title/g;
     $the_letter =~ s/#deadline#/$deadline/g;
     $the_letter =~ s/#obsid#/$obsid/g;
+    $the_letter =~ s/#obs_date#/$obs_date/g;
+    $the_letter =~ s/#contact#/$prop_name/g;
+    $the_letter =~ s/#cxc_name#/$cxc_name/g;
+    $the_letter =~ s/#cxc_email#/$cxc_email/g;
+    $the_letter =~ s/#cxc_phone#/$cxc_phone/g;
+    if ($cxc_fax ne ''){
+        $the_letter =~ s/#cxc_fax#/$cxc_fax/g;
+    }
+}
 
+#----------------------------------------------------------------------------------
+#-- make_acis_st_letter: make acis short letter                                 ---
+#----------------------------------------------------------------------------------
+
+sub make_acis_st_letter {
+#
+#--- read acis template and substitues 
+#
+    local(*INPUT, $/);
+    open(INPUT, "/data/mta4/CUS/www/Usint/go_form/Letters/acis_st_23");
+    $the_letter = <INPUT>;
+    close(INPUT);
+
+    $the_letter =~ s/#obsid#/$obsid/g;
+    $the_letter =~ s/#prop_title#/$prop_title/g;
+    $the_letter =~ s/#deadline#/$deadline/g;
+    $the_letter =~ s/#obj_name#/$obj_name/g;
+    $the_letter =~ s/#seq_num#/$seq_num/g;
+    $the_letter =~ s/#contact#/$prop_name/g;
+    $the_letter =~ s/#cxc_name#/$cxc_name/g;
+    $the_letter =~ s/#cxc_email#/$cxc_email/g;
+    $the_letter =~ s/#cxc_phone#/$cxc_phone/g;
+    if ($cxc_fax ne ''){
+        $the_letter =~ s/#cxc_fax#/$cxc_fax/g;
+    }
+}
+
+#----------------------------------------------------------------------------------
+#-- make_acis_st_early_letter: make acis short early letter                     ---
+#----------------------------------------------------------------------------------
+
+sub make_acis_st_early_letter {
+#
+#--- read acis template and substitues 
+#
+    local(*INPUT, $/);
+    open(INPUT, "/data/mta4/CUS/www/Usint/go_form/Letters/acis_st_early_23");
+    $the_letter = <INPUT>;
+    close(INPUT);
+
+    $the_letter =~ s/#obsid#/$obsid/g;
+    $the_letter =~ s/#prop_title#/$prop_title/g;
+    $the_letter =~ s/#deadline#/$deadline/g;
+    $the_letter =~ s/#obj_name#/$obj_name/g;
+    $the_letter =~ s/#seq_num#/$seq_num/g;
+    $the_letter =~ s/#contact#/$prop_name/g;
+    $the_letter =~ s/#cxc_name#/$cxc_name/g;
+    $the_letter =~ s/#cxc_email#/$cxc_email/g;
+    $the_letter =~ s/#cxc_phone#/$cxc_phone/g;
+    if ($cxc_fax ne ''){
+        $the_letter =~ s/#cxc_fax#/$cxc_fax/g;
+    }
 }
 
 #----------------------------------------------------------------------------------
@@ -878,14 +963,14 @@ sub make_letg_letter {
     if (($instrument eq "HRC-S") or ($instrument eq "HRC-I")) {
 
         local(*INPUT, $/);
-        open(INPUT, "/proj/web-icxc/htdocs/cal/go_form/Letters/letg_hrc");
+        open(INPUT, "/data/mta4/CUS/www/Usint/go_form/Letters/letg_hrc_new");
         $the_letter = <INPUT>;
         close(INPUT);
 
     } elsif (($instrument eq "ACIS-S") or ($instrument eq "ACIS-I")) {
 
         local(*INPUT, $/);
-        open(INPUT, "/proj/web-icxc/htdocs/cal/go_form/Letters/letg_acis");
+        open(INPUT, "/data/mta4/CUS/www/Usint/go_form/Letters/letg_acis_new");
         $the_letter = <INPUT>;
         close(INPUT);
 
@@ -908,8 +993,15 @@ sub make_letg_letter {
 
     $the_letter =~ s/#prop_name#/$prop_name/g;
     $the_letter =~ s/#obsid#/$obsid/g;
-    $the_letter =~ s/#part1#/$part1/g;
-    $the_letter =~ s/#part2#/$part2/g;
+
+    $the_letter =~ s/#prop_title#/$prop_title/g;
+    $the_letter =~ s/#seq_num#/$seq_num/g;
+    $the_letter =~ s/#obj_name#/$obj_name/g;
+    $the_letter =~ s/#deadline#/$deadline/g;
+
+    #$the_letter =~ s/#part1#/$part1/g;
+    #$the_letter =~ s/#part2#/$part2/g;
+    #
     $the_letter =~ s/#cxc_name#/$cxc_name/g;
     $the_letter =~ s/#cxc_email#/$cxc_email/g;
     $the_letter =~ s/#cxc_phone#/$cxc_phone/g;
@@ -934,7 +1026,7 @@ sub make_hetg_letter {
 #--- $the_letter is formatted to a good screen width (72 char?).
 
     local(*INPUT, $/);
-    open(INPUT, "/proj/web-icxc/htdocs/cal/go_form/Letters/hetg");
+    open(INPUT, "/data/mta4/CUS/www/Usint/go_form/Letters/hetg");
     $the_letter = <INPUT>;
     close(INPUT);
 
