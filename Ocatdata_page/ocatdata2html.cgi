@@ -401,6 +401,9 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 # Help pange link to each section added
 # (Jul 14, 2021)
 #
+# TARGNAME is back in the <obsid>.<rev> data 
+# (Sep 07, 2021)
+#
 #-----Up to here were done by t. isobe (tisobe@cfa.harvard.edu)-----
 #
 # ----------
