@@ -19,7 +19,7 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 #                                                                               #
 #       author: t. isobe (tisobe@cfa.harvard.edu)                               #
 #                                                                               #
-#       last update: Mar 12, 2021                                               #
+#       last update: Jul 14, 2021                                               #
 #                                                                               #
 #################################################################################
 
@@ -386,6 +386,21 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 # window_constraint missig NULL display value fixed
 # (Mar 16, 2021)
 #
+# target name is now editable
+# (Mar 24, 2021)
+#
+# MP warning email related to target name change added
+# (Mar 25, 2021)
+#
+# ACIS parameter change <---> updates_table.list bug fixed with a better checking 
+# (Apr 27, 2021)
+#
+# HRC SI mode column is added to the updates_table.list
+# (Jun 28, 2021)
+#
+# Help pange link to each section added
+# (Jul 14, 2021)
+#
 #-----Up to here were done by t. isobe (tisobe@cfa.harvard.edu)-----
 #
 # ----------
@@ -507,6 +522,7 @@ $cus_email   = 'cus@head.cfa.harvard.edu';
 #--- mp contact email address
 #
 $mp_email    = 'mp@cfa.harvard.edu';
+$cdo_email   = 'cdo@cfa.harvard.edu';
 #
 #--- arcops email address
 #
@@ -1064,6 +1080,26 @@ if($access_ok eq 'yes'){
             }
 
 			send_email_to_mp();		            #--- sending warning email to MP
+        }
+#
+#--- sending warning emamil to CDO --- currently this is disabled
+#
+#        $cdo_notes = param('cdo_notes');
+#        if(length($cdo_notes) > 0){
+#            $cdo_notes =~ s/###/\n/g;
+#            $cdo_notes =~ s/##/\n/g;
+#            $cdo_notes =~ s/#/  /g;
+#            send_email_to_cdo();
+#        }
+#
+#--- sending warning emamil to MP
+#
+        $mp_notes = param('mp_notes');
+        if(length($mp_notes) > 0){
+            $mp_notes =~ s/###/\n/g;
+            $mp_notes =~ s/##/\n/g;
+            $mp_notes =~ s/#/  /g;
+            send_email_to_mp();
         }
 
 #--------------------------------------------------
@@ -2104,7 +2140,7 @@ sub read_databases{
 		$sqlh1->execute();
 
 		while(@group_obsid = $sqlh1->fetchrow_array){
-    		$group_obsid = join("<td>", @group_obsid);
+    		$group_obsid = join("<td>", $group_obsid);
 			if($usint_on =~ /test/){
                 $line  = "<a href=\"$test_http\/ocatdata2html.cgi\?$group_obsid\">$group_obsid<\/a> ";
     			@group = (@group, $line);
@@ -3167,7 +3203,7 @@ sub read_databases{
 #--------------------------------------------------
 
 	@paramarray = (
-		SI_MODE,
+		SI_MODE,TARGNAME,
 		INSTRUMENT,GRATING,TYPE,PI_NAME,OBSERVER,APPROVED_EXPOSURE_TIME, 
 		RA,DEC,ROLL_OBSR,Y_DET_OFFSET,Z_DET_OFFSET,TRANS_OFFSET,FOCUS_OFFSET,DEFOCUS,
 		DITHER_FLAG,Y_AMP, Y_FREQ, Y_PHASE, Z_AMP, Z_FREQ, Z_PHASE,Y_AMP_ASEC, Z_AMP_ASEC,
@@ -3197,7 +3233,7 @@ sub read_databases{
 #---------------------------------------------------------------
 
 	@passarray = (
-		SEQ_NBR,STATUS,OBSID,PROPOSAL_NUMBER,PROPOSAL_TITLE,GROUP_ID,OBS_AO_STR,TARGNAME,
+		SEQ_NBR,STATUS,OBSID,PROPOSAL_NUMBER,PROPOSAL_TITLE,GROUP_ID,OBS_AO_STR,
 		REM_EXP_TIME,RASTER_SCAN,ACA_MODE,
 		PROPOSAL_JOINT,PROPOSAL_HST,PROPOSAL_NOAO,PROPOSAL_XMM,PROPOSAL_RXTE,PROPOSAL_VLA,
 		PROPOSAL_VLBA,SOE_ST_SCHED_DATE,LTS_LT_PLAN,
@@ -3551,7 +3587,12 @@ endofhtml
 
     print '</p>';
 
-	print '<h2>General Parameters</h2>';
+	print '<h2>General Parameters';
+    print "<span style='font-size:65%;'>";
+    print '<a href="javascript:WindowOpener(\'./user_help.html#general_parameters\')">';
+    print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
+    print " </span>";
+    print '</h2>';
 
 #------------------------------------------------>
 #----- General Parameter dispaly starts here----->
@@ -3588,8 +3629,17 @@ endofhtml
 
 	print '<table  style="border-width:0px">';
 	print '<tr><td>&#160;</td>';
-	print '<th>Target Name:</th><td>';
-	print "$targname",'</td>';
+#
+#--- changed 03/23/21
+#
+	#print '<th>Target Name:</th><td>';
+	#print "$targname",'</td>';
+	
+	print '<th>Target Name:</th>';
+    print '<td style="text-align:left"><input type="text" name="TARGNAME" value="';
+    print "$targname";
+    print '" size="20"></td>';
+#----------
 	print '<th>SI Mode:</th>';
 
     print '<td>',$si_mode,'</td>';
@@ -3849,7 +3899,12 @@ endofhtml
 
 	print '<hr />';
 
-	print '<h2>Dither</h2>';
+	print '<h2>Dither';
+    print "<span style='font-size:65%;'>";
+    print '<a href="javascript:WindowOpener(\'./user_help.html#dither_flag\')">';
+    print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
+    print " </span>";
+    print '</h2>';
 
 	print '<table  style="border-width:0px">';
 	print '<tr><th>Dither:</th><td>';
@@ -3912,7 +3967,12 @@ endofhtml
 #----- time constraint case start here
 #-------------------------------------
 
-	print '<h2>Time Constraints</h2>';
+	print '<h2>Time Constraints';
+    print "<span style='font-size:65%;'>";
+    print '<a href="javascript:WindowOpener(\'./user_help.html#time_constraints\')">';
+    print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
+    print " </span>";
+    print '</h2>';
 
     print '<p><span style="color:red;">New</span>: "';
     print '<a href="javascript:WindowOpener(\'./ranked_entries.html\')">';
@@ -4098,7 +4158,12 @@ endofhtml
 #---- Roll Constraint Case starts here
 #-------------------------------------
 
-    print '<h2>Roll Constraints </h2>';
+    print '<h2>Roll Constraints';
+    print "<span style='font-size:65%;'>";
+    print '<a href="javascript:WindowOpener(\'./user_help.html#roll_constraints\')">';
+    print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
+    print " </span>";
+    print ' </h2>';
 
     print '<p><span style="color:red;">New</span>: "';
     print '<a href="javascript:WindowOpener(\'./ranked_entries.html\')">';
@@ -4203,7 +4268,13 @@ endofhtml
 #----------------------------------------
 
 	print '<hr />';
-	print '<h2>Other Constraints</h2>';
+	print '<h2>Other Constraints'; 
+    print "<span style='font-size:65%;'>";
+    print '<a href="javascript:WindowOpener(\'./user_help.html#other_constraints\')">';
+    print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
+    print " </span>";
+    print '</h2>';
+
 	print '<table style="border-width:0px">';
 	print '<tr>';
 	
@@ -4223,8 +4294,8 @@ endofhtml
                      -value=>['NO','YES', 'NULL'],
 	 		         -default=>"$dpointing_constraint",-override=>1000000);
 #### REMOVE AFTER 04-30-21   #####################
-	print "<span style='color:red;font-size:90%;'>(New Field! ";
-    print "<a href='https://cxc.harvard.edu/mta/CUS/Usint/user_help.html#pointing_constraint'>";
+#	print "<span style='color:red;font-size:90%;'>(New Field! ";
+#    print "<a href='https://cxc.harvard.edu/mta/CUS/Usint/user_help.html#pointing_constraint'>";
 ##################################################
     print "Description</a>)</span></td>";
     print '</tr>';
@@ -4403,7 +4474,13 @@ endofhtml
 #----- HRC Parameters
 #--------------------
 
-	print '<h2>HRC Parameters</h2>';
+	print '<h2>HRC Parameters';
+    print "<span style='font-size:65%;'>";
+    print '<a href="javascript:WindowOpener(\'./user_help.html#hrc_parameters\')">';
+    print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
+    print " </span>";
+    print '</h2>';
+
 	print '<table style="border-width:0px">';
 	print '<tr><td></td>';
 
@@ -4439,7 +4516,13 @@ endofhtml
 #----- ACIS Parameters
 #--------------------
 
-	print '<h2>ACIS Parameters</h2>';
+	print '<h2>ACIS Parameters';
+    print "<span style='font-size:65%;'>";
+    print '<a href="javascript:WindowOpener(\'./user_help.html#acis_parameters\')">';
+    print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
+    print " </span>";
+    print '</h2>';
+
 	print '<table style="border-width:0px">';
 	print '<tr>';
 	
@@ -4673,7 +4756,12 @@ endofhtml
 #--- ACIS window Constraints: some values are linked to eventfilter_lower condition
 #
 	print '<hr />';
-	print '<h2> ACIS Window Constraints</h2>';
+	print '<h2> ACIS Window Constraints';
+    print "<span style='font-size:65%;'>";
+    print '<a href="javascript:WindowOpener(\'./user_help.html#acis_window\')">';
+    print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
+    print " </span>";
+    print '</h2>';
 
     print '<p><span style="color:red;">New</span>: "';
     print '<a href="javascript:WindowOpener(\'./ranked_entries.html\')">';
@@ -5120,7 +5208,12 @@ endofhtml
 #-----------------------------------
 
 	print '<hr />';
-	print '<h2>TOO Parameters</h2>';
+	print '<h2>TOO Parameters';
+    print "<span style='font-size:65%;'>";
+    print '<a href="javascript:WindowOpener(\'./user_help.html#too_parameters\')">';
+    print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
+    print " </span>";
+    print '</h2>';
 	
 	print '<table style="border-width:0px">';
 	print '<tr>';
@@ -5177,7 +5270,12 @@ endofhtml
 #---------------------------------->
 	
 	print '<hr />';
-	print '<h2>Comments and Remarks</h2>';
+	print '<h2>Comments and Remarks';
+    print "<span style='font-size:65%;'>";
+    print '<a href="javascript:WindowOpener(\'./user_help.html#comments\')">';
+    print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
+    print " </span>";
+    print '</h2>';
 	print '<p style="padding-bottom:20px"><strong>The remarks area below ';
     print 'is reserved for remarks related to constraints, ';
 	print 'actions/considerations that apply to the observation. ';
@@ -5657,6 +5755,9 @@ sub chk_entry{
 	@pwarning_orig_val  = ();
 	@pwarning_new_val   = ();
 	$pwarning_cnt       = 0;
+
+    $cdo_notes          = '';
+    $mp_notes           = '';
 
 #-------------------
 #----- general cases
@@ -6316,6 +6417,23 @@ sub chk_entry{
 	}
 		
 	print '<br /><br />';
+#
+#--- if cdo/mp warning is logged, pass it as param. make sure that there is no space etc.
+#
+    if(length($cdo_notes) > 1){
+        $cdo_notes =~ s/\n/##/g;
+        $cdo_notes =~ s/\s/#/g;
+    }else{
+        $cdo_notes = '';
+    }
+    if(length($mp_notes) > 1){
+        $mp_notes =~ s/\n/##/g;
+        $mp_notes =~ s/\s/#/g;
+    }else{
+        $mp_notes = '';
+    }
+    print "<input type='hidden' name='cdo_notes' value=$cdo_notes>";
+    print "<input type='hidden' name='mp_notes'  value=$mp_notes>";
 
 #---------------------------------------------------------------
 #----- print all paramter entries so that a user verifies input
@@ -6436,6 +6554,8 @@ sub entry_test{
 				shift @{condition.$name};
 				push(@{condition.$name},'<span style="color:red">Has CDO approved this change?</span>');
 				$rchk++;
+
+                $cdo_notes = "$cdo_notes"."$uname: ${$original} to ${$uname} \n";
 #
 #--- keep CDO warning
 #
@@ -6677,6 +6797,8 @@ sub entry_test{
 					$wline = "$name<->${$uname}";
 					push(@cdo_warning, $wline);
 					$cdo_w_cnt++;
+
+                    $cdo_notes = "$cdo_notes"."$uname: $orig_instrument to $instrument \n";
 				}
 				$rchk++;
 
@@ -6724,11 +6846,36 @@ sub entry_test{
 				$wline = "$name<->${$uname}";
 				push(@cdo_warning, $wline);
 				$cdo_w_cnt++;
+
+                $cdo_notes = "$cdo_notes"."$uname: $orig_instrument to $instrument \n";
 			}
 			if($rchk > 0){
 				$range_ind++;
 			}
 		}
+
+#-----------------------
+#------ target name: MP 
+#-----------------------
+
+        if($uname =~/TARGNAME/i){
+
+			if($orig_targname ne $targname){
+                @{same.$name}      = @{condition.$name};
+                @{condition.$name} = ("<span style='color:red'>MP will be notified this change.</span>");
+                $line              = "$name<->${$uname}<->@{condition.$name}";
+                push(@out_range,$line);
+                @{condition.$name} = @{same.$name};
+                $rchk++;
+#
+#---MP warning
+#
+                $mp_notes = "$cdo_notes"."$uname: $orig_targname to $targname \n";
+            }
+            if($rchk > 0){
+                $range_ind++;
+            }
+        }
 
 #-----------------------
 #----- grating case: CDO
@@ -6749,6 +6896,8 @@ sub entry_test{
 				$wline = "$name<->${$uname}";
 				push(@cdo_warning, $wline);
 				$cdo_w_cnt++;
+
+                $cdo_notes = "$cdo_notes"."$uname: $orig_grating to $grating \n";
 			}
 			if($rchk > 0){
 				$range_ind++;
@@ -6774,6 +6923,8 @@ sub entry_test{
 				$wline = "$name<->${$uname}";
 				push(@cdo_warning, $wline);
 				$cdo_w_cnt++;
+
+                $cdo_notes = "$cdo_notes"."$uname: $orig_obj_flag to $obj_flag \n";
 			}
 			if($rchk > 0){
 				$range_ind++;
@@ -6831,6 +6982,8 @@ sub entry_test{
 				$wline = "$name<->RA+DEC > 8 arcmin";
 				push(@cdo_warning, $wline);
 				$cdo_w_cnt++;
+
+                $cdo_notes = "$cdo_notes"."$uname: $wline \n";
 			}
 			if($rchk > 0){
 				$range_ind++;
@@ -6869,6 +7022,8 @@ sub entry_test{
                 $wline = "y/z_offset<->Y/Z Offset >= 10 arcmin";
                 push(@cdo_warning, $wline);
                 $cdo_w_cnt++;
+
+                $cdo_notes = "$cdo_notes"."$uname: $wline \n";
             }
             if($rchk > 0){
                 $range_ind++;
@@ -6894,6 +7049,8 @@ sub entry_test{
 				$wline = "$name<->${$uname}";
 				push(@cdo_warning, $wline);
 				$cdo_w_cnt++;
+
+                $cdo_notes = "$cdo_notes"."$uname: $orig_multitelescope to $multitelescope \n";
 			}
 			if($rchk > 0){
 				$range_ind++;
@@ -6919,6 +7076,8 @@ sub entry_test{
 				$wline = "$name<->${$uname}";
 				push(@cdo_warning, $wline);
 				$cdo_w_cnt++;
+
+                $cdo_notes = "$cdo_notes"."$uname: $orig_observatories to $observatories \n";
 			}
 			if($rchk > 0){
 				$range_ind++;
@@ -6944,6 +7103,8 @@ sub entry_test{
 				$wline = "$name<->${$uname}";
 				push(@cdo_warning, $wline);
 				$cdo_w_cnt++;
+
+                $cdo_notes = "$cdo_notes"."$uname: $orig_pointing_constraint to $pointing_constraint \n";
 			}
 			if($rchk > 0){
 				$range_ind++;
@@ -7338,7 +7499,8 @@ sub submit_entry{
 		    $old_name  = 'orig_'."$lc_name";
 		    $old_value = ${$old_name};
 
-    		unless (($lc_name =~/TARGNAME/i) || ($lc_name =~/TITLE/i)
+    		#unless (($lc_name =~/TARGNAME/i) || ($lc_name =~/TITLE/i)
+    		unless (($lc_name =~/TITLE/i)
 			    ||  ($lc_name =~/^WINDOW_CONSTRAINT/i) || ($lc_name =~ /^TSTART/i) || ($lc_name =~/^TSTOP/i) 
 			    ||  ($lc_name =~/^ROLL_CONSTRAINT/i) || ($lc_name =~ /^ROLL_180/i)
 			    ||  ($lc_name =~/^CHIP/i) || ($lc_name =~ /^INCLUDE_FLAG/i) || ($lc_name =~ /^START_ROW/i)
@@ -8116,12 +8278,10 @@ sub submit_entry{
 #------------------------------------------------
 
 			}else{
-
 #-----------------------
 #----- window order case
 #-----------------------
 				if($name eq 'ACISWIN_ID'){
-
 					for($j = 0; $j < $aciswin_no; $j++){
 						$jj = $j + 1;
 						$ehead = "ENTRY $jj ";
@@ -8278,16 +8438,18 @@ sub submit_entry{
 					}
 				}
 
-				foreach $param (@acisarray){
-					if ($name eq $param){
-						$k++;
-					}
-				}
-				foreach $param (@aciswinarray){
-					if ($name eq $param){
-						$l++;
-					}
-				}
+                if($instrument =~ /ACIS/i){
+				    foreach $param (@acisarray){
+					    if ($name eq $param){
+						    $k++;
+					    }
+				    }
+				    foreach $param (@aciswinarray){
+					    if ($name eq $param){
+						    $l++;
+					    }
+				    }
+                }
 				foreach $param2 (@genarray){
 					if ($name eq $param2){
 						$m++;
@@ -8296,7 +8458,6 @@ sub submit_entry{
 			}
 		}
 	}
-
 	$pline = "$pline"."</table><br />";
 
 #--------------------------------
@@ -9706,6 +9867,192 @@ sub send_email_to_mp{
 	system("rm $temp_file");
 }
 
+
+#######################################################################################
+### send_email_to_cdo sending email to CDO if there are CDO warning                 ###
+#######################################################################################
+
+sub send_email_to_cdo{
+
+#
+#--- check whether there are parameter changes for other obsids
+#   
+    $schk = sp_list_test($split_list);
+    if ($schk == 1){
+        @tobs_list = split_string_to_list($split_list, $obsid);
+        unshift(@tobs_list, $obsid);
+        $tchk = 1;
+    }else{
+        @tobs_list = ($obsid);
+        $tchk = 0;
+    }
+#
+#---- start printing the email to CDO
+#
+    $temp_file = "$temp_dir/cdo_request";
+    open(ZOUT, ">$temp_file");
+    
+    print ZOUT "\n\nA user: $submitter submitted changes of  ";
+    print ZOUT "OBSID: $obsid which requires CDO permissions.\n";
+    if($tchk > 0){
+        print ZOUT "The user also submitted related obsids with the same parameter changes.\n";
+        print ZOUT "OBSIDS: $split_list\n";
+    }   
+    print ZOUT "\n";
+    
+    print ZOUT "The contact email_address address is: $email_address\n\n";
+    
+    if($tchk == 0){
+        print ZOUT "Its Ocat Data Page is:\n";
+    }else{
+        print ZOUT "Their Ocat Data Page are:\n";
+    }
+    foreach $tobsid (@tobs_list){
+        print ZOUT "https://cxc.cfa.harvard.edu/mta/CUS/Usint/ocatdata2html.cgi?$tobsid";
+        print ZOUT "\n";
+    }
+    print ZOUT "\n";
+
+    print ZOUT "The user requested the following change(s):\n\n";
+
+    print ZOUT "$cdo_notes";
+
+    print ZOUT "\n\n";
+
+    print ZOUT "If you like to see what else were changed:\n";
+
+    foreach $tobsid (@tobs_list){   
+        ($file_name, $la) = find_latest_rev($tobsid, @u_list);
+         $file_name       = increment_obidrev($file_name, $tobsid);
+        print ZOUT "https://cxc.cfa.harvard.edu/mta/CUS/Usint/chkupdata.cgi?$file_name\n";
+    }
+    print ZOUT "\n\n";
+
+	print ZOUT "If you have any question about this email, please contact ";
+	print ZOUT "bwargelin\@head.cfa.harvard.edu.","\n\n\n";
+#
+#--- today's date
+#
+	($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime(time);
+	$uyear = 1900 + $year;
+	
+	if($mon < 10){
+    	$mon = '0'."$mon";
+	}
+	
+	$mon++;
+	if($mday < 10){
+    	$mday = '0'."$mday";
+	}
+	
+	$date = "$mon/$mday/$uyear";
+	
+	print ZOUT  "$date\n";
+	close(ZOUT);
+
+	if($usint_on =~ /test/){
+        $cmd = "cat $temp_file | mailx -s\"Subject:TEST!! Change to ";
+        $cmd = "$cmd"."Obsid $obsid Which Requires CDO Approval ($cdo_email)\" $test_email";
+		system($cmd);
+	}else{
+        $cmd = "cat $temp_file | mailx -s\"Subject: Change to Obsid $obsid ";
+        $cmd = "$cmd"."Which Requires CDO Approval\"  $cdo_email cus\@head.cfa.harvard.edu";
+		system($cmd);
+	}
+
+	system("rm $temp_file");
+}
+
+#######################################################################################
+### send_email_to_mp: sending email to MP if there are MP warning                   ###
+#######################################################################################
+
+sub send_email_to_mp{
+#
+#--- check whether there are parameter changes for other obsids
+#   
+    $schk = sp_list_test($split_list);
+    if ($schk == 1){
+        @tobs_list = split_string_to_list($split_list, $obsid);
+        unshift(@tobs_list, $obsid);
+        $tchk = 1;
+    }else{
+        @tobs_list = ($obsid);
+        $tchk = 0;
+    }
+#
+#---- start printing the email to MP 
+#
+    $temp_file = "$temp_dir/mp_request";
+    open(ZOUT, ">$temp_file");
+    
+    print ZOUT "\n\nA user: $submitter submitted changes:\n  ";
+    print ZOUT "$mp_notes";
+    print ZOUT "\nin OBSID: $obsid.\n";
+    if($tchk > 0){
+        print ZOUT "The user also submitted related obsids with the same parameter changes.\n";
+        print ZOUT "OBSIDS: $split_list\n";
+    }   
+    print ZOUT "\n";
+    
+    print ZOUT "The contact email_address address is: $email_address\n\n";
+    
+    if($tchk == 0){
+        print ZOUT "Its Ocat Data Page is:\n";
+    }else{
+        print ZOUT "Their Ocat Data Page are:\n";
+    }
+    foreach $tobsid (@tobs_list){
+        print ZOUT "https://cxc.cfa.harvard.edu/mta/CUS/Usint/ocatdata2html.cgi?$tobsid";
+        print ZOUT "\n";
+    }
+
+    print ZOUT "\n\n";
+
+    print ZOUT "If you like to see what else were changed:\n";
+
+    foreach $tobsid (@tobs_list){   
+        ($file_name, $la) = find_latest_rev($tobsid, @u_list);
+         $file_name       = increment_obidrev($file_name, $tobsid);
+        print ZOUT "https://cxc.cfa.harvard.edu/mta/CUS/Usint/chkupdata.cgi?$file_name\n";
+    }
+    print ZOUT "\n\n";
+
+	print ZOUT "If you have any question about this email, please contact ";
+	print ZOUT "bwargelin\@head.cfa.harvard.edu.","\n\n\n";
+#
+#--- today's date
+#
+	($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime(time);
+	$uyear = 1900 + $year;
+	
+	if($mon < 10){
+    	$mon = '0'."$mon";
+	}
+	
+	$mon++;
+	if($mday < 10){
+    	$mday = '0'."$mday";
+	}
+	
+	$date = "$mon/$mday/$uyear";
+	
+	print ZOUT  "$date\n";
+	close(ZOUT);
+
+	if($usint_on =~ /test/){
+        $cmd = "cat $temp_file | mailx -s\"Subject:TEST!! Change to ";
+        $cmd = "$cmd"."Obsid $obsid Which Requires MP Approval ($mp_email)\" $test_email";
+		system($cmd);
+	}else{
+        $cmd = "cat $temp_file | mailx -s\"Subject: Change to Obsid $obsid ";
+        $cmd = "$cmd"."Which Requires MP Approval\"  $mp_email cus\@head.cfa.harvard.edu";
+		system($cmd);
+	}
+
+	system("rm $temp_file");
+}
+
 ####################################################################################
 ### oredit_sub: external part of oredit; a part ocatdata2html.cgi                ###
 ####################################################################################
@@ -9744,6 +10091,7 @@ sub oredit_sub{
     	$general_status = "NULL";			#--- these are for the status verification page
     	$acis_status    = "NULL";			#--- orupdate.cgi
     	$si_mode_status = "NULL";
+    	$hrc_si_mode_status = "NULL";       #--- UPDATED 06/23/21!!!!!
 
     	$dutysci_status = "$dutysci $date";
 
@@ -9784,6 +10132,7 @@ sub oredit_sub{
     	$general_status = "NULL";
     	$acis_status    = "NULL";
     	$si_mode_status = "NULL";
+    	$hrc_si_mode_status = "NULL";
 		$dutysci_status = "$dutysci $date";
 		@temp_app       = ();
 
@@ -9821,6 +10170,7 @@ sub oredit_sub{
 		$general_status = "NA";
 		$acis_status    = "NULL";
 		$si_mode_status = "NULL";
+		$hrc_si_mode_status = "NULL";
 
 	} else {
 
@@ -9831,7 +10181,8 @@ sub oredit_sub{
         if($hrc_si_select eq 'yes'){
             $general_status = "NULL";
             $acis_status    = "NULL";
-            $si_mode_status = "NA";
+            $si_mode_status = "NULL";
+            $hrc_si_mode_status = "NA";
         } else {
 
 #------------------------------------------------------
@@ -9844,20 +10195,23 @@ sub oredit_sub{
 			    $general_status = "NULL";
 		    }
 		    if ($acistag =~/ON/){
-			    $acis_status    = "NA";
-			    $si_mode_status = "NA";
+			    $acis_status        = "NA";
+			    $si_mode_status     = "NA";
+                $hrc_si_mode_status = "NULL";
 		    } else {
-			    $acis_status    = "NULL";
-                if($instrument =~ /HRC/){
+			    $acis_status        = "NULL";
+                $si_mode_status     = "NULL";
+                $hrc_si_mode_status = "NULL";
+                if($instrument =~ /HRC/){           #---- UPDATED 06/23/21!!!! (see hrc_si_mode_status)
                     if(($hrc_si_mode eq '') || ($hrc_si_mode =~ /NULL/) 
                              || ($hrc_si_mode =~ /DEFAULT/)){
-                        $si_mode_status = 'NULL';
+                        $hrc_si_mode_status = 'NULL';
 
                     }elsif($orig_hrc_si_mode eq $hrc_si_mode){
 
-                        $si_mode_status = 'NULL'
+                        $hrc_si_mode_status = 'NULL'
                     }else{
-                        $si_mode_status = 'NA';
+                        $hrc_si_mode_status = 'NA';
                     }
 			    }elsif ($si_mode =~/NULL/){
 
@@ -9941,7 +10295,8 @@ sub oredit_sub{
 
 			flock($update, LOCK_EX) or die "died while trying to lock the file<br />\n";	
 			print $update "$obsid.$rev\t$general_status\t$acis_status\t";
-            print $update "$si_mode_status\t$dutysci_status\t$seq_nbr\t$dutysci\n";
+            print $update "$si_mode_status\t$hrc_si_mode_status\t";         #--- UPDATED 06/23/21!!!!
+            print $update "$dutysci_status\t$seq_nbr\t$dutysci\n";
  			close $update;
 
 #---------------------
@@ -11646,7 +12001,8 @@ output: email sent to arc_ops
 #
 #--- if there are more than 10 obsids to be updated, notify arcops
 #
-    if( (scalar @split_list) < 10){
+    #if( (scalar @split_list) < 10){
+    if( (scalar @split_list) < 2){
         return 
     }
 #
