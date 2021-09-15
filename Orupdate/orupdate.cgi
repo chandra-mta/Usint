@@ -133,6 +133,12 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 # T. Isobe Mar 31, 2021                                                                 #
 # TOO/DDT si mode email: send to hrcdude if the instrument is hrc                       #
 #                                                                                       #
+# T. Isobe Jun 25, 2021                                                                 #
+# HRC SI column added/ ACIS column removed                                              #
+#                                                                                       #
+# T. Isobe Sep 15, 2021                                                                 #
+# ACIS column is added back                                                             #
+#                                                                                       #
 #########################################################################################
 
 ###############################################################################
@@ -142,9 +148,9 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 #---- if this is usint version, set the following param to 'yes', otherwise 'no'
 #
 
-$usint_on = 'yes';                     ##### USINT Version
+#$usint_on = 'yes';                     ##### USINT Version
 #$usint_on = 'no';                      ##### USER Version
-#$usint_on = 'test_yes';                 ##### Test Version USINT
+$usint_on = 'test_yes';                 ##### Test Version USINT
 #$usint_on = 'test_no';                 ##### Test Version USER
 
 @color_table = ('#E6E6FA', '#F5F5DC', '#FFDAB9', '#90EE90', '#BDB76B',\
@@ -754,8 +760,9 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
 	close(FILE);
 
 	print "<table border=1>";
-	print "<tr><th>OBSID.revision</th><th>general obscat edits by</th>";
-	print "<th>ACIS obscat edits by</th><th>SI MODE edits by</th><th>Verified by";
+	print "<tr><th>OBSID.revision</th><th>General edits by</th>";
+    print "<th>ACIS edits by</th>";
+	print "<th>ACIS SI Mode edits by</th><th>HRC SI MODE edits by</th><th>Verified by";
 	print "</th><th>&nbsp;</th><th>Note</th></tr>";
 #
 #---- save "hidden" value pass till the end of the table
@@ -785,7 +792,7 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
 	OUTER3:
 	foreach $ent (@revisions){
 		@ctemp = split(/\t+/, $ent);
-		if($ctemp[4] !~ /NA/){			#--- if it is already "verified", skip
+		if($ctemp[5] !~ /NA/){			#--- if it is already "verified", skip
 			next OUTER3;
 		}
 		@dtemp = split(/\./,  $ctemp[0]);
@@ -911,7 +918,7 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
 		chomp $line;
 		@values         = split ("\t", $line);
 
-		if($values[4] !~ /NA/){				#--- if it is signed off, removed from our list
+		if($values[5] !~ /NA/){				#--- if it is signed off, removed from our list
 			next ROUTER;
 		}
 
@@ -921,9 +928,10 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
 		$general_status = $values[1];
 		$acis_status    = $values[2];
 		$si_mode_status = $values[3];
-		$dutysci_status = $values[4];
-		$seqnum         = $values[5];
-		$user           = $values[6];
+		$hrc_si_mode_status = $values[4];               #--- UPDATE 06/24/21
+		$dutysci_status = $values[5];
+		$seqnum         = $values[6];
+		$user           = $values[7];
 		@atemp          = split(/\./,$obsrev);
 		$tempid         = $atemp[0];
 
@@ -1021,12 +1029,10 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
 
 			print "\?$obsrev\">$obsrev</a><br />$seqnum<br />$ftime<br />$user</td>";
 #--------------------
-#----- general obscat 
+#----- general obscat
 #--------------------
 			if ($general_status =~/NULL/){
-
-				print "<td style='text-align:center'>$general_status</td>";
-
+				    print "<td>$general_status</td>";
 			} elsif ($general_status =~/NA/){
 
 #----------------------------------------------------------------------------
@@ -1034,14 +1040,15 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
 #----------------------------------------------------------------------------
 
 				if($sp_user eq 'yes'){
-					print "<td style='text-align:center'><input type=\"text\" ";
+					print "<td><input type=\"text\" ";
                     print "name=\"general_status#$obsrev\" size=\"12\"></td>";
 					push(@pass_list, "general_status#$obsrev");
 				}else{
-					print "<td style='text-align:center'>---</td>";
+					print "<td>---</td>";
 				}
+
 			} else {
-				print "<td style='text-align:center'>$general_status</td>";
+				print "<td>$general_status</td>";
 			}
 #------------------
 #----- acis obscat
@@ -1060,7 +1067,7 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
 				print "<td style='text-align:center'>$acis_status</td>";
 			}
 #-------------
-#----- si mode
+#----- acis si mode
 #-------------
 			if ($si_mode_status =~/NULL/){
 				print "<td style='text-align:center'>$si_mode_status</td>";
@@ -1074,6 +1081,23 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
 				}
 			} else {
 				print "<td style='text-align:center'>$si_mode_status</td>";
+			}
+
+#-------------
+#----- hrc si mode                  #--- UPEATE 06/24/21
+#-------------
+			if ($hrc_si_mode_status =~/NULL/){
+				print "<td style='text-align:center'>$hrc_si_mode_status</td>";
+			} elsif ($hrc_si_mode_status =~/NA/){
+				if($sp_user eq 'yes'){
+					print "<td style='text-align:center'><input type=\"text\" ";
+                    print " name=\"hrc_si_mode_status#$obsrev\" size=\"12\"></td>";
+					push(@pass_list, "hrc_si_mode_status#$obsrev");
+				}else{
+						print "<td style='text-align:center'>---</td>";
+				}
+			} else {
+				print "<td style='text-align:center'>$hrc_si_mode_status</td>";
 			}
 
 #------------------
@@ -1090,7 +1114,8 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
 #--- if the obsrev seems to ready for approval, give the approve button, except
 #--- it is already in approved list
 #
-                        if($general_status ne 'NA' && $acis_status ne 'NA' && $si_mode_status ne 'NA'){
+                        if($general_status ne 'NA' && $acis_status ne 'NA' 
+                                    && $si_mode_status ne 'NA' && $hrc_si_mode_status ne 'NA'){
                             $ochk = check_obsid_in_approve($obsid);
                             if($ochk == 0){
 						        print "<br /><br /><input type=\"submit\" name=\"approve\" ";
@@ -1101,7 +1126,8 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
                         }
 
 						push(@pass_list, "dutysci_status#$obsrev");
-					}elsif($general_status ne 'NA' && $acis_status ne 'NA' && $si_mode_status ne 'NA'){
+					}elsif($general_status ne 'NA' && $acis_status ne 'NA' 
+                                    && $si_mode_status ne 'NA' && $hrc_si_mode_status ne 'NA'){
 						print "<td style='text-align:center'><input type=\"text\" ";
                         print " name=\"dutysci_status#$obsrev";
 
@@ -1262,12 +1288,15 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
 
 		print "<tr>";
 		print "<td><a href=\"$usint_http/";
-		print "chkupdata.cgi\?$btemp[0]\">$btemp[0]</a><br />$btemp[5]<br />$ftime";
-		print "<br />$btemp[6]</td><td style='text-align:center'>$btemp[1]</td>";
+		print "chkupdata.cgi\?$btemp[0]\">$btemp[0]</a><br />$btemp[6]<br />$ftime";
+		print "<br />$btemp[7]</td>";
+
+        print "<td style='text-align:center'>$btemp[1]</td>";
         print "<td style='text-align:center'>$btemp[2]</td>";
-		print "<td style='text-align:center'>$btemp[3]</td>";
+        print "<td style='text-align:center'>$btemp[3]</td>";
+		print "<td style='text-align:center'>$btemp[4]</td>";
         print "<td style='text-align:center;color;#005C00'>";
-		print "$btemp[4]</td><td>&nbsp;</td><td>&nbsp;</td></tr>";
+		print "$btemp[5]</td><td>&nbsp;</td><td>&nbsp;</td></tr>";
 	}
 
 	print "</table>";
@@ -1482,9 +1511,10 @@ sub update_info {
 		push(@obs_save,  $obsline);
 		push(@info_save, $info);
 		$ent_cnt++;
-		${gadd.$obsline} = 0;
-		${aadd.$obsline} = 0;
-		${madd.$obsline} = 0;
+		${gadd.$obsline} = 0;       #--- general case indicator
+		${hadd.$obsline} = 0;       #--- acis case indicator
+		${madd.$obsline} = 0;       #--- acis si mode indicator
+		${padd.$obsline} = 0;       #--- hrc si mode indicator
 	}
 
 	for($j = 0; $j < $ent_cnt; $j++){
@@ -1493,7 +1523,7 @@ sub update_info {
 		$info      = $info_save[$j];
 		
 #----------------------------------------------------------------
-#------- if there really is a change, make the change	
+#------- if there is really a change, make the change	
 #----------------------------------------------------------------
 
 		${si_sign.$obsline}   = 0;
@@ -1507,9 +1537,10 @@ sub update_info {
         	$newgeneral_status = $newvalues[1];
         	$newacis_status    = $newvalues[2];
         	$newsi_mode_status = $newvalues[3];
-        	$newdutysci_status = $newvalues[4];
-        	$newseqnum         = $newvalues[5];
-        	$newuser           = $newvalues[6];
+        	$newhrc_si_mode_status = $newvalues[4];
+        	$newdutysci_status = $newvalues[5];
+        	$newseqnum         = $newvalues[6];
+        	$newuser           = $newvalues[7];
 
 #-------------------------------------------
 #---- there is obs id match, change the line
@@ -1525,10 +1556,31 @@ sub update_info {
 #---- general case
 #-----------------
 			if ($stat_type =~/general/){
-				$tline = "$newobsrev\t$info $date\t$newacis_status\t$newsi_mode_status\t";
+				$tline = "$newobsrev\t$info $date\t$newacis_status\t";
+                $tline = "$tline"."$newsi_mode_status\t$newhrc_si_mode_status\t";
                 $tline = "$tline"."$newdutysci_status\t$newseqnum\t$newuser\n";
 				push (@newoutput, $tline);
 				${gadd.$obsline}++;
+					
+#-------------
+#--- acis case
+#-------------
+            } elsif ($stat_type =~/acis/){
+				if(${gadd.$obsline} == 0){
+					$tline = "$newobsrev\t$newgeneral_status\t";
+                    $tline = "$tline"."$info $date\t$newsi_mode_status\t";
+                    $tline = "$tline"."$newhrc_si_mode_status\t";
+                    $tline = "$tline"."$newdutysci_status\t$newseqnum\t$newuser\n";
+
+				}else{
+					pop(@newoutput);
+					$tline = "$newobsrev\t$info $date\t$info $date\t";
+                    $tline = "$tline"."$newsi_mode_status\t$newhrc_si_mode_status\t";
+                    $tline = "$tline"."$newdutysci_status\t";
+                    $tline = "$tline"."$newseqnum\t$newuser\n";
+				}
+				push (@newoutput, $tline);
+				${hadd.$obsline}++;
 
 #---------------------------------------
 #--- if si mode is NA, set email notice
@@ -1549,51 +1601,88 @@ sub update_info {
 					close(OUT);
 					${si_sign.$obsline} = 1;
 				}
-					
-#-------------
-#--- acis case
-#-------------
-            } elsif ($stat_type =~/acis/){
-				if(${gadd.$obsline} == 0){
+
+                if($newhrc_si_mode_status =~ /NA/i){
+                    open(OUT, ">$temp_dir/hrc_si_mail.$obsline.tmp");
+                    print OUT "Please sign off SI Mode for obsid.rev: $newobsrev at: \n";
+
+                    if($usint_on =~ /no/){
+                        print OUT "$obs_ss_http/orupdate.cgi","\n";
+                    }elsif($usint_on =~ /yes/){
+                        print OUT "$usint_http/orupdate.cgi","\n";
+                    }
+
+                    print OUT 'This message is generated by a sign-off web page, ';
+                    print OUT 'so no reply is necessary.',"\n";
+                    close(OUT);
+                    ${si_sign.$obsline} = 1;
+                }
+
+#------------------
+#--- acis si mode case
+#------------------
+            } elsif ($stat_type =~/mode/ && $stat_type !~ /hrc/){
+
+				if(${gadd.$obsline} == 0 && ${hadd.$obsline} == 0){
 					$tline = "$newobsrev\t$newgeneral_status\t";
-                    $tline = "$tline"."$info $date\t$newsi_mode_status\t";
+                    $tline = "$tline"."$newacis_status\t$info $date\t";
+                    $tline = "$tline"."$newhrc_si_mode_status\t";
+                    $tline = "$tline"."$newdutysci_status\t$newseqnum\t$newuser\n";
+
+				}elsif(${gadd.$obsline} != 0 && ${hadd.$obsline} == 0){
+					pop(@newoutput);
+					$tline = "$newobsrev\t$info $date\t$newacis_status\t";
+                    $tline = "$tline"."$info $date\t";
+                    $tline = "$tline"."$newhrc_si_mode_status\t";
+                    $tline = "$tline"."$newdutysci_status\t$newseqnum\t$newuser\n";
+
+				}elsif(${gadd.$obsline} == 0 && ${hadd.$obsline} != 0){
+					pop(@newoutput);
+					$tline = "$newobsrev\t$newgeneral_status\t$info $date\t";
+                    $tline = "$tline"."$info $date\t$newhrc_si_mode_status\t";
                     $tline = "$tline"."$newdutysci_status\t$newseqnum\t$newuser\n";
 
 				}else{
 					pop(@newoutput);
 					$tline = "$newobsrev\t$info $date\t$info $date\t";
-                    $tline = "$tline"."$newsi_mode_status\t$newdutysci_status\t";
-                    $tline = "$tline"."$newseqnum\t$newuser\n";
-				}
-				push (@newoutput, $tline);
-				${aadd.$obsline}++;
-
-#------------------
-#---- si mode case
-#------------------
-            } elsif ($stat_type =~/mode/){
-				if(${gadd.$obsline} == 0 && ${aadd.$obsline} == 0){
-					$tline = "$newobsrev\t$newgeneral_status\t";
-                    $tline = "$tline"."$newacis_status\t$info $date\t";
-                    $tline = "$tline"."$newdutysci_status\t$newseqnum\t$newuser\n";
-
-				}elsif(${gadd.$obsline} != 0 && ${aadd.$obsline} == 0){
-					pop(@newoutput);
-					$tline = "$newobsrev\t$info $date\t$newacis_status\t";
-                    $tline = "$tline"."$info $date\t$newdutysci_status\t$newseqnum\t$newuser\n";
-
-				}elsif(${gadd.$obsline} == 0 && ${aadd.$obsline} != 0){
-					pop(@newoutput);
-					$tline = "$newobsrev\t$newgeneral_status\t$info $date\t";
-                    $tline = "$tline"."$info $date\t$newdutysci_status\t$newseqnum\t$newuser\n";
-
-				}else{
-					pop(@newoutput);
-					$tline = "$newobsrev\t$info $date\t$info $date\t$info $date\t";
+                    $tline = "$tline"."$info $date\t$newhrc_si_mode_status\t";
                     $tline = "$tline"."$newdutysci_status\t$newseqnum\t$newuser\n";
 				}
 				push (@newoutput, $tline);
 				${madd.$obsline}++;
+
+#------------------
+#---- hrc si mode case
+#------------------
+            } elsif ($stat_type =~/mode/ && $stat_type =~ /hrc/){
+
+				if(${gadd.$obsline} == 0 && ${hadd.$obsline} == 0){
+					$tline = "$newobsrev\t$newgeneral_status\t";
+                    $tline = "$tline"."$newacis_status\t$newsi_mode_status\t";
+                    $tline = "$tline"."$info $date\t";
+                    $tline = "$tline"."$newdutysci_status\t$newseqnum\t$newuser\n";
+
+				}elsif(${gadd.$obsline} != 0 && ${hadd.$obsline} == 0){
+					pop(@newoutput);
+					$tline = "$newobsrev\t$info $date\t$newacis_status\t";
+                    $tline = "$tline"."$newsi_mode_status\t";
+                    $tline = "$tline"."$info $date\t";
+                    $tline = "$tline"."$newdutysci_status\t$newseqnum\t$newuser\n";
+
+				}elsif(${gadd.$obsline} == 0 && ${hadd.$obsline} != 0){
+					pop(@newoutput);
+					$tline = "$newobsrev\t$newgeneral_status\t$info $date\t";
+                    $tline = "$tline"."$newsi_mode_status\t$info $date\t";
+                    $tline = "$tline"."$newdutysci_status\t$newseqnum\t$newuser\n";
+
+				}else{
+					pop(@newoutput);
+					$tline = "$newobsrev\t$info $date\t$info $date\t";
+                    $tline = "$tline"."$newsi_mode_status\t$info $date\t";
+                    $tline = "$tline"."$newdutysci_status\t$newseqnum\t$newuser\n";
+				}
+				push (@newoutput, $tline);
+				${padd.$obsline}++;
 
 #----------------------
 #---- duty sci sign off
@@ -1627,56 +1716,99 @@ sub update_info {
 					if(${gadd.$obsline} == 0 && $newgeneral_status =~ /NA/){
 						$newgeneral_status = "N/A";
 					}
-					if(${aadd.$obsline} == 0 && $newacis_status    =~ /NA/){
-						$newacis_status    = "N/A";
+					if(${hadd.$obsline} == 0 && $newacis_status =~ /NA/){
+						$newacis_status = "N/A";
 					}
 					if(${madd.$obsline} == 0 && $newsi_mode_status =~ /NA/){
 						$newsi_mode_status = "N/A";
 					}
-                        $mchk = 1
+					if(${padd.$obsline} == 0 && $newhrc_si_mode_status =~ /NA/){
+						$newhrc_si_mode_status = "N/A";
+					}
+                    $mchk = 1
 
 				}else{
 					if($newgeneral_status eq 'NA' 
                             || $newacis_status eq 'NA' 
-                            || $newsi_mode_status eq 'NA'){
+                            || $newsi_mode_status eq 'NA'
+                            || $newhrc_si_mode_status eq 'NA'){
 						next NOUTER;
 					}
 				}
 
-				if(${gadd.$obsline} == 0 && ${aadd.$obsline} == 0 && ${madd.$obsline} == 0){
-					$tline = "$newobsrev\t$newgeneral_status\t$newacis_status\t";
-                    $tline = "$tline"."$newsi_mode_status\t$info $date\t$newseqnum\t$newuser\n";
+                if(${gadd.$obsline} == 0 && ${hadd.$obsline} == 0){
+                    if(${madd.$obsline} != 0){
+					    $tline = "$newobsrev\t$newgeneral_status\t$newacis_status\t";
+                        $tline = "$tline"."$info $date\t$newhrc_si_mode_status\t";
+                        $tline = "$tline"."$info $date\t$newseqnum\t$newuser\n";
 
-				}elsif(${gadd.$obsline} != 0 && ${aadd.$obsline} == 0 && ${madd.$obsline} == 0){
-					$zzz= pop(@newoutput);
-					$tline = "$newobsrev\t$info $date\t$newacis_status\t";
-                    $tline = "$tline"."$newsi_mode_status\t$info $date\t$newseqnum\t$newuser\n";
+                    }elsif(${padd.$obsline} != 0){
+					    $tline = "$newobsrev\t$newgeneral_status\t$newacis_status\t";
+                        $tline = "$tline"."$newsi_mode_status\t$info $date\t";
+                        $tline = "$tline"."$info $date\t$newseqnum\t$newuser\n";
 
-				}elsif(${gadd.$obsline} == 0 && ${aadd.$obsline} != 0 && ${madd.$obsline} == 0){
-					pop(@newoutput);
-					$tline = "$newobsrev\t$newgeneral_status\t$info $date\t";
-                    $tline = "$tline"."$newsi_mode_status\t$info $date\t$newseqnum\t$newuser\n";
+                    }else{
+					    $tline = "$newobsrev\t$newgeneral_status\t$newacis_status\t";
+                        $tline = "$tline"."$newsi_mode_status\t$newhrc_si_mode_status\t";
+                        $tline = "$tline"."$info $date\t$newseqnum\t$newuser\n";
 
-				}elsif(${gadd.$obsline} == 0 && ${aadd.$obsline} == 0 && ${madd.$obsline} != 0){
-					pop(@newoutput);
-					$tline = "$newobsrev\t$newgeneral_status\t$newacis_status\t";
-                    $tline = "$tline"."$info $date\t$info $date\t$newseqnum\t$newuser\n";
+                    }
 
-				}elsif(${gadd.$obsline} != 0 && ${aadd.$obsline} != 0 && ${madd.$obsline} == 0){
-					pop(@newoutput);
-					$tline = "$newobsrev\t$info $date\t$info $date\t$newsi_mode_status\t";
-                    $tline = "$tline"."$info $date\t$newseqnum\t$newuser\n";
+                }elsif(${gadd.$obsline} != 0 && ${hadd.$obsline} == 0){
+                    if(${madd.$obsline} != 0){
+					    $tline = "$newobsrev\t$info $date\t$newacis_status\t";
+                        $tline = "$tline"."$info $date\t$newhrc_si_mode_status\t";
+                        $tline = "$tline"."$info $date\t$newseqnum\t$newuser\n";
 
-				}elsif(${gadd.$obsline} != 0 && ${aadd.$obsline} == 0 && ${madd.$obsline} != 0){
-					pop(@newoutput);
-					$tline = "$newobsrev\t$info $date\t$newacis_status\t$info $date\t";
-                    $tline = "$tline"."$info $date\t$newseqnum\t$newuser\n";
+                    }elsif(${padd.$obsline} != 0){
+					    $tline = "$newobsrev\t$info $date\t$newacis_status\t";
+                        $tline = "$tline"."$newsi_mode_status\t$info $date\t";
+                        $tline = "$tline"."$info $date\t$newseqnum\t$newuser\n";
 
-				}elsif(${gadd.$obsline} == 0 && ${aadd.$obsline} != 0 && ${madd.$obsline} != 0){
-					pop(@newoutput);
-					$tline = "$newobsrev\t$newgeneral_status\t$info $date\t$info $date\t";
-                    $tline = "$tline"."$info $date\t$newseqnum\t$newuser\n";
-				}
+                    }else{
+					    $tline = "$newobsrev\t$info $date\t$newacis_status\t";
+                        $tline = "$tline"."$newsi_mode_status\t$newhrc_si_mode_status\t";
+                        $tline = "$tline"."$info $date\t$newseqnum\t$newuser\n";
+
+                    }
+
+                }elsif(${gadd.$obsline} == 0 && ${hadd.$obsline} != 0){
+                    if(${madd.$obsline} != 0){
+					    $tline = "$newobsrev\t$newgeneral_status\t$info $date\t";
+                        $tline = "$tline"."$info $date\t$newhrc_si_mode_status\t";
+                        $tline = "$tline"."$info $date\t$newseqnum\t$newuser\n";
+
+                    }elsif(${padd.$obsline} != 0){
+					    $tline = "$newobsrev\t$newgeneral_status\t$info $date\t";
+                        $tline = "$tline"."$newsi_mode_status\t$info $date\t";
+                        $tline = "$tline"."$info $date\t$newseqnum\t$newuser\n";
+
+                    }else{
+					    $tline = "$newobsrev\t$newgeneral_status\t$info $date\t";
+                        $tline = "$tline"."$newsi_mode_status\t$newhrc_si_mode_status\t";
+                        $tline = "$tline"."$info $date\t$newseqnum\t$newuser\n";
+
+                    }
+
+                }else{
+                    if(${madd.$obsline} != 0){
+					    $tline = "$newobsrev\t$info $date\t$info $date\t";
+                        $tline = "$tline"."$info $date\t$newhrc_si_mode_status\t";
+                        $tline = "$tline"."$info $date\t$newseqnum\t$newuser\n";
+
+                    }elsif(${padd.$obsline} != 0){
+					    $tline = "$newobsrev\t$info $date\t$info $date\t";
+                        $tline = "$tline"."$newsi_mode_status\t$info $date\t";
+                        $tline = "$tline"."$info $date\t$newseqnum\t$newuser\n";
+
+                    }else{
+					    $tline = "$newobsrev\t$info $date\t$info $date\t";
+                        $tline = "$tline"."$newsi_mode_status\t$newhrc_si_mode_status\t";
+                        $tline = "$tline"."$info $date\t$newseqnum\t$newuser\n";
+
+                    }
+                }
+                    
 				push (@newoutput,$tline);
 
                 ${last_sign.$obsline} = 1;
@@ -1769,12 +1901,12 @@ sub update_info {
 #						system("rm $temp_dir/too_gen_change");
 
 					}else{
-						if($newsi_mode_status =~ /NA/){
+						if($newsi_mode_status =~ /NA/ || $newhrc_si_mode_status =~ /NA/){
 
 							#--- ask to sing off SI MODE
 
 							open(OUT, ">$temp_dir/too_gen_change");
-							print OUT "Editing of General entries of $newobsrev ";
+							print OUT "Editing of General/ACIS entries of $newobsrev ";
 							print OUT "were finished and signed off. ";
 							print OUT "Please  update SI Mode entries, then go to: ";
 							print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
@@ -1839,103 +1971,103 @@ sub update_info {
 						}
 					}
 
-				}elsif($stat_type =~ /acis/){
+#				}elsif($stat_type =~ /acis/){
+##
+##--- ACIS entires signed off
+##
+#					if($newgeneral_status =~ /NA/){
 #
-#--- ACIS entires signed off
+#						#--- ask to sign off GENERAL
 #
-					if($newgeneral_status =~ /NA/){
-
-						#--- ask to sign off GENERAL
-
-#						open(OUT, ">$temp_dir/too_gen_change");
-#						print OUT "Editing of ACIS entries of $newobsrev ";
-#						print OUT "were finished and signed off, but General entries are not yet. ";
-#						print OUT "Please  update General entries, then go to: ";
-#						print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
-#						print OUT "and sign off General Status.\n";
+##						open(OUT, ">$temp_dir/too_gen_change");
+##						print OUT "Editing of ACIS entries of $newobsrev ";
+##						print OUT "were finished and signed off, but General entries are not yet. ";
+##						print OUT "Please  update General entries, then go to: ";
+##						print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
+##						print OUT "and sign off General Status.\n";
+##
+##						if($usint_on =~ /test/){
+##							$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
+##							$cmd = "$cmd"."Subject: TOO General Status Signed Off Request: OBSID: ";
+##							$cmd = "$cmd"."$newobsid\n\"   $test_email";
+##							system($cmd);
+##						}else{
+##							$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
+##							$cmd = "$cmd"."Subject: TOO General Status Signed Off Request: OBSID: ";
+##							$cmd = "$cmd"."$newobsid\n\" -rcus\@head.cfa.harvard.edu ";
+##							$cmd = "$cmd"."-ccus\@head.cfa.harvard.edu $email_address";
+##							system($cmd);
+##
+##							$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
+##							$cmd = "$cmd"."Subject: TOO General Status Signed Off Request: OBSID: ";
+##							$cmd = "$cmd"."$newobsid\n\" -rcus\@head.cfa.harvard.edu $test_email";
+##							system($cmd);
+##						}
+##						system("rm $temp_dir/too_gen_change");
 #
-#						if($usint_on =~ /test/){
-#							$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
-#							$cmd = "$cmd"."Subject: TOO General Status Signed Off Request: OBSID: ";
-#							$cmd = "$cmd"."$newobsid\n\"   $test_email";
-#							system($cmd);
+#					}else{
+#						if($newsi_mode_status =~ /NA/){
+#
+#							#--- ask to sing off SI MODE
+#
+#							open(OUT, ">$temp_dir/too_gen_change");
+#							print OUT "Editing of ACIS entries of $newobsrev ";
+#							print OUT "were finished and signed off. ";
+#							print OUT "Please  update SI Mode entries, then go to: ";
+#							print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
+#							print OUT "and sign off SI Mode Status.\n";
+#	
+#							if($usint_on =~ /test/){
+#								$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
+#                                $cmd = "$cmd"."Subject: TOO SI Status Signed Off Request: OBSID: ";
+#                                $cmd = "$cmd"."$newobsid\"  $test_email";
+#                                system($cmd);
+#							}else{
+#								$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
+#                                $cmd = "$cmd"."Subject: TOO SI Status Signed Off Request: OBSID: ";
+#                                $cmd = "$cmd"."$newobsid\" -ccus\@head.cfa.harvard.edu ";
+#                                $cmd = "$cmd"."acisdude\@head.cfa.harvard.edu";
+#                                system($cmd);
+#
+#								$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
+#                                $cmd = "$cmd"."Subject: TOO SI Status Signed Off Request: OBSID: ";
+#                                $cmd = "$cmd"."$newobsid\"  $test_email";
+#                                system($cmd);
+#							}
+#							system("rm $temp_dir/too_gen_change");
+#
 #						}else{
-#							$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
-#							$cmd = "$cmd"."Subject: TOO General Status Signed Off Request: OBSID: ";
-#							$cmd = "$cmd"."$newobsid\n\" -rcus\@head.cfa.harvard.edu ";
-#							$cmd = "$cmd"."-ccus\@head.cfa.harvard.edu $email_address";
-#							system($cmd);
+#							#--- ask to VERIFY the final status
 #
-#							$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
-#							$cmd = "$cmd"."Subject: TOO General Status Signed Off Request: OBSID: ";
-#							$cmd = "$cmd"."$newobsid\n\" -rcus\@head.cfa.harvard.edu $test_email";
-#							system($cmd);
+#							open(OUT, ">$temp_dir/too_gen_change");
+#							print OUT "Editing of all entries of $newobsrev ";
+#							print OUT "were finished and signed off. ";
+#							print OUT "Please  verify it, then go to: ";
+#							print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
+#							print OUT "and sign off 'Verified By' column.\n";
+#	
+#							if($usint_on =~ /test/){
+#								$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
+#                                $cmd = "$cmd"."Subject: TOO Verification Signed Off Request: OBSID: ";
+#                                $cmd = "$cmd"."$newobsid\"  $test_email";
+#                                system($cmd);
+#
+#							}else{
+#								$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
+#                                $cmd = "$cmd"."Subject: TOO Verification Signed Off Request: OBSID: ";
+#                                $cmd = "$cmd"."$newobsid\"  -ccus\@head.cfa.harvard.edu ";
+#                                $cmd = "$cmd"."$email_address";
+#                                system($cmd);
+#
+#								$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
+#                                $cmd = "$cmd"."Subject: TOO Verification Signed Off Request: OBSID: ";
+#                                $cmd = "$cmd"."$newobsid\"  $test_email";
+#                                system($cmd);
+#							}
+#							system("rm $temp_dir/too_gen_change");
 #						}
-#						system("rm $temp_dir/too_gen_change");
-
-					}else{
-						if($newsi_mode_status =~ /NA/){
-
-							#--- ask to sing off SI MODE
-
-							open(OUT, ">$temp_dir/too_gen_change");
-							print OUT "Editing of ACIS entries of $newobsrev ";
-							print OUT "were finished and signed off. ";
-							print OUT "Please  update SI Mode entries, then go to: ";
-							print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
-							print OUT "and sign off SI Mode Status.\n";
-	
-							if($usint_on =~ /test/){
-								$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: TOO SI Status Signed Off Request: OBSID: ";
-                                $cmd = "$cmd"."$newobsid\"  $test_email";
-                                system($cmd);
-							}else{
-								$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: TOO SI Status Signed Off Request: OBSID: ";
-                                $cmd = "$cmd"."$newobsid\" -ccus\@head.cfa.harvard.edu ";
-                                $cmd = "$cmd"."acisdude\@head.cfa.harvard.edu";
-                                system($cmd);
-
-								$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: TOO SI Status Signed Off Request: OBSID: ";
-                                $cmd = "$cmd"."$newobsid\"  $test_email";
-                                system($cmd);
-							}
-							system("rm $temp_dir/too_gen_change");
-
-						}else{
-							#--- ask to VERIFY the final status
-
-							open(OUT, ">$temp_dir/too_gen_change");
-							print OUT "Editing of all entries of $newobsrev ";
-							print OUT "were finished and signed off. ";
-							print OUT "Please  verify it, then go to: ";
-							print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
-							print OUT "and sign off 'Verified By' column.\n";
-	
-							if($usint_on =~ /test/){
-								$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: TOO Verification Signed Off Request: OBSID: ";
-                                $cmd = "$cmd"."$newobsid\"  $test_email";
-                                system($cmd);
-
-							}else{
-								$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: TOO Verification Signed Off Request: OBSID: ";
-                                $cmd = "$cmd"."$newobsid\"  -ccus\@head.cfa.harvard.edu ";
-                                $cmd = "$cmd"."$email_address";
-                                system($cmd);
-
-								$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: TOO Verification Signed Off Request: OBSID: ";
-                                $cmd = "$cmd"."$newobsid\"  $test_email";
-                                system($cmd);
-							}
-							system("rm $temp_dir/too_gen_change");
-						}
-					}
-
+#					}
+#
 				}elsif($stat_type =~ /si_mode/){
 #
 #--- SI MODE entires signed off
@@ -2077,12 +2209,12 @@ sub update_info {
 #						system("rm $temp_dir/ddt_gen_change");
 
 					}else{
-						if($newsi_mode_status =~ /NA/){
+						if($newsi_mode_status =~ /NA/ || $newhr_si_mode_status =~ /NA/){
 
 							#--- ask to sign off SI MODE
 
 							open(OUT, ">$temp_dir/ddt_gen_change");
-							print OUT "Editing of General entries of $newobsrev ";
+							print OUT "Editing of General/ACIS entries of $newobsrev ";
 							print OUT "were finished and signed off. ";
 							print OUT "Please  update SI Mode entries, then go to: ";
 							print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
@@ -2147,106 +2279,106 @@ sub update_info {
 						}
 					}
 
-				}elsif($stat_type =~ /acis/){
+#				}elsif($stat_type =~ /acis/){
+##
+##--- ACIS entires signed off
+##
+#					if($newgeneral_status =~ /NA/){
 #
-#--- ACIS entires signed off
+#						#--- ask to sign off GENERAL
 #
-					if($newgeneral_status =~ /NA/){
-
-						#--- ask to sign off GENERAL
-
-#						open(OUT, ">$temp_dir/ddt_gen_change");
-#						print OUT "Editing of ACIS entries of $newobsrev ";
-#						print OUT "were finished and signed off, but General entries are not yet. ";
-#						print OUT "Please  update General entries, then go to: ";
-#						print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
-#						print OUT "and sign off General Status.\n";
+##						open(OUT, ">$temp_dir/ddt_gen_change");
+##						print OUT "Editing of ACIS entries of $newobsrev ";
+##						print OUT "were finished and signed off, but General entries are not yet. ";
+##						print OUT "Please  update General entries, then go to: ";
+##						print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
+##						print OUT "and sign off General Status.\n";
+##
+##						if($usint_on =~ /test/){
+##							$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
+##							$cmd = "$cmd"."Subject: DDT General Status Signed Off Request: OBSID: ";
+##							$cmd = "$cmd"."$newobsid\n\" -rcus\@head.cfa.harvard.edu  $test_email";
+##							system($cmd);
+##						}else{
+##							$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
+##							$cmd = "$cmd"."Subject: DDT General Status Signed Off Request: OBSID: ";
+##							$cmd = "$cmd"."$newobsid\n\" -rcus\@head.cfa.harvard.edu ";
+##							$cmd = "$cmd"."-ccus\@head.cfa.harvard.edu $email_address";
+##							system($cmd);
+##
+##							$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
+##							$cmd = "$cmd"."Subject: DDT General Status Signed Off Request: OBSID: ";
+##							$cmd = "$cmd"."$newobsid\n\" -rcus\@head.cfa.harvard.edu $test_email";
+##							system($cmd);
+##						}
+##						system("rm $temp_dir/ddt_gen_change");
 #
-#						if($usint_on =~ /test/){
-#							$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
-#							$cmd = "$cmd"."Subject: DDT General Status Signed Off Request: OBSID: ";
-#							$cmd = "$cmd"."$newobsid\n\" -rcus\@head.cfa.harvard.edu  $test_email";
-#							system($cmd);
+#					}else{
+#						if($newsi_mode_status =~ /NA/){
+#
+#							#--- ask to sing off SI MODE
+#
+#							open(OUT, ">$temp_dir/ddt_gen_change");
+#							print OUT "Editing of ACIS entries of $newobsrev ";
+#							print OUT "were finished and signed off. ";
+#							print OUT "Please  update SI Mode entries, then go to: ";
+#							print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
+#							print OUT "and sign off SI Mode Status.\n";
+#	
+#							if($usint_on =~ /test/){
+#								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
+#                                $cmd = "$cmd"."Subject: DDT SI Status Signed Off Request: OBSID: ";
+#                                $cmd = "$cmd"."$newobsid\"  $test_email";
+#                                system($cmd);
+#
+#							}else{
+#								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
+#                                $cmd = "$cmd"."Subject: DDT SI Status Signed Off Request: OBSID: ";
+#                                $cmd = "$cmd"."$newobsid\"  -ccus\@head.cfa.harvard.edu ";
+#                                $cmd = "$cmd"."acisdude\@head.cfa.harvard.edu";
+#                                system($cmd);
+#
+#								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
+#                                $cmd = "$cmd"."Subject: DDT SI Status Signed Off Request: OBSID: ";
+#                                $cmd = "$cmd"."$newobsid\"  $test_email";
+#                                system($cmd);
+#							}
+#
+#							system("rm $temp_dir/ddt_gen_change");
+#
 #						}else{
-#							$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
-#							$cmd = "$cmd"."Subject: DDT General Status Signed Off Request: OBSID: ";
-#							$cmd = "$cmd"."$newobsid\n\" -rcus\@head.cfa.harvard.edu ";
-#							$cmd = "$cmd"."-ccus\@head.cfa.harvard.edu $email_address";
-#							system($cmd);
+#							#--- ask to VERIFY the final status
 #
-#							$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
-#							$cmd = "$cmd"."Subject: DDT General Status Signed Off Request: OBSID: ";
-#							$cmd = "$cmd"."$newobsid\n\" -rcus\@head.cfa.harvard.edu $test_email";
-#							system($cmd);
+#							open(OUT, ">$temp_dir/ddt_gen_change");
+#							print OUT "Editing of all entries of $newobsrev ";
+#							print OUT "were finished and signed off. ";
+#							print OUT "Please  verify it, then go to: ";
+#							print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
+#							print OUT "and sign off 'Verified By' column.\n";
+#	
+#							if($usint_on =~ /test/){
+#								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
+#                                $cmd = "$cmd"."Subject: DDT Verification Signed Off Request: OBSID: ";
+#                                $cmd = "$cmd"."$newobsid\"  $test_email";
+#                                system($cmd);
+#
+#							}else{
+#								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
+#                                $cmd = "$cmd"."Subject: DDT Verification Signed Off Request: OBSID: ";
+#                                $cmd = "$cmd"."$newobsid\"  -ccus\@head.cfa.harvard.edu ";
+#                                $cmd = "$cmd"."$email_address";
+#                                system($cmd);
+#
+#								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
+#                                $cmd = "$cmd"."Subject: DDT Verification Signed Off Request: OBSID: ";
+#                                $cmd = "$cmd"."$newobsid\"  $test_email";
+#                                system($cmd);
+#							}
+#
+#							system("rm $temp_dir/ddt_gen_change");
 #						}
-#						system("rm $temp_dir/ddt_gen_change");
-
-					}else{
-						if($newsi_mode_status =~ /NA/){
-
-							#--- ask to sing off SI MODE
-
-							open(OUT, ">$temp_dir/ddt_gen_change");
-							print OUT "Editing of ACIS entries of $newobsrev ";
-							print OUT "were finished and signed off. ";
-							print OUT "Please  update SI Mode entries, then go to: ";
-							print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
-							print OUT "and sign off SI Mode Status.\n";
-	
-							if($usint_on =~ /test/){
-								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: DDT SI Status Signed Off Request: OBSID: ";
-                                $cmd = "$cmd"."$newobsid\"  $test_email";
-                                system($cmd);
-
-							}else{
-								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: DDT SI Status Signed Off Request: OBSID: ";
-                                $cmd = "$cmd"."$newobsid\"  -ccus\@head.cfa.harvard.edu ";
-                                $cmd = "$cmd"."acisdude\@head.cfa.harvard.edu";
-                                system($cmd);
-
-								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: DDT SI Status Signed Off Request: OBSID: ";
-                                $cmd = "$cmd"."$newobsid\"  $test_email";
-                                system($cmd);
-							}
-
-							system("rm $temp_dir/ddt_gen_change");
-
-						}else{
-							#--- ask to VERIFY the final status
-
-							open(OUT, ">$temp_dir/ddt_gen_change");
-							print OUT "Editing of all entries of $newobsrev ";
-							print OUT "were finished and signed off. ";
-							print OUT "Please  verify it, then go to: ";
-							print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
-							print OUT "and sign off 'Verified By' column.\n";
-	
-							if($usint_on =~ /test/){
-								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: DDT Verification Signed Off Request: OBSID: ";
-                                $cmd = "$cmd"."$newobsid\"  $test_email";
-                                system($cmd);
-
-							}else{
-								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: DDT Verification Signed Off Request: OBSID: ";
-                                $cmd = "$cmd"."$newobsid\"  -ccus\@head.cfa.harvard.edu ";
-                                $cmd = "$cmd"."$email_address";
-                                system($cmd);
-
-								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: DDT Verification Signed Off Request: OBSID: ";
-                                $cmd = "$cmd"."$newobsid\"  $test_email";
-                                system($cmd);
-							}
-
-							system("rm $temp_dir/ddt_gen_change");
-						}
-					}
-
+#					}
+#
 				}elsif($stat_type =~ /si_mode/){
 #
 #--- SI MODE entires signed off
@@ -2348,7 +2480,6 @@ sub update_info {
 			}
 		}
 	}
-
 #----------------------------------------------------------------------
 #---- start updating the updates_table.list, if there are any changes.
 #----------------------------------------------------------------------
@@ -4380,6 +4511,7 @@ sub oredit{
     $general_status = "NULL";			# these are for the status verification page
    	$acis_status    = "NULL";			# orupdate.cgi
    	$si_mode_status = "NULL";
+   	$hrc_si_mode_status = "NULL";       #--- UPDATED 06/24/21
 	$dutysci_status = "$dutysci $date";
 	
 	open(ASIN,"$ocat_dir/approved");
@@ -4446,7 +4578,7 @@ sub oredit{
 #--------------------------------------------------------------------------------------------------
 
             flock($update, LOCK_EX) or die "died while trying to lock the file<br />\n";
-            print $update "$obsid.$rev\tNULL\tNULL\tNULL\t$dutysci_status\t";
+            print $update "$obsid.$rev\tNULL\tNULL\tNULL\tNULL\t$dutysci_status\t";
             print $update "$seq_nbr\t$submitter\n";
             close $update;
 
