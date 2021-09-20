@@ -148,9 +148,9 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 #---- if this is usint version, set the following param to 'yes', otherwise 'no'
 #
 
-#$usint_on = 'yes';                     ##### USINT Version
+$usint_on = 'yes';                     ##### USINT Version
 #$usint_on = 'no';                      ##### USER Version
-$usint_on = 'test_yes';                 ##### Test Version USINT
+#$usint_on = 'test_yes';                 ##### Test Version USINT
 #$usint_on = 'test_no';                 ##### Test Version USER
 
 @color_table = ('#E6E6FA', '#F5F5DC', '#FFDAB9', '#90EE90', '#BDB76B',\
@@ -760,8 +760,9 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
 	close(FILE);
 
 	print "<table border=1>";
-	print "<tr><th>OBSID.revision</th><th>General edits by</th>";
-    print "<th>ACIS edits by</th>";
+	print "<tr><th>OBSID.revision</th>";
+    print "<th style='background-color:rgb(0,179,170);'>General edits by</th>";
+    print "<th style='background-color:rgb(0,179,170);'>ACIS edits by</th>";
 	print "<th>ACIS SI Mode edits by</th><th>HRC SI MODE edits by</th><th>Verified by";
 	print "</th><th>&nbsp;</th><th>Note</th></tr>";
 #
@@ -898,7 +899,7 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
 		@o_list = ();
 		foreach $chk (@revisions){
 			@btemp = split(/\t+/, $chk);
-			if($btemp[6] =~ /$userid/){
+			if($btemp[7] =~ /$userid/){
 				push(@u_list, $chk);
 			}else{
 				push(@o_list, $chk);
@@ -1032,7 +1033,7 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
 #----- general obscat
 #--------------------
 			if ($general_status =~/NULL/){
-				    print "<td>$general_status</td>";
+				    print "<td style='background-color:rgb(0,179,170);'>$general_status</td>";
 			} elsif ($general_status =~/NA/){
 
 #----------------------------------------------------------------------------
@@ -1040,31 +1041,31 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
 #----------------------------------------------------------------------------
 
 				if($sp_user eq 'yes'){
-					print "<td><input type=\"text\" ";
+					print "<td style='background-color:rgb(0,179,170);'><input type=\"text\" ";
                     print "name=\"general_status#$obsrev\" size=\"12\"></td>";
 					push(@pass_list, "general_status#$obsrev");
 				}else{
-					print "<td>---</td>";
+					print "<td style='background-color:rgb(0,179,170);'>---</td>";
 				}
 
 			} else {
-				print "<td>$general_status</td>";
+				print "<td style='background-color:rgb(0,179,170);'>$general_status</td>";
 			}
 #------------------
 #----- acis obscat
 #------------------
 			if ($acis_status =~/NULL/){
-				print "<td style='text-align:center'>$acis_status</td>";
+				print "<td style='text-align:center;background-color:rgb(0,179,170);'>$acis_status</td>";
 			} elsif ($acis_status =~/NA/){
 				if($sp_user eq 'yes'){
-					print "<td style='text-align:center'><input type=\"text\"";
+					print "<td style='text-align:center;background-color:rgb(0,179,170);'><input type=\"text\"";
                     print " name=\"acis_status#$obsrev\" size=\"12\"></td>";
 					push(@pass_list, "acis_status#$obsrev");
 				}else{
-					print "<td style='text-align:center'>---</td>";
+					print "<td style='text-align:center;background-color:rgb(0,179,170);'>---</td>";
 				}
 			} else {
-				print "<td style='text-align:center'>$acis_status</td>";
+				print "<td style='text-align:center;background-color:rgb(0,179,170);'>$acis_status</td>";
 			}
 #-------------
 #----- acis si mode
@@ -1291,8 +1292,8 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
 		print "chkupdata.cgi\?$btemp[0]\">$btemp[0]</a><br />$btemp[6]<br />$ftime";
 		print "<br />$btemp[7]</td>";
 
-        print "<td style='text-align:center'>$btemp[1]</td>";
-        print "<td style='text-align:center'>$btemp[2]</td>";
+        print "<td style='text-align:center;background-color:rgb(0,179,170);'>$btemp[1]</td>";
+        print "<td style='text-align:center;background-color:rgb(0,179,170);'>$btemp[2]</td>";
         print "<td style='text-align:center'>$btemp[3]</td>";
 		print "<td style='text-align:center'>$btemp[4]</td>";
         print "<td style='text-align:center;color;#005C00'>";
