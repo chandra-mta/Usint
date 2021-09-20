@@ -139,6 +139,9 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 # T. Isobe Sep 15, 2021                                                                 #
 # ACIS column is added back                                                             #
 #                                                                                       #
+# T. Isobe Sep. 20, 2021                                                                #
+# a couple more cosmetic updates                                                        #
+#                                                                                       #
 #########################################################################################
 
 ###############################################################################
@@ -677,7 +680,7 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
     print "have either not been verified or ";
 	print "have been verified in the last 24 hours.</strong></p>";
 #
-    print "<div style='color:red;margin-left:20px; margin-right:300px;'>";
+    print "<div style='margin-left:20px; margin-right:300px;'>";
 
     print '<p>';
     print 'The "Update" button will Verify that the requested revisions are complete. ';
