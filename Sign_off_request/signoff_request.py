@@ -6,7 +6,7 @@
 #                                                                                               #
 #               author: t. isobe (tisobe@cfa.harvard.edu)                                       #
 #                                                                                               #
-#               last update: Jul 27, 2021                                                       #
+#               last update: Sep 27, 2021                                                       #
 #                                                                                               #
 #################################################################################################
 
@@ -48,7 +48,7 @@ zspace = '/tmp/zspace' + str(rtail)
 #--- set a few email addresses
 #
 admin  = 'bwargelin@cfa.harvard.edu'
-tech   = 'tisobe@cfa.harvard.edu'
+tech   = 'lina.pulgarin-duque@cfa.harvard.edu'
 cus    = 'cus@cfa.harvard.edu'
 
 #---------------------------------------------------------------------------------------
@@ -86,21 +86,21 @@ def signoff_request():
 #
 #--- acis si case
 #
-    aslist = find_obs(obsrev, o_dict, 2, 'acis')
+    aslist = find_obs(obsrev, o_dict, 2)
     if len(aslist) > 0:
         [email, subject, content] = create_email(aslist, 'sa')
         send_email(email, subject, content)
 #
 #--- hrc si case
 #
-    hslist = find_obs(obsrev, o_dict, 2, 'hrc')
+    hslist = find_obs(obsrev, o_dict, 3)
     if len(hslist) > 0:
         [email, subject, content] = create_email(hslist, 'sh')
         send_email(email, subject, content)
 #
 #--- verificaiton signoff
 #
-    ulist  = find_obs(obsrev, o_dict, 3)
+    ulist  = find_obs(obsrev, o_dict, 4)
     if len(ulist) > 0:
 #
 #--- for the verification, only one email is sent per a user;
@@ -151,7 +151,7 @@ def signoff_status():
     input:  none, but read from <ocat_dir>/updates_table.list
     output: obsrev  --- a list of obsrev
             usint   --- a list of useint users
-            o_idct  --- a dict of [<general> <acis> <si> <verify> <inst> <user id>]: key: obsrev
+            o_idct  --- a dict of [<general> <acis> <acis si> <hrc si> <verify> <inst> <user id>]: key: obsrev
     """
 #
 #--- create obsid <--> instrument dictionary
@@ -228,19 +228,18 @@ def make_obs_inst_dict():
 #-- find_obs: find which obsrev's need signoff request email                          --
 #---------------------------------------------------------------------------------------
 
-def find_obs(obsrev, o_dict, pos, inst=''):
+def find_obs(obsrev, o_dict, pos):
     """
     find which obsrev's need signoff request email
     input:  obsrev      --- a list of obsrev
             o_dict      --- a diectionay of [<general> <acis> <si> <verify> <inst> <usit>]
             pos         --- position of sign off checking (e.g. <acis> for pos 1)
-            inst        --- instrument: acis/hrc/''
     output: r_list      --- a list of lists of (<bosrev>, <usint>]
     """
     r_list = []
     for obs in obsrev:
 #
-#--- status: [<general> <asics> <si> <verify> <inst> <user id>]
+#--- status: [<general> <acis> <acis si> <hrc si>  <verify> <inst> <user id>]
 #
         status = o_dict[obs]
 #
@@ -256,12 +255,6 @@ def find_obs(obsrev, o_dict, pos, inst=''):
             chk += status[k]
         if chk > 0:
             continue
-#
-#--- check whether this is a particular instrument case, and if the inst does not match ignore
-#
-        if inst != '':
-            if inst != status[4]:
-                continue
 #
 #--- r_list is a list of [<obsrev>, <usint>]
 #
@@ -290,7 +283,7 @@ def send_email(address, subject, content):
 
     cmd = 'cat ' + zspace + '|mailx -s "Subject: ' + subject + '" -c' + admin 
     cmd = cmd + ' -b' + tech + ' ' + address
-    ####cmd = 'cat ' + zspace + '|mailx -s "Subject: TEST!! ' + subject + '\n" ' + tech
+    #cmd = 'cat ' + zspace + '|mailx -s "Subject: TEST!! ' + subject + '\n" ' + tech
     os.system(cmd)
 
     ccf.rm_files(zspace)
