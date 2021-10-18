@@ -19,7 +19,7 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 #                                                                               #
 #       author: t. isobe (tisobe@cfa.harvard.edu)                               #
 #                                                                               #
-#       last update: Jul 14, 2021                                               #
+#       last update: Sep 21, 2021                                               #
 #                                                                               #
 #################################################################################
 
@@ -404,6 +404,9 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 # TARGNAME is back in the <obsid>.<rev> data 
 # (Sep 07, 2021)
 #
+# A bug: turning on acistag with multiple entry case fixed
+# (Oct 18, 2021)
+#
 #-----Up to here were done by t. isobe (tisobe@cfa.harvard.edu)-----
 #
 # ----------
@@ -514,8 +517,8 @@ $usint_on = 'yes';			##### USINT Version
 #
 #---- set a name and email address of a test/tech person
 #
-$test_user  = 'isobe';
-$test_email = 'isobe@head.cfa.harvard.edu';
+$test_user  = 'lina.pulgarin-duque';
+$test_email = 'lina.pulgarin-duque@head.cfa.harvard.edu';
 #
 #--- admin contact email address
 #
@@ -4299,8 +4302,8 @@ endofhtml
 #### REMOVE AFTER 04-30-21   #####################
 #	print "<span style='color:red;font-size:90%;'>(New Field! ";
 #    print "<a href='https://cxc.harvard.edu/mta/CUS/Usint/user_help.html#pointing_constraint'>";
+#    print "Description</a>)</span></td>";
 ##################################################
-    print "Description</a>)</span></td>";
     print '</tr>';
     print '</table>';
 
@@ -10197,7 +10200,7 @@ sub oredit_sub{
 		    } else {
 			    $general_status = "NULL";
 		    }
-		    if ($acistag =~/ON/){
+		    if ($acistag =~/ON/ && $instrument =~ /ACIS/i){
 			    $acis_status        = "NA";
 			    $si_mode_status     = "NA";
                 $hrc_si_mode_status = "NULL";
