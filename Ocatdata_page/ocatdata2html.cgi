@@ -700,7 +700,9 @@ close(FH);
 #----------------
 
 $submitter = cookie('submitter');
-$pass_word = cookie('pass_word');
+#$pass_word = cookie('pass_word');
+#replaces pass with cookie if it exists, otherwise uses the Sys arg $pass variable definition doesn't quite work
+$pass = cookie('pass_bool_cookie') || $pass;
 
 #-------------------
 #--- decode cookies
@@ -716,18 +718,20 @@ foreach $char (@Cookie_Decode_Chars) {
 #-----------------------------------------------
 
 $submitter = param('submitter') || $submitter;
-$pass_word = param('password')  || $pass_word;
+#$pass_word = param('password')  || $pass_word;
+
+$pass_word = param('password');
 
 #-------------------
 #--- refresh cookies
 #-------------------
 
 $en_submitter = $submitter;
-$en_pass_word = $pass_word;
+#$en_pass_word = $pass_word;
 
 foreach $char (@Cookie_Encode_Chars) {
     $en_submitter   =~ s/$char/$Cookie_Encode_Chars{$char}/g;
-    $en_pass_word   =~ s/$char/$Cookie_Encode_Chars{$char}/g;
+    #$en_pass_word   =~ s/$char/$Cookie_Encode_Chars{$char}/g;
 }
 
 $user_cookie = cookie(-name    => 'submitter',
@@ -735,16 +739,23 @@ $user_cookie = cookie(-name    => 'submitter',
                       -path    => '/',
                       -expires => '+8h');
 
-$pass_cookie = cookie(-name    => 'pass_word',
-                      -value   => "$en_pass_word",
-                      -path    => '/',
-                      -expires => '+8h');
+#$pass_cookie = cookie(-name    => 'pass_word',
+#                      -value   => "$en_pass_word",
+#                      -path    => '/',
+#                      -expires => '+8h');
+
+$pass_bool_cookie = cookie(-name => 'pass',
+                          -value => "$pass",
+                          -path => '/',
+                          -expires => '+8h');
 
 #-------------------------
 #---- new cookies worte in
 #-------------------------
 
-print header(-cookie=>[$user_cookie, $pass_cookie], -type => 'text/html;  charset=utf-8');
+#print header(-cookie=>[$user_cookie, $pass_cookie], -type => 'text/html;  charset=utf-8');
+#print header(-cookie=>$user_cookie, -type => 'text/html;  charset=utf-8');
+print header(-cookie=>[$user_cookie,$pass_bool_cookie], -type => 'text/html;  charset=utf-8');
 
 print "<!DOCTYPE html>";
 print "<html>";
@@ -3463,7 +3474,7 @@ sub data_input_page{
 
 endofhtml
 
-    print '	<h1>Obscat Data Page</h1>';
+    print '	<h1>Obscat Data Page Test</h1>';
 
     $schk = 0;
     if(length($soe_st_sched_date) > 0){
