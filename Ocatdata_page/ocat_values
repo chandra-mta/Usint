@@ -17,7 +17,7 @@
 G	Exp_Time		approved_exposure_time		OPEN					NONE
 G	Type			type				GO,TOO,GTO,CAL,DDT,CAL_ER,ARCHIVE,CDFS		NONE
 G	TOO_Id			tooid				OPEN					NONE
-G	Target_Name		targname			OPEN					NONE
+G	Target_Name		targname			REST					MP 
 G	Target_Description	description			OPEN					NONE
 G	Object			object				NEW,NONE,COMET,EARTH,JUPITER,MARS,MOON,NEPTUNE,PLUTO,SATURN,URANUS,VENUS,NONE
 G	Object_flag		obj_flag			SS,MT,NO				NONE
