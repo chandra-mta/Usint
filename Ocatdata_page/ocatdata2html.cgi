@@ -406,6 +406,12 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 #
 # A bug: turning on acistag with multiple entry case fixed
 # (Oct 18, 2021)
+# 
+# comparing o_val/n_val in null value cases updated
+# (Nov 01, 2021)
+#
+# added the PREVIOUS PAGE button and unintentional reset to NULL warning
+# (May 10, 2022)
 #
 #-----Up to here were done by t. isobe (tisobe@cfa.harvard.edu)-----
 #
@@ -517,8 +523,8 @@ $usint_on = 'yes';			##### USINT Version
 #
 #---- set a name and email address of a test/tech person
 #
-$test_user  = 'lina.pulgarin-duque';
-$test_email = 'lina.pulgarin-duque@head.cfa.harvard.edu';
+$test_user = 'malgosia';
+$test_email = 'malgosia@head.cfa.harvard.edu';
 #
 #--- admin contact email address
 #
@@ -7992,6 +7998,11 @@ sub submit_entry{
 #----- print the verification webpage
 #------------------------------------
 
+        $pline = "$pline"."<p style='color:red;padding-bottom:10'><strong> Do not use the PREVIOUS PAGE button. ";
+        $pline = "$pline"."Some parameters may be unintentionally reset to NULL.</strong></p> ";
+        $pline = "$pline"."<p style='padding-bottom:10'><strong>If you need to re-edit your change request, start from scratch-- ";
+        $pline = "$pline"."delete the current tab/window and start over in a new one.</strong></p>";
+
 	$pline = "$pline"."<p style='padding-bottom:10'><strong>You have submitted the following ";
     $pline = "$pline"."values for obsid $obsid:</strong> </p>";
 
@@ -8550,10 +8561,14 @@ sub submit_entry{
 
 	if($wrong_si == 0){
 		$pline = "$pline"."<br /><hr />";
-		$pline = "$pline"."<p style='padding-top:15px;padding-bottom:5px'>";
-		$pline = "$pline"."<strong>If these values are correct, click the FINALIZE button.<br />";
-		$pline = "$pline"."Otherwise, use the previous page button to edit.</strong><br />";
-		$pline = "$pline"."</p>";
+		$pline = "$pline"."<p style='padding-top:15px;padding-bottom:5px'><strong>";
+		$pline = "$pline"."If these values are correct, click the FINALIZE button.</strong></p>";
+                $pline = "$pline"."<p style='color:red'>Do not use the PREVIOUS PAGE button. ";
+                $pline = "$pline"."Some parameters may be unintentionally reset to NULL.<p> ";
+                $pline = "$pline"."<p><strong>If you need to re-edit your change request, start from scratch--";
+                $pline = "$pline"."delete the current tab/window and start over in a new one.</strong></p><br>";
+		#$pline = "$pline"."Otherwise, use the previous page button to edit.</strong><br />";
+		#$pline = "$pline"."</p>";
 	}
 	$j = 0;
 
@@ -9090,6 +9105,13 @@ output: printed out line
 sub print_table_row{
 	($t_name, $o_value, $n_value, $color) = @_;
 	
+    $test1 = check_null_ent($o_value);
+    $test2 = check_null_ent($n_value);
+    if(($test1 == 1) && ($test2 == 1)){
+        $color == '';
+        $o_value = 'same';
+    }
+
     if ($color eq ''){
         $color= '#FF0000'
     }
@@ -9103,6 +9125,20 @@ sub print_table_row{
         $pline = "$pline"."<tr style='color:$color'><th>$t_name</th><td style='text-align:center'>$o_value</td>";
         $pline = "$pline"."<td style='color:#FF0000;text-align:center'>$n_value</td></tr>";
     }
+}
+#########################################################################
+##########################################################################
+##########################################################################
+
+sub check_null_ent{
+    ($val) = @_;
+
+    foreach $test ('NA',  'NULL', 'None', 'NONE',   'null', 'none', '', ' '){
+        if($val =~ /$test/i){
+            return 1;
+        }
+    }
+    return 0;
 }
 
 #########################################################################
