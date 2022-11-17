@@ -415,6 +415,11 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 #
 #-----Up to here were done by t. isobe (tisobe@cfa.harvard.edu)-----
 #
+# Removing Password Cookies in favor of using .htaccess authentication
+# (Nov, 17,2022)
+#
+#-----Up to here changes were done by William Aaron (waaron@cfa.harvard.edu)----
+#
 # ----------
 # sub list:
 # ---------
@@ -518,13 +523,13 @@ $blank2 = '<Blank>';
 #
 #---- if this is usint version, set the following param to 'yes', otherwise 'no'
 #
-$usint_on = 'yes';			##### USINT Version
-###$usint_on = 'test_yes';			##### Test Version USINT
+#$usint_on = 'yes';			##### USINT Version
+$usint_on = 'test_yes';			##### Test Version USINT
 #
 #---- set a name and email address of a test/tech person
 #
-$test_user = 'malgosia';
-$test_email = 'malgosia@head.cfa.harvard.edu';
+$test_user = 'waaron';
+$test_email = 'waaron@head.cfa.harvard.edu';
 #
 #--- admin contact email address
 #
@@ -698,19 +703,18 @@ close(FH);
 #----------------
 #--- read cookies
 #----------------
-
-$submitter = cookie('submitter');
+#Sumbitter is overrided from being the REMOTE_USER only if the change_user function is operated, thereby updating cookie.
+$submitter = cookie('submitter') || $ENV{REMOTE_USER};
 #$pass_word = cookie('pass_word');
-#replaces pass with cookie if it exists, otherwise uses the Sys arg $pass variable definition doesn't quite work
-$pass = cookie('pass_bool_cookie') || $pass;
-
+#
+$temp_submitter = $submitter;
 #-------------------
 #--- decode cookies
 #-------------------
 
 foreach $char (@Cookie_Decode_Chars) {
     $submitter  =~ s/$char/$Cookie_Decode_Chars{$char}/g;
-    $pass_word  =~ s/$char/$Cookie_Decode_Chars{$char}/g;
+    #$pass_word  =~ s/$char/$Cookie_Decode_Chars{$char}/g;
 }
 
 #-----------------------------------------------
@@ -744,18 +748,14 @@ $user_cookie = cookie(-name    => 'submitter',
 #                      -path    => '/',
 #                      -expires => '+8h');
 
-$pass_bool_cookie = cookie(-name => 'pass',
-                          -value => "$pass",
-                          -path => '/',
-                          -expires => '+8h');
 
 #-------------------------
 #---- new cookies worte in
 #-------------------------
 
 #print header(-cookie=>[$user_cookie, $pass_cookie], -type => 'text/html;  charset=utf-8');
-#print header(-cookie=>$user_cookie, -type => 'text/html;  charset=utf-8');
-print header(-cookie=>[$user_cookie,$pass_bool_cookie], -type => 'text/html;  charset=utf-8');
+print header(-cookie=>$user_cookie, -type => 'text/html;  charset=utf-8');
+
 
 print "<!DOCTYPE html>";
 print "<html>";
@@ -3475,7 +3475,7 @@ sub data_input_page{
 endofhtml
 
     print '	<h1>Obscat Data Page Test</h1>';
-
+    #print "<h1>Testing OcatDir: $ocat_dir \n</h1>";
     $schk = 0;
     if(length($soe_st_sched_date) > 0){
         $obs_time = $soe_st_sched_date;
