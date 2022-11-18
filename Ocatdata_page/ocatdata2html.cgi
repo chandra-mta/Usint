@@ -904,14 +904,15 @@ if($check eq ''){
 	}
 }
 =cut
-if ($check eq ''){	
+if ($check eq ''){
+=removing change user until can do so through apache web server authentication	
 	$chg_user_ind = param('chg_user_ind');
 
 	match_user();	
 	if ($chg_user_ind = 'yes'){
 		password_input();
 	}	
-
+=cut
 	special_user();
 	pi_check();
 	data_input_page();
@@ -1209,7 +1210,7 @@ print "</html>";
 #########################################################################
 ### password_check: open a user - a password input page               ###
 #########################################################################
-=old version
+=old version: Remove as ideally we never want the perl cgi script to store passwords as a variable
 sub password_check{
 	print '<h3>Please type your user name and password</h3>';
     print '<table style="border-width:0px"><tr><th>Name</th><td>';
@@ -1222,23 +1223,12 @@ sub password_check{
     print '<input type="submit" name="Check" value="Submit">';
 }
 =cut
-sub password_input{
-    print '<h3>Please type your user name and password to change user.</h3>';
-    print '<table style="border-width:0px"><tr><th>Name</th><td>';
-    print textfield(-name=>'submitter', -value=>'', -size=>20);
-    print '</td></tr><tr><th>Password</th><td>';
-    print password_field( -name=>'password', -value=>'', -size=>20);
-    print '</td></tr></table><br />';
 
-	print hidden(-name=>'Check', -override=>'', -value=>'');
-    print '<input type="submit" name="Check" value="Submit">';
-
-}
 
 #########################################################################
 ### match_user: check a user and a password matches                   ###
 #########################################################################
-
+=Want to avoid having to store passwords as variables. Cutting out function
 sub match_user{
 	if($submitter eq ''){
     	$submitter = param('submitter');
@@ -1273,30 +1263,8 @@ sub match_user{
         $pass = 'no';
     }
 }
-
-=temp
-sub change_usr_check{
-	if ($submitter eq ''){
-		$submitter = param('submitter');
-	}
-	open(FH, "<$pass_dir/.htpasswd");
-	while(<FH>) {
-    		chomp $_; 
-	}
-	close(FH);
-
-open(FH, "<$pass_dir/.htpasswd");
-
-%pwd_list = ();             	#--- save the user-password list
-while(<FH>) {
-    chomp $_;
-    @passwd = split(/:/,$_);
-    $pwd_list{"$passwd[0]"} = $passwd[1];
-    push(@user_name_list, $passwd[0]);
-}
-close(FH);
-}
 =cut
+
 #########################################################################
 ### special_user: check whether the user is a special user            ###
 #########################################################################
