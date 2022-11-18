@@ -30,15 +30,15 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 #--- a few settings ....
 ############################
 
-$usint_on = 'yes';                     ##### USINT Version
+#$usint_on = 'yes';                     ##### USINT Version
 #$usint_on = 'no';                      ##### USER Version
-#$usint_on = 'test_yes';                 ##### Test Version USINT
+$usint_on = 'test_yes';                 ##### Test Version USINT
 #$usint_on = 'test_no';                 ##### Test Version USER
 #
 #---- set a name and email address of a test person
 #
-$test_user  = 'isobe';
-$test_email = 'isobe@head.cfa.harvard.edu';
+$test_user  = 'waaron';
+$test_email = 'william.aaron@cfa.harvard.edu';
 
 #$test_user  = 'mta';
 #$test_email = 'isobe@head.cfa.harvard.edu';
@@ -294,7 +294,7 @@ if($change =~ /Change/){
         input_obsid();
 
     }else{
-        print "<h1>Ocat Data Express Approval Page</h1>";
+        print "<h1>Ocat Data Express Approval Page Test</h1>";
         print "<h3>";
         print "On this page, you can approve more than one observations ";
         print " consequently. To use this page, however,  your name must be registered. ";
@@ -582,7 +582,8 @@ sub match_user{
 
 sub input_obsid{
 
-    print "<h2 style='padding-bottom:20px'>Welcome to Express Approval Page.</h2>";
+    print "<h2 style='padding-bottom:20px'>Welcome to Express Approval Page Test.</h2>";
+    print "<h2> Test Ocat Directory: $ocat_dir<h2>";
     print '<h3>Please type all obsids which you want to approve. ';
     print 'You can use <i>comma, colon, semi-colon</i>, "/", or by "  " ';
     print '(&lt;<i> blank space</i>&gt;) to separate them. ';
