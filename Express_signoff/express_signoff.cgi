@@ -182,32 +182,33 @@ close(FH);
 #--- read cookies
 #----------------
 
-$submitter = cookie('submitter');
-$pass_word = cookie('pass_word');
+$submitter = $ENV{REMOTE_USER};
+#$submitter = cookie('submitter');
+#$pass_word = cookie('pass_word');
 
 #-------------------
 #--- de code cookies
 #-------------------
-
+=begin
 foreach $char (@Cookie_Decode_Chars) {
     $submitter  =~ s/$char/$Cookie_Decode_Chars{$char}/g;
     $pass_word  =~ s/$char/$Cookie_Decode_Chars{$char}/g;
 }
-
+=cut
 #-----------------------------------------------
 #---- find out whether there are param passed on
 #-----------------------------------------------
 
-$submitter = param('submitter') || $submitter;
-$pass_word = param('password')  || $pass_word;
+#$submitter = param('submitter') || $submitter;
+#$pass_word = param('password')  || $pass_word;
 
 #-------------------
 #--- refresh cookies
 #-------------------
 
-$en_submitter = $submitter;
-$en_pass_word = $pass_word;
-
+#$en_submitter = $submitter;
+#$en_pass_word = $pass_word;
+=begin
 foreach $char (@Cookie_Encode_Chars) {
     $en_submitter =~ s/$char/$Cookie_Encode_Chars{$char}/g;
     $en_pass_word =~ s/$char/$Cookie_Encode_Chars{$char}/g;
@@ -221,11 +222,12 @@ $pass_cookie = cookie(-name    =>'pass_word',
                       -value   =>"$en_pass_word",
                       -path    =>'/',
                       -expires => '+8h');
-
+=cut
 #-------------------------
 #---- new cookies wrote in
 #-------------------------
 
+#print header(-cookie=>[$user_cookie, $pass_cookie], -type => 'text/html;charset=utf-8');
 print header(-cookie=>[$user_cookie, $pass_cookie], -type => 'text/html;charset=utf-8');
 
 #----------------------------------------------------------------------------------
@@ -282,6 +284,220 @@ if($email_adress !~ /\w/){
 	$email_address = param('email_adress');
 }
 
+#New if-then blocks for page generation without password checks
+
+print_param();
+
+if ($approve !~ /Approve/ && $final !~ /Finalize/ && ($check eq '' || $check =~ /Submit/ || $back =~ /Back to the Previous Page/)){
+	input_obsid();
+
+}elsif($approve =~ /Approve/){
+#
+#--- convert inputted string of obsids list into a list of obsids
+#
+	$temp       = param("obsid_list");
+    @obsid_list = split_string_to_list($temp);
+#
+#--- read which obsids are in the avtive OR list
+#
+	open(IN, "$obs_ss/scheduled_obs_list");
+	@or_list = ();
+	while(<IN>){
+		chomp $_;
+		@mtemp = split(/\s+/, $_);
+		push(@or_list, $mtemp[0]);
+	}
+	close(IN);
+
+	print "<h2 style='padding-top:20px;padding-bottom:10px'>";
+    print "Are you sure to approve the observations of:</h2>";
+	print '<table border=1>';
+	print '<tr><th>OBSID</th>';
+	print '<th>ID</th>';
+	print '<th>Seq #</th>';
+	print '<th>Title</th>';
+	print '<th>Target</th>';
+	print '<th>PI</th>';
+	print '<th>Note</th></tr>';
+
+	$chk_app  = 0;
+	$chk_app2 = 0;
+	$chk_app3 = 0;
+	$mp_warn_list = '';
+	foreach $obsid (@obsid_list){
+		OUTER:
+		foreach $comp (@app_obsid){
+			if($obsid == $comp){
+				$chk_app = 1;
+				$bgcolor='red';
+				last;
+			}
+		}
+		OUTER2:
+		foreach $comp (@or_list){
+			if($obsid == $comp){
+				$chk_app2 = 1;
+				$bgcolor2 = 'yellow';
+				last;
+			}
+		}
+#
+#--- read parameter data from the database
+#
+		read_databases();
+
+		if($si_mode =~ /blank/i || $si_mode =~ /NULL/i || $si_mode eq '' || $si_mode =~ /\s+/){
+			$chk_app3 = 1;
+			$bgcolor  = 'orange';
+		}
+
+		if($usint_on =~ /test/){
+			print "<tr><td style='background-color:$bgcolor'>";
+            print "<a href=\"$test_http/ocatdata2html.cgi?$obsid\" target='_blank'>$obsid</td>";
+
+		}elsif($usint_on =~ /yes/){
+			print "<tr><td style='background-color:$bgcolor'>";
+            print "<a href=\"$usint_http/ocatdata2html.cgi?$obsid\" target='_blank'>$obsid</td>";
+
+		}else{
+			print "<tr><td style='background-color:$bgcolor'>";
+            print "<a href=\"$obs_ss_http/ocatdata2html.cgi?$obsid\" target='_blank'>$obsid</td>";
+		}
+		print "<td style='background-color:$bgcolor'>$targid</td>";
+		print "<td style='background-color:$bgcolor'>$seq_nbr</td>";
+		print "<td style='background-color:$bgcolor'>$proposal_title</td>";
+		print "<td style='background-color:$bgcolor'>$targname</td>";
+		print "<td style='background-color:$bgcolor'>$PI_name</td>";
+
+		if($chk_app  > 0){
+			print "<td style='background-color:$bgcolor'>Already Approved </td></tr>";
+			$chk_app     = 0;
+			$app_warning = 1;
+
+		}elsif($chk_app2 > 0){
+			print "<td style='background-color:$bgcolor2'>in Active OR List</td></tr>";
+			$mp_warn_list = "$mp_warn_list:"."$obsid";
+			$chk_app2     = 0;
+
+		}elsif($chk_app3 > 0){
+			print "<td style='background-color:$bgcolor'>SI Mode Is Not Set</td></tr>";
+			$chk_app     = 0;
+			$app_warning3= 3;
+
+		}else{
+			print "<td>&#160;</td></tr>";
+		}
+		$bgcolor  = 'white';
+		$bgcolor2 = 'white';
+	}
+	print "</table>";
+	
+	print hidden(-name=>'obsid_list',   -value=>"$temp");
+	print hidden(-name=>'mp_warn_list', -value=>"$mp_warn_list");
+
+	print "<div style='padding-bottom:30px;'></div>";
+
+	if($app_warning > 0){
+		print "<h3>The observation marked by<span style='color:red'> ";
+        print "red </span>is already in the approved list. ";
+		print "Please go back and remove it from the list.</h3>";
+	}
+	if($app_warning3 > 0){
+		print "<h3>The observation marked by<span style='color:orange'> ";
+        print "orange </span>is missing SI mode. ";
+		print "Please go back and remove it from the list.</h3>";
+	}
+	if($chk_app == 0 && $chk_app2 == 0 && $chk_app3 == 0){	
+		print '<input type="submit" name="Final" value="Finalize">';
+	}
+
+	print '<br /><br />';
+	print '<input type="submit" name="Back" value="Back to the Previous Page">';
+	
+}elsif($final =~ /Finalize/){
+#
+#--- convert inputted string of obsids list into a list of obsids
+#
+	$temp       = param("obsid_list");
+    @obsid_list = split_string_to_list($temp);
+
+	print "<br /><h3>Approving.....  (it may take a few minutes)</h3>";
+#
+#--- update databases for each obsid as "asis"
+#
+	foreach $obsid(@obsid_list){
+
+		read_databases();                   #--- read parameters
+
+		$asis = 'ASIS';
+		print hidden(-name=>'seq_nbr',-override=>"$seq_nbr", -value=>"$seq_nbr");
+
+		read_name();                        #--- read descriptive name of parameters
+		prep_submit();                      #--- sub to  print a modification check page
+		submit_entry();                     #--- check and submitting the modified input values
+		oredit();                           #---  update approved list etc and send out email
+	}
+#
+#--- if the observation is in an active OR list, send warning to MP
+#
+	$mp_list      = param('mp_warn_list');
+	@atemp        =  split(/:/, $mp_list);
+	@mp_warn_list = ();
+	$chk          = 0;
+	OUTER:
+	foreach $obsid (@atemp){
+		if($obsid =~ /\d/){
+			push(@mp_warn_list, $obsid);
+			$chk++;
+		}
+	}
+	if($chk > 0){
+		send_email_to_mp();
+	}
+#
+#--- check approved obsids is actually in apporved list and send out email to the user
+#
+	check_apporved_list();
+
+#
+#--- notify the user the task is done and display the ending message.
+#
+    print "";
+    print "<h2 style='padding-bottom:15px'>ALL DONE!!</h2>";
+    print "<h3 style='padding-bottom:30px'>You should receive confirmation email shortly.</h3>";
+
+	if($usint_on =~ /test/){
+		if($org_obsid =~ /\d/){
+			print "<h3>Back to <a href=\"$test_http/ocatdata2html.cgi?$org_obsid\">";
+            print "Ocat Data Page (obsid: $org_obsid)</a>";
+		}
+
+        	print "<h3>Back to <a href=\"$test_http/express_signoff.cgi\">";
+            print "Top of Express Approval Page</a></h3>";
+
+	}elsif($usint_on =~ /yes/i){
+
+		if($org_obsid =~ /\d/){
+			print "<h3>Back to <a href=\"$usint_http/ocatdata2html.cgi?$org_obsid\">";
+            print "Ocat Data Page (obsid: $org_obsid)</a></h3>";
+		}
+		print "<h3>Back to <a href=\"$usint_http/express_signoff.cgi\">";
+        print "Top of Express Approval Page</a></h3>";
+        print "<h3>Back to <a href=\"$usint_home/\">USINT Page</a></h3>";
+
+	}else{
+		if($org_obsid =~ /\d/){
+			print "<h3>Back to <a href=\"$obs_ss_http/ocatdata2html.cgi?$org_obsid\">";
+            print "Ocat Data Page (obsid: $org_obsid)</a></h3>";
+		}
+		print "<h3>Back to <a href=\"$obs_ss_http/express_signoff.cgi\">";
+        print "Top of Express Approval Page</a></h3>";
+        print "<h3>Back to <a href=\"$obs_ss_http/\">USINT Page</a></h3>";
+	}
+	exit 1;
+}
+
+=begin
 if($change =~ /Change/){
     password_check();
 }elsif($approve !~ /Approve/ && $final !~ /Finalize/ 
@@ -521,10 +737,27 @@ if($change =~ /Change/){
 	}
 	exit 1;
 }
+=cut
 
 print end_form();
 print "</body>";
 print "</html>";
+
+###########################################################################################################
+### print_param: prints html text of the form parameters for testing purposes. Not necessary beyond testing
+###########################################################################################################
+
+sub print_param{
+	print "<p>Print_param() is Running</p>";
+	if (@param == 0){
+		print "<p>No Form Parameters!</p>";
+	}else{
+		for $i (param()){
+			print "<p>Parameter: $i, Value: ".param($i)."</p>";
+		}
+	}
+}
+
 
 #########################################################################
 ### password_check: open a user - a password input page               ###
@@ -583,6 +816,7 @@ sub match_user{
 sub input_obsid{
 
     print "<h2 style='padding-bottom:20px'>Welcome to Express Approval Page Test.</h2>";
+    print "<h2>Acting User : $submitter</h2>";
     print "<h2> Test Ocat Directory: $ocat_dir<h2>";
     print '<h3>Please type all obsids which you want to approve. ';
     print 'You can use <i>comma, colon, semi-colon</i>, "/", or by "  " ';
