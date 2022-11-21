@@ -703,18 +703,16 @@ close(FH);
 #----------------
 #--- read cookies
 #----------------
-#Sumbitter is overrided from being the REMOTE_USER only if the change_user function is operated, thereby updating cookie.
+#Submitter is overrided from being the REMOTE_USER only if the change_user function is operated, thereby updating cookie.
 $submitter = cookie('submitter') || $ENV{REMOTE_USER};
-#$pass_word = cookie('pass_word');
 #
-$temp_submitter = $submitter;
+
 #-------------------
 #--- decode cookies
 #-------------------
 
 foreach $char (@Cookie_Decode_Chars) {
     $submitter  =~ s/$char/$Cookie_Decode_Chars{$char}/g;
-    #$pass_word  =~ s/$char/$Cookie_Decode_Chars{$char}/g;
 }
 
 #-----------------------------------------------
@@ -722,20 +720,15 @@ foreach $char (@Cookie_Decode_Chars) {
 #-----------------------------------------------
 
 $submitter = param('submitter') || $submitter;
-#$pass_word = param('password')  || $pass_word;
-
-#$pass_word = param('password');
 
 #-------------------
 #--- refresh cookies
 #-------------------
 
 $en_submitter = $submitter;
-#$en_pass_word = $pass_word;
 
 foreach $char (@Cookie_Encode_Chars) {
     $en_submitter   =~ s/$char/$Cookie_Encode_Chars{$char}/g;
-    #$en_pass_word   =~ s/$char/$Cookie_Encode_Chars{$char}/g;
 }
 
 $user_cookie = cookie(-name    => 'submitter',
@@ -743,17 +736,11 @@ $user_cookie = cookie(-name    => 'submitter',
                       -path    => '/',
                       -expires => '+8h');
 
-#$pass_cookie = cookie(-name    => 'pass_word',
-#                      -value   => "$en_pass_word",
-#                      -path    => '/',
-#                      -expires => '+8h');
-
 
 #-------------------------
 #---- new cookies worte in
 #-------------------------
 
-#print header(-cookie=>[$user_cookie, $pass_cookie], -type => 'text/html;  charset=utf-8');
 print header(-cookie=>$user_cookie, -type => 'text/html;  charset=utf-8');
 
 
@@ -905,17 +892,12 @@ if($check eq ''){
 }
 =cut
 if ($check eq ''){
-=removing change user until can do so through apache web server authentication	
-	$chg_user_ind = param('chg_user_ind');
-
-	match_user();	
-	if ($chg_user_ind = 'yes'){
-		password_input();
-	}	
-=cut
 	special_user();
 	pi_check();
 	data_input_page();
+}else{
+	print 'Something wrong. Exit<br/>';
+	exit(1);
 }
 #----------------------------------
 #--- password check finished.
