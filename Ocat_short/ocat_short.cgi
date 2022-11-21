@@ -699,8 +699,8 @@ close(FH);
 #--- read cookies
 #----------------
 
-$submitter = cookie('submitter');
-$pass_word = cookie('pass_word');
+$submitter = cookie('submitter') || $ENV{REMOTE_USER};
+#$pass_word = cookie('pass_word');
 
 #-------------------
 #--- decode cookies
@@ -708,7 +708,7 @@ $pass_word = cookie('pass_word');
 
 foreach $char (@Cookie_Decode_Chars) {
     $submitter  =~ s/$char/$Cookie_Decode_Chars{$char}/g;
-    $pass_word  =~ s/$char/$Cookie_Decode_Chars{$char}/g;
+    #$pass_word  =~ s/$char/$Cookie_Decode_Chars{$char}/g;
 }
 
 #-----------------------------------------------
@@ -716,36 +716,38 @@ foreach $char (@Cookie_Decode_Chars) {
 #-----------------------------------------------
 
 $submitter = param('submitter') || $submitter;
-$pass_word = param('password')  || $pass_word;
+#$pass_word = param('password')  || $pass_word;
 
+$pass_word = param('password');
 #-------------------
 #--- refresh cookies
 #-------------------
 
 $en_submitter = $submitter;
-$en_pass_word = $pass_word;
+#$en_pass_word = $pass_word;
 
 foreach $char (@Cookie_Encode_Chars) {
     $en_submitter   =~ s/$char/$Cookie_Encode_Chars{$char}/g;
-    $en_pass_word   =~ s/$char/$Cookie_Encode_Chars{$char}/g;
+    #$en_pass_word   =~ s/$char/$Cookie_Encode_Chars{$char}/g;
 }
 
 $user_cookie = cookie(-name    => 'submitter',
                       -value   => "$en_submitter",
                       -path    => '/',
                       -expires => '+8h');
-
+=remove password cookie
 $pass_cookie = cookie(-name    => 'pass_word',
                       -value   => "$en_pass_word",
                       -path    => '/',
                       -expires => '+8h');
-
+=cut
 #-------------------------
 #---- new cookies worte in
 #-------------------------
 
-print header(-cookie=>[$user_cookie, $pass_cookie], -type => 'text/html;  charset=utf-8');
+#print header(-cookie=>[$user_cookie, $pass_cookie], -type => 'text/html;  charset=utf-8');
 
+print header(-cookie=>$user_cookie, -type => 'text/html;  charset=utf-8');
 print "<!DOCTYPE html>";
 print "<html>";
 print "<head>";
