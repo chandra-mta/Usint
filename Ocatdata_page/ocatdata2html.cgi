@@ -655,93 +655,9 @@ while(<FH>){
 	}
 }
 
-#-------------------------------
-#---- read a user-password list
-#-------------------------------
+$submitter = $ENV{REMOTE_USER};
 
-open(FH, "<$pass_dir/.htpasswd");
-
-%pwd_list = ();             	#--- save the user-password list
-while(<FH>) {
-    chomp $_;
-    @passwd = split(/:/,$_);
-    $pwd_list{"$passwd[0]"} = $passwd[1];
-    push(@user_name_list, $passwd[0]);
-}
-close(FH);
-
-#---------------------------------------------------
-#---- read cookies for a user name and the password
-#---------------------------------------------------
-
-#-----------------------------------------
-#--- treat special charactors for cookies
-#-----------------------------------------
-
-@Cookie_Encode_Chars = ('\%', '\+', '\;', '\,', '\=', '\&', '\:\:', '\s');
-
-%Cookie_Encode_Chars = ('\%',   '%25',
-            '\+',   '%2B',
-            '\;',   '%3B',
-            '\,',   '%2C',
-            '\=',   '%3D',
-            '\&',   '%26',
-            '\:\:', '%3A%3A',
-            '\s',   '+');
-
-@Cookie_Decode_Chars = ('\+', '\%3A\%3A', '\%26', '\%3D', '\%2C', '\%3B', '\%2B', '\%25');
-
-%Cookie_Decode_Chars = ('\+',       ' ',
-            '\%3A\%3A', '::',
-            '\%26',     '&',
-            '\%3D',     '=',
-            '\%2C',     ',',
-            '\%3B',     ';',
-            '\%2B',     '+',
-            '\%25',     '%');
-
-#----------------
-#--- read cookies
-#----------------
-#Submitter is overrided from being the REMOTE_USER only if the change_user function is operated, thereby updating cookie.
-$submitter = cookie('submitter') || $ENV{REMOTE_USER};
-#
-
-#-------------------
-#--- decode cookies
-#-------------------
-
-foreach $char (@Cookie_Decode_Chars) {
-    $submitter  =~ s/$char/$Cookie_Decode_Chars{$char}/g;
-}
-
-#-----------------------------------------------
-#---- find out whether there are param passed on
-#-----------------------------------------------
-
-$submitter = param('submitter') || $submitter;
-
-#-------------------
-#--- refresh cookies
-#-------------------
-
-$en_submitter = $submitter;
-
-foreach $char (@Cookie_Encode_Chars) {
-    $en_submitter   =~ s/$char/$Cookie_Encode_Chars{$char}/g;
-}
-
-$user_cookie = cookie(-name    => 'submitter',
-                      -value   => "$en_submitter",
-                      -path    => '/',
-                      -expires => '+8h');
-
-
-#-------------------------
-#---- new cookies worte in
-#-------------------------
-
-print header(-cookie=>$user_cookie, -type => 'text/html;  charset=utf-8');
+print header(-type => 'text/html;  charset=utf-8');
 
 
 print "<!DOCTYPE html>";
@@ -849,59 +765,16 @@ $roll_ordr_special = 'no';
 $ordr_special      = 'no';
 $check             = param("Check");			#--- a param which indicates which page to be displayed 
 
-#-------------------------------------------------
-#--------- checking password!
-#-------------------------------------------------
-=begin
-if($check eq ''){
-	$chg_user_ind = param('chg_user_ind');
-	#match_user();               	            #--- sub to check inputed user and password
 
-#---------------------------------------------------------------
-#--------- if a user and a password do not match ask to re-type
-#---------------------------------------------------------------
-	print "<h1>chg_user_ind val: $chg_user_ind \n</h1>";
-	if($chg_user_ind eq 'yes'){
-		password_check();
-
-	}
-	elsif($pass eq '' || $pass eq 'no'){
-    	if(($pass eq 'no') && ($submitter  ne ''|| $pass_word ne '')){
-        	print "<h3 style='color:red'>Name and/or Password are not valid.</h3>";
-    	}
-
-    	password_check();       			    #--- this one create password input page
-
-	}elsif($pass eq 'yes'){ 		    	    #--- ok a user and a password matched
-
-#-------------------------------------------
-#------ check whether s/he is a special user
-#-------------------------------------------
-
-		$sp_user   = 'yes';
-		$access_ok = 'yes';
-       	special_user();			                #--- sub to check whether s/he is a special user
-        pi_check();			                    #--- sub to check whether the pi has an access
-
-        data_input_page();                      #--- sub to display data for edit
-
-	}else{
-    	print 'Something wrong. Exit<br />';
-    	exit(1);
-	}
-}
-=cut
 if ($check eq ''){
-	special_user();
-	pi_check();
-	data_input_page();
+	special_user();			#--- sub to check whether s/he is a special user
+	pi_check();			#--- sub to check whether the pi has an access
+	data_input_page();		#--- sub to display data for edit
 }else{
 	print 'Something wrong. Exit<br/>';
 	exit(1);
 }
-#----------------------------------
-#--- password check finished.
-#----------------------------------
+
 
 pass_param();			                        #--- sub to pass parameters between submitting data
 
@@ -1187,65 +1060,20 @@ print "</html>";
 #---- the main script finishes here. sub-scripts start here.
 #################################################################################################
 
+###########################################################################################################
+### print_param: prints html text of the form parameters for testing purposes. Not necessary beyond testing
+###########################################################################################################
 
-
-#########################################################################
-### password_check: open a user - a password input page               ###
-#########################################################################
-=old version: Remove as ideally we never want the perl cgi script to store passwords as a variable
-sub password_check{
-	print '<h3>Please type your user name and password</h3>';
-    print '<table style="border-width:0px"><tr><th>Name</th><td>';
-    print textfield(-name=>'submitter', -value=>'', -size=>20);
-    print '</td></tr><tr><th>Password</th><td>';
-    print password_field( -name=>'password', -value=>'', -size=>20);
-    print '</td></tr></table><br />';
-
-	print hidden(-name=>'Check', -override=>'', -value=>'');
-    print '<input type="submit" name="Check" value="Submit">';
-}
-=cut
-
-
-#########################################################################
-### match_user: check a user and a password matches                   ###
-#########################################################################
-=Want to avoid having to store passwords as variables. Cutting out function
-sub match_user{
-	if($submitter eq ''){
-    	$submitter = param('submitter');
-    	$submitter =~s/^\s+//g;
-    	$pass_word = param('password');
-    	$pass_word =~s/^\s+//g;
-	}
-	
-	$sp_status = 'no';
-	if($usint_on =~ /yes/){
-		$sp_status = 'yes';
-	}
-	if($pass eq 'yes'){
-		$pass_status = 'match';
+sub print_param{
+	print "<p>Print_param() is Running</p>";
+	if (@param == 0){
+		print "<p>No Form Parameters!</p>";
 	}else{
-    	OUTER:
-    	foreach $test_name (@user_name_list){
-        	$ppwd  = $pwd_list{"$submitter"};
-        	$ptest = crypt("$pass_word","$ppwd");
-	
-        	if(($submitter =~ /$test_name/i) && ($ptest  eq $ppwd)){
-            	$pass_status = 'match';
-            	last OUTER;
-        	}
-    	}
+		for $i (param()){
+			print "<p>Parameter: $i, Value: ".param($i)."</p>";
+		}
 	}
-
-	if(($usint_on =~ /yes/) && ($sp_status eq 'yes') && ($pass_status eq 'match')){
-		$pass = 'yes';
-		print hidden(-name=>'pass', -override=>"$pass", -value=>"$pass");
-    }else{
-        $pass = 'no';
-    }
 }
-=cut
 
 #########################################################################
 ### special_user: check whether the user is a special user            ###
@@ -3474,7 +3302,8 @@ sub data_input_page{
 endofhtml
 
     print '	<h1>Obscat Data Page Test</h1>';
-    #print "<h1>Testing OcatDir: $ocat_dir \n</h1>";
+    print " <h1> Acting User: $submitter</h1>";
+    print_param();
     $schk = 0;
     if(length($soe_st_sched_date) > 0){
         $obs_time = $soe_st_sched_date;
