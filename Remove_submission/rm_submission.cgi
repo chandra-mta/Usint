@@ -1,8 +1,8 @@
-#!/soft/ascds/DS.release/ots/bin/perl
+#!/home/ascds/DS.release/ots/bin/perl
 
 BEGIN
 {
-    $ENV{SYBASE} = "/soft/SYBASE_OCS15.5";
+    $ENV{SYBASE} = "/soft/SYBASE_OCS16.0";
 } 
 
 use CGI qw/:standard :netscape /;
@@ -10,15 +10,16 @@ use CGI qw/:standard :netscape /;
 use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 
 #########################################################################################
-#											#
-# rm_submission.cgi: remove an accidental submission from database			#
-#											#
-# 		Author: t. isobe (tisobe@cfa.harvard.edu)				#
-#		Last Update: Sept 05, 2013 						#
-# This script removes an obsid from database.    	                            	#
-#											#
+#                                           						#
+# rm_submission.cgi: remove an accidental submission from database          		#
+#                                           						#
+# 		Author: t. isobe (tisobe@cfa.harvard.edu)                    		#
+#		Last Update: Sep  21, 2021                              		#
+# This script removes an obsid from database.          	                            	#
+#                                           						#
+# Jul 16, 2022 MS                                                                       #
+# /soft/ascds/DS.release/ots/bin/perl -> /home/ascds/DS.release/ots/bin/perl            #
 #########################################################################################
-
 #
 #---- if this is usint version, set the following param to 'yes', otherwise 'no'
 #
@@ -27,14 +28,10 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 #$usint_on = 'no';                      ##### USER Version
 $usint_on = 'test_yes';                 ##### Test Version USINT
 #$usint_on = 'test_no';                 ##### Test Version USER
-
-
 #
 #---- set directory paths : updated to read from a file (02/25/2011)
 #
 
-#open(IN, '/data/udoc1/ocat/Info_save/dir_list');
-#open(IN, '/proj/web-cxc-dmz/htdocs/mta/CUS/Usint/ocat/Info_save/dir_list');
 open(IN, '/data/mta4/CUS/www/Usint/ocat/Info_save/dir_list');
 
 while(<IN>){
@@ -74,32 +71,25 @@ print "<html>";
 print "<head>";
 print "<title>Obscat Submission Cancellation  Form</title>";
 print "<style  type='text/css'>";
-print "table{text-align:center;margin-left:auto;margin-right:auto;border-style:solid;border-spacing:8px;border-width:2px;border-collapse:separate}";
+print "table{text-align:center;margin-left:auto;margin-right:auto;";
+print "border-style:solid;border-spacing:8px;border-width:2px;border-collapse:separate}";
 print "a:link {color:blue;}";
 print "a:visited {color:teal;}";
 print "</style>";
 print "</head>";
 
-
 print "<body style='color:#000000;background-color:#FFFFE0'>";
 
-
 print start_form();			# starting a form
-
 
 #---------------------------------------------------------------------
 # ----- here are non CXC GTOs who have an access to data modification.
 #---------------------------------------------------------------------
 
-@special_user = ('isobe','mta');
+@special_user = ('lina.pulgarin-duque','mta');
 $no_sp_user = 2;
 
-#######################
-$usint_on = 'yes';
-#$usint_on = 'no';
-#######################
-
-if($usint_on eq 'yes'){
+if($usint_on =~ /yes/i){
         open(FH, "$pass_dir/usint_users");
         while(<FH>){
                 chomp $_;
@@ -128,10 +118,6 @@ while(<FH>) {
 close(FH);
 
 
-#if-then block for removing submission without password checks
-
-
-
 #------------------------------------
 #---- check inputed user and password
 #------------------------------------
@@ -157,7 +143,7 @@ if($pass eq '' || $pass eq 'no'){
 #------ check whether s/he is a special user
 #-------------------------------------------
 
-	if($usint_on eq 'yes'){
+	if($usint_on =~ /yes/i){
 		$sp_user = 'yes';
 	}else{
 		special_user();
@@ -310,6 +296,7 @@ sub remve_submission{
 	print " made parameter changes, and cannot remove that submission.</h3>";
 
 	print "<h3 style='color:red;padding-bottom:10px'>If it is once removed, the change is permanent; be careful to select a correct one</h3>";
+    print "<h3>It may take a while to load the data. Please be patient...</h3>";
 ########
 #	print "<B><A HREF=\"https://cxc.cfa.harvard.edu/cgi-bin/obs_ss/index.html\">Verification Page ";
 #
@@ -325,8 +312,6 @@ sub remve_submission{
 	@revisions = <FILE>;
 	close (FILE);
 	print "<form name=\"update\" Method=\"post\" action=\"https://cxc.cfa.harvard.edu/mta/CUS/Usint/rm_submission.cgi\">";
-#	print "<FORM NAME=\"update\" METHOD=\"post\" ACTION=\"https://cxc.cfa.harvard.edu/cgi-gen/mta/Obscat/rm_submission.cgi\">";
-#	print "<FORM NAME=\"update\" METHOD=\"post\" ACTION=\"https://cxc.cfa.harvard.edu/cgi-bin/obs_ss/rm_submission.cgi\">";
 #####
 
 	print "<div style='text-align:center;margin-left:auto;margin-right;auto;'>";
@@ -339,18 +324,19 @@ sub remve_submission{
 #---------------------------------------------------------
 
 	if($cancelled_line){
-    		@values= split ("\t", $cancelled_line);
-    		$obsrev = $values[0];
-    		@atemp = split(/\./,$obsrev);
-    		$obsid = $atemp[0];
+    		@values         = split ("\t", $cancelled_line);
+    		$obsrev         = $values[0];
+    		@atemp          = split(/\./,$obsrev);
+    		$obsid          = $atemp[0];
     		$general_status = $values[1];
-    		$acis_status = $values[2];
+    		$acis_status    = $values[2];
     		$si_mode_status = $values[3];
-    		$dutysci_status = $values[4];
-    		$seqnum = $values[5];
-    		$user = $values[6];
-    		@atemp = split(/\./,$obsrev);
-    		$tempid = $atemp[0];
+    		$hrc_si_mode_status = $values[4];
+    		$dutysci_status = $values[5];
+    		$seqnum         = $values[6];
+    		$user           = $values[7];
+    		@atemp          = split(/\./,$obsrev);
+    		$tempid         = $atemp[0];
 
 		print "<td>$obsrev<br />$seqnum<br />$ftime<br />$user</td>";
 		print "</td><td style='color:red'>Cancelled</td></tr> ";
@@ -362,18 +348,19 @@ sub remve_submission{
 
 	foreach $line (@revisions){
     		chop $line;
-    		@values= split ("\t", $line);
-    		$obsrev = $values[0];
-    		@atemp = split(/\./,$obsrev);
-    		$obsid = $atemp[0];
+    		@values         = split ("\t", $line);
+    		$obsrev         = $values[0];
+    		@atemp          = split(/\./,$obsrev);
+    		$obsid          = $atemp[0];
     		$general_status = $values[1];
-    		$acis_status = $values[2];
+    		$acis_status    = $values[2];
     		$si_mode_status = $values[3];
-    		$dutysci_status = $values[4];
-    		$seqnum = $values[5];
-    		$user = $values[6];
-    		@atemp = split(/\./,$obsrev);
-    		$tempid = $atemp[0];
+    		$hrc_si_mode_status = $values[4];
+    		$dutysci_status = $values[5];
+    		$seqnum         = $values[6];
+    		$user           = $values[7];
+    		@atemp          = split(/\./,$obsrev);
+    		$tempid         = $atemp[0];
 
 #-------------------------------------------------------------------------
 #---- checking whether a ac_user has a permission to sign off the case.
@@ -393,8 +380,13 @@ sub remve_submission{
 			}
 		}
 
-    		($na0,$na1,$na2,$na3,$na4,$na5,$na6,$na7,$na8,$mtime,$na10,$na11,$na12) 
+            if($usint_on =~ /test/i){
+    		    ($na0,$na1,$na2,$na3,$na4,$na5,$na6,$na7,$na8,$mtime,$na10,$na11,$na12) 
+					= stat "/proj/web-cxc/cgi-gen/mta/Obscat/ocat/updates/$obsrev";
+            }else{
+    		    ($na0,$na1,$na2,$na3,$na4,$na5,$na6,$na7,$na8,$mtime,$na10,$na11,$na12) 
 					= stat "/data/mta4/CUS/www/Usint/ocat/updates/$obsrev";
+            }
 #    		($na0,$na1,$na2,$na3,$na4,$na5,$na6,$na7,$na8,$mtime,$na10,$na11,$na12) 
 #			= stat "/proj/ascwww/AXAF/extra/science/cgi-gen/mta/Obscat/ocat/updates/$obsrev";
 
@@ -404,8 +396,8 @@ sub remve_submission{
     		($t0,$t1,$t2,$t3,$t4,$t5,$t6,$t7,$t8) = localtime($mtime);
 
     		$month = $t4 + 1;
-    		$day = $t3;
-    		$year = $t5 + 1900;
+    		$day   = $t3;
+    		$year  = $t5 + 1900;
     		$ftime ="$month/$day/$year";
 
 #----------------------------------------------------------------------------------------------
@@ -452,6 +444,12 @@ sub remve_submission{
 #----- si mode
 #-------------
 			if ($si_mode_status ne 'NULL' && $si_mode_status ne 'NA'){
+				$rm_permission = 'no';
+			}
+#-------------
+#----- hrc si mode
+#-------------
+			if ($hrc_si_mode_status ne 'NULL' && $hrc_si_mode_status ne 'NA'){
 				$rm_permission = 'no';
 			}
 
@@ -504,14 +502,15 @@ sub update_info {
 	$cancelled_line = '';
 	foreach $newline (@revcopy){
                	chop $newline;
-               	@newvalues= split ("\t", $newline);
-               	$newobsrev = $newvalues[0];
-               	$newgeneral_status = $newvalues[1];
-               	$newacis_status = $newvalues[2];
-               	$newsi_mode_status = $newvalues[3];
-               	$newdutysci_status = $newvalues[4];
-               	$newseqnum = $newvalues[5];
-               	$newuser = $newvalues[6];
+               	@newvalues         = split ("\t", $newline);
+               	$newobsrev         = $newvalues[0];
+               	#$newgeneral_status = $newvalues[1];
+               	#$newacis_status    = $newvalues[2];
+               	#$newsi_mode_status = $newvalues[3];
+               	#$newhrc_si_mode_status = $newvalues[4];
+               	#$newdutysci_status = $newvalues[5];
+               	#$newseqnum         = $newvalues[6];
+               	#$newuser           = $newvalues[7];
 #-------------------------------------------
 #---- there is obs id match, remove the line
 #-------------------------------------------
