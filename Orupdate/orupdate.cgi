@@ -151,9 +151,9 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 #---- if this is usint version, set the following param to 'yes', otherwise 'no'
 #
 
-$usint_on = 'yes';                     ##### USINT Version
+#$usint_on = 'yes';                     ##### USINT Version
 #$usint_on = 'no';                      ##### USER Version
-#$usint_on = 'test_yes';                 ##### Test Version USINT
+$usint_on = 'test_yes';                 ##### Test Version USINT
 #$usint_on = 'test_no';                 ##### Test Version USER
 
 @color_table = ('#E6E6FA', '#F5F5DC', '#FFDAB9', '#90EE90', '#BDB76B',\
@@ -161,8 +161,8 @@ $usint_on = 'yes';                     ##### USINT Version
 #
 #---- set a name and email address of a test person
 #
-$test_user  = 'isobe';
-$test_email = 'isobe@head.cfa.harvard.edu';
+$test_user  = 'waaron';
+$test_email = 'william.aaron@cfa.harvard.edu';
 #
 #--- sot contact email address etc
 #
@@ -208,8 +208,8 @@ if($usint_on =~ /test/i){
 $usint_http   = 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/';      #--- web site for usint users
 $main_http    = 'https://cxc.cfa.harvard.edu/cus/index.html';      #--- USINT page
 $obs_ss_http  = 'https://cxc.cfa.harvard.edu/cgi-bin/obs_ss/';     #--- web site for none usint users (GO Expert etc)
-$test_http    = 'https://cxc.cfa.harvard.edu/mta/CUS/Obscat/';     #--- web site for test
-
+#$test_http    = 'https://cxc.cfa.harvard.edu/mta/CUS/Obscat/';     #--- web site for test
+$test_http    = 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/test_dir'; #--- website for test
 ############################
 #----- end of settings
 ############################
@@ -234,99 +234,8 @@ if($usint_on =~ /yes/){
         }
 }
 
-#------------------------------
-#---- read a user-password list
-#------------------------------
-
-open(FH, "<$pass_dir/.htpasswd");
-
-%pwd_list = ();				# save the user-password list
-while(<FH>) {
-        chomp $_;
-        @passwd                 = split(/:/, $_);
-        $pwd_list{"$passwd[0]"} = $passwd[1];
-
-        push(@user_name_list, $passwd[0]);
-}
-close(FH);
-
-#---------------------------------------------------
-#---- read cookies for a user name and the password
-#---------------------------------------------------
-
-#-----------------------------------------
-#--- treat special charactors for cookies
-#-----------------------------------------
-
-@Cookie_Encode_Chars = ('\%', '\+', '\;', '\,', '\=', '\&', '\:\:', '\s');
-
-%Cookie_Encode_Chars = ('\%',   '%25',
-                        '\+',   '%2B',
-                        '\;',   '%3B',
-                        '\,',   '%2C',
-                        '\=',   '%3D',
-                        '\&',   '%26',
-                        '\:\:', '%3A%3A',
-                        '\s',   '+');
-
-@Cookie_Decode_Chars = ('\+', '\%3A\%3A', '\%26', '\%3D', '\%2C', '\%3B', '\%2B', '\%25');
-
-%Cookie_Decode_Chars = ('\+',       ' ',
-                        '\%3A\%3A', '::',
-                        '\%26',     '&',
-                        '\%3D',     '=',
-                        '\%2C',     ',',
-                        '\%3B',     ';',
-                        '\%2B',     '+',
-                        '\%25',     '%');
-#----------------
-#--- read cookies
-#----------------
-
-$ac_user  = cookie('ac_user');
-$password = cookie('password');
-
-#-------------------
-#--- de code cookies
-#-------------------
-foreach $char (@Cookie_Decode_Chars) {
-        $ac_user   =~ s/$char/$Cookie_Decode_Chars{$char}/g;
-        $password  =~ s/$char/$Cookie_Decode_Chars{$char}/g;
-}
-
-#-----------------------------------------------
-#---- find out whether there are param passed on
-#-----------------------------------------------
-
-$ac_user  = param('ac_user')   || $ac_user;
-$password = param('password')  || $pass_word;
-
-#-------------------
-#--- refresh cookies
-#-------------------
-
-$en_ac_user   = $ac_user;
-$en_pass_word = $password;
-
-foreach $char (@Cookie_Encode_Chars) {
-        $en_ac_user   =~ s/$char/$Cookie_Encode_Chars{$char}/g;
-        $en_pass_word =~ s/$char/$Cookie_Encode_Chars{$char}/g;
-}
-
-$user_cookie = cookie(-name    =>'ac_user',
-                      -value   =>"$en_ac_user",
-                      -path    =>'/',
-                      -expires => '+8h');
-$pass_cookie = cookie(-name    =>'password',
-                      -value   =>"$en_pass_word",
-                      -path    =>'/',
-                      -expires => '+8h');
-
-#-------------------------
-#---- new cookies worte in
-#-------------------------
-
-print header(-cookie=>[$user_cookie, $pass_cookie], -type => 'text/html; charset=utf-8');
+$ac_user = $ENV{REMOTE_USER};
+print header(-type => 'text/html; charset=utf-8');
 
 print "<!DOCTYPE html>";
 print "<html>";
@@ -400,118 +309,42 @@ print "<body style='color:#000000;background-color:#FFFFE0'>";
 #-------------------
 
 print start_form();
+#if-then block for page generation without password checks
 
-#------------------------------------
-#---- check inputed user and password
-#------------------------------------
 
-if($usint_on =~ /yes/){
-	$pass = 'yes';
-}else{
-	match_user();			# this sub match a user to a password
-}
+special_user();
 
-#--------------------------------------------------------------
-#--------- if a user and a password do not match ask to re-type
-#--------------------------------------------------------------
 
-if($pass eq '' || $pass eq 'no'){
-	if(($pass eq 'no') && ($ac_user  ne ''|| $pass_word ne '')){
-		print "<p style='color:red;padding-bottom:20px'>Name and/or ";
-		print "Password are not valid. Please try again.</p>";
-	}
-	password_check();	# this one create password input page
-
-}elsif($pass eq 'yes'){		# ok a user and a password matched
-
-	$sp_user = 'no';
-
-#-------------------------------------------
-#------ check whether s/he is a special user
-#-------------------------------------------
-
-	if($usint_on =~ /yes/){
-		$sp_user = 'yes';
-	}else{
-		special_user();
-	}
-	
 #-------------------------------------------------------
 #----- go to the main part to print a verification page
 #----- check whether there are any changes, if there are
 #----- go into update_info sub to update the table
 #-------------------------------------------------------
 
-	$ap_cnt     = param('ap_cnt');
-	@name_list  = ();
-	@value_list = ();
-	$chk_cnt    = 0;
-	for($k = 0; $k < $ap_cnt; $k++){
-		$name  = param("pass_name.$k");
-		$value = param("$name");
-		push(@name_list,  $name);
-		push(@value_list, $value);
-		if($value =~ /\w/){
-			$chk_cnt++;
-		}
+$ap_cnt     = param('ap_cnt');
+@name_list  = ();
+@value_list = ();
+$chk_cnt    = 0;
+for($k = 0; $k < $ap_cnt; $k++){
+	$name  = param("pass_name.$k");
+	$value = param("$name");
+	push(@name_list,  $name);
+	push(@value_list, $value);
+	if($value =~ /\w/){
+		$chk_cnt++;
 	}
-	if($chk_cnt > 0){
-		update_info();		# this sub update updates_table.list
-	}
-
-	orupdate_main();		# this sub creates and displays a html page
-
-}else{
-	print '<p>Something wrong. Exiting.</p>';
-	exit(1);
 }
+if($chk_cnt > 0){
+	update_info();		# this sub update updates_table.list
+}
+
+orupdate_main();		# this sub creates and displays a html page
+
+
 
 print end_form();
 print end_html();
 
-
-#########################################################################
-### password_check: open a user - a password input page               ###
-#########################################################################
-
-sub password_check{
-	print '<h3>Please type your user name and password</h3>';
-	print '<table style="border-width:0px"><tr><th>Name</th><td>';
-	print textfield(-name=>'ac_user', -value=>'', -size=>20);
-	print '</td></tr><tr><th>Password</th><td>';
-	print password_field( -name=>'password', -value=>'', -size=>20);
-	print '</td></tr></table><br />';
-	
-	print '<input type="submit" name="Check" value="Submit">';
-}
-
-#########################################################################
-### match_user: check a user and a password matches                   ###
-#########################################################################
-
-sub match_user{
-	$ac_user   = param('ac_user');
-	$ac_user   =~ s/^\s+//g; 
-	$pass_word = param('password');
-	$pass_word =~ s/^\s+//g;
-
-	OUTER:
-	foreach $test_name (@user_name_list){
-		$ppwd  = $pwd_list{"$ac_user"};
-		$ptest = crypt("$pass_word","$ppwd");
-
-		if(($ac_user eq $test_name) && ($ptest  eq $ppwd)){
-			$pass_status = 'match';
-			last OUTER;
-		}
-	}
-
-	if($pass_status eq 'match'){
-		$pass = 'yes';
-	}else{
-		$pass = 'no';
-	}
-}
 
 #########################################################################
 ### special_user: check whether the user is a special user            ###
@@ -644,13 +477,7 @@ sub orupdate_main{
 
 $cj      = 0;		#--- counter for the color table 0 - 10.
 
-#-------------------------------------------
-#----- a couple of hidden parameters to pass
-#-------------------------------------------
 
-    $ac_user  = cookie('ac_user');
-	print hidden(-name=>'ac_user',  -value=>"$ac_user");
-	print hidden(-name=>'password', -value=>"$password");
 #
 #--- read CDO warning list--- only large coordinate shift case recorded
 #
@@ -673,8 +500,8 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
 
 	@pass_list = ();
 
-	print "<h1>Target Parameter Update Status Form</h1>";
-
+	print "<h1>Target Parameter Update Status Form Test</h1>";
+	print "<h3> Acting User: $ac_user</h3>";
 	print "<p style='text-align:justify; padding-right:4em'><strong>";
 	print "This form contains all requested updates which ";
     print "have either not been verified or ";

@@ -23,9 +23,9 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 #---- if this is usint version, set the following param to 'yes', otherwise 'no'
 #
 
-$usint_on = 'yes';                     ##### USINT Version
+#$usint_on = 'yes';                     ##### USINT Version
 #$usint_on = 'no';                      ##### USER Version
-#$usint_on = 'test_yes';                 ##### Test Version USINT
+$usint_on = 'test_yes';                 ##### Test Version USINT
 #$usint_on = 'test_no';                 ##### Test Version USER
 
 
@@ -126,6 +126,10 @@ while(<FH>) {
         push(@user_name_list, $passwd[0]);
 }
 close(FH);
+
+
+#if-then block for removing submission without password checks
+
 
 
 #------------------------------------
