@@ -102,52 +102,20 @@ if($usint_on =~ /yes/i){
         }
 }
 
-#------------------------------
-#---- read a user-password list
-#------------------------------
+#if-then blocks for removing submission without password checks from previous version
 
-open(FH, "<$pass_dir/.htpasswd");
-
-%pwd_list = ();				# save the user-password list
-while(<FH>) {
-        chomp $_;
-        @passwd = split(/:/,$_);
-        $pwd_list{"$passwd[0]"} = $passwd[1];
-        push(@user_name_list, $passwd[0]);
-}
-close(FH);
-
-
-#------------------------------------
-#---- check inputed user and password
-#------------------------------------
-
-match_user();			# this sub match a user to a password
-
-#--------------------------------------------------------------
-#--------- if a user and a password do not match ask to re-type
-#--------------------------------------------------------------
-
-if($pass eq '' || $pass eq 'no'){
-	if(($pass eq 'no') && ($ac_user  ne ''|| $pass_word ne '')){
-		print "<h2 style='color:red;padding-bottom:10px'>Name and/or Password are not valid.";
-		print " Please try again.</hr>";
-	}
-	password_check();	# this one create password input page
-
-}elsif($pass eq 'yes'){		# ok a user and a password matched
-
-	$sp_user = 'no';
-
+$sp_user = 'no';
+$ac_user = $ENV{REMOTE_USER};
+$pass = 'yes'; #Defaults variable $pass in case password verification is needed in older versions of functions. Now password is verified outside of script.
 #-------------------------------------------
 #------ check whether s/he is a special user
 #-------------------------------------------
 
-	if($usint_on =~ /yes/i){
-		$sp_user = 'yes';
-	}else{
-		special_user();
-	}
+if($usint_on =~ /yes/i){
+	$sp_user = 'yes';
+}else{
+	special_user();
+}
 	
 #-------------------------------------------------------
 #----- go to the main part to print a verification page
@@ -155,67 +123,17 @@ if($pass eq '' || $pass eq 'no'){
 #----- go into update_info sub to update the table
 #-------------------------------------------------------
 
-	$rm_obsrev = '';
-	$rm_obsrev = param('Remove');
-	if($rm_obsrev){
-		update_info();		# this sub update updates_table.list
-	}
-
-	remve_submission();		# this sub creates a html page
-
-}else{
-	print '<h2 style="color:red">Something wrong. Exiting</h2>';
-	exit(1);
+$rm_obsrev = '';
+$rm_obsrev = param('Remove');
+if($rm_obsrev){
+	update_info();		# this sub update updates_table.list
 }
+remve_submission();		# this sub creates a html page
+
 
 print end_form();
 print "</body>";
 print "</html>";
-
-
-#########################################################################
-### password_check: open a user - a password input page               ###
-#########################################################################
-
-sub password_check{
-	print '<h3>Please type your user name and password</h3>';
-	print '<table><tr><th>Name</th><td>';
-	print textfield(-name=>'ac_user', -value=>'', -size=>20);
-	print '</td></tr><tr><th>Password</th><td>';
-	print password_field( -name=>'password', -value=>'', -size=>20);
-	print '</td></tr></table><br>';
-	
-	print '<input type="submit" name="Check" value="Submit">';
-}
-
-
-#########################################################################
-### match_user: check a user and a password matches                   ###
-#########################################################################
-
-sub match_user{
-	$ac_user = param('ac_user');
-	$ac_user =~s/^\s+//g; 
-	$pass_word = param('password');
-	$pass_word =~s/^\s+//g;
-	OUTER:
-	foreach $test_name (@user_name_list){
-		$ppwd  = $pwd_list{"$ac_user"};
-		$ptest = crypt("$pass_word","$ppwd");
-
-		if(($ac_user eq $test_name) && ($ptest  eq $ppwd)){
-			$pass_status = 'match';
-			last OUTER;
-		}
-	}
-
-	if($pass_status eq 'match'){
-		$pass = 'yes';
-	}else{
-		$pass = 'no';
-	}
-}
-
 
 #########################################################################
 ### special_user: check whether the user is a special user            ###
@@ -289,8 +207,8 @@ sub remve_submission{
 #------------------------------------------------------------------------------------------
 	@pass_list = ();
 
-	print "<h2 style='text-decoration:underline'>Obs Data Submission Cancellation Page</h2>";
-
+	print "<h2 style='text-decoration:underline'>Obs Data Submission Cancellation Page Test</h2>";
+	print "<h3>Acting User: $ac_user</h3>";
 	print "<h3>If you need to remove an accidental submission, please choose the obsid and";
 	print " and click a button from \"Remove\" side. If it says \"NO ACCESS\", it means that someone already";
 	print " made parameter changes, and cannot remove that submission.</h3>";
