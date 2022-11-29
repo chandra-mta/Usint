@@ -627,6 +627,8 @@ $pass      = $atemp[1];
 $submitter = $atemp[2];
 $user      = $atemp[2];
 
+
+
 #-------------------------------------------------------------------
 #---- read approved list, and check whether this obsid is listed.
 #---- if it does, send warning.
@@ -656,6 +658,8 @@ while(<FH>){
 }
 
 $submitter = $ENV{REMOTE_USER};
+
+
 
 print header(-type => 'text/html;  charset=utf-8');
 
@@ -705,6 +709,7 @@ print "</head>";
 
 print "<body style='color:#000000;background-color:#FFFFE0'>";
 
+test_display();
 #---------------------------------------
 #------ read database to get the values
 #---------------------------------------
@@ -1060,18 +1065,40 @@ print "</html>";
 #---- the main script finishes here. sub-scripts start here.
 #################################################################################################
 
-###########################################################################################################
-### print_param: prints html text of the form parameters for testing purposes. Not necessary beyond testing
-###########################################################################################################
 
-sub print_param{
-	print "<p>Print_param() is Running</p>";
-	if (@param == 0){
-		print "<p>No Form Parameters!</p>";
+##############################################################
+### test_display: prints input arguments for testing purposes
+##############################################################
+
+sub test_display{
+	print_ARGV();
+	print_QUERY();
+}
+
+##############################################################
+### print_ARGV: prints system arguments
+##############################################################
+sub print_ARGV{
+
+	print "<p> print_ARGV() is running</p>";
+	if (@ARGV == 0){
+		print "<p>No Interpreted SYS ARGS</p>";
 	}else{
-		for $i (param()){
-			print "<p>Parameter: $i, Value: ".param($i)."</p>";
-		}
+		print "<p> ARGV: ".join(", ",@ARGV)."</p>";
+	}
+}
+#######################################
+### print_QUERY: prints the input query
+#######################################
+#Note that for an input .cgi query. It is registered as html form parameters if an only if the 
+#query is structured around name=value pairs all separated by ampersand &
+
+sub print_QUERY{
+	print "<p> print_QUERY() is running</p>";
+	if ($ENV{QUERY_STRING} == ''){
+		print "<p>Empty Query String</p>";
+	}else{
+		print"<p> QUERY: $ENV{QUERY_STRING}</p>";
 	}
 }
 
@@ -3303,7 +3330,6 @@ endofhtml
 
     print '	<h1>Obscat Data Page Test</h1>';
     print " <h1> Acting User: $submitter</h1>";
-    print_param();
     $schk = 0;
     if(length($soe_st_sched_date) > 0){
         $obs_time = $soe_st_sched_date;
