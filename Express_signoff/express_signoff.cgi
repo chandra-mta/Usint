@@ -137,6 +137,14 @@ if($usint_on =~ /yes/){
 
 $submitter = $ENV{REMOTE_USER};
 
+#
+#---- set a name and email address of a test person
+#
+$test_user  = $submitter;
+$test_email = $test_user.'@head.cfa.harvard.edu';
+
+
+
 print header(-type => 'text/html;charset=utf-8');
 
 #----------------------------------------------------------------------------------
@@ -195,7 +203,6 @@ if($email_adress !~ /\w/){
 
 #New if-then blocks for page generation without password checks
 
-print_param();
 
 if ($approve !~ /Approve/ && $final !~ /Finalize/ && ($check eq '' || $check =~ /Submit/ || $back =~ /Back to the Previous Page/)){
 	input_obsid();
@@ -417,7 +424,7 @@ print "</html>";
 
 sub print_param{
 	print "<p>Print_param() is Running</p>";
-	if (@param == 0){
+	if (param() == 0){
 		print "<p>No Form Parameters!</p>";
 	}else{
 		for $i (param()){
@@ -433,9 +440,12 @@ sub print_param{
 
 sub input_obsid{
 
-    print "<h2 style='padding-bottom:20px'>Welcome to Express Approval Page Test.</h2>";
-    print "<h2>Acting User : $submitter</h2>";
-    print "<h2> Test Ocat Directory: $ocat_dir<h2>";
+    if ($usint_on =~ /test/){
+	print "<h2 style='padding-bottom:20px'>Welcome to Express Approval Page: Test Version</h2>";
+	print "<h3> User: $submitter	----	Directory: $ocat_dir</h3>";
+    }else{	
+	print "<h2 style='padding-bottom:20px'>Welcome to Express Approval Page</h2>";
+    }
     print '<h3>Please type all obsids which you want to approve. ';
     print 'You can use <i>comma, colon, semi-colon</i>, "/", or by "  " ';
     print '(&lt;<i> blank space</i>&gt;) to separate them. ';
@@ -450,11 +460,7 @@ sub input_obsid{
     print '</div>';
 
     print '<hr />';
-    print "<h3 style='padding-top:20px'>If you are not a user  ";
-    print "<span style='color:blue'>$submitter</span>, please change a user name: ";
-    print '<input type="submit" name="Change" value="Change"> </h3>';
 
-    print hidden(-name=>'submitter',-override=>"$submitter", -value=>"$submitter");
 }
 
 ################################################################################

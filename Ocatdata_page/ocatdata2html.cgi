@@ -568,14 +568,7 @@ while(<IN>){
     }
 }
 close(IN);
-#
-#--- if this is a test case, use the first directory, otherwise use the real one
-#
-if($usint_on =~ /test/i){
-	$ocat_dir = $test_dir;
-}else{
-	$ocat_dir = $real_dir;
-}
+
 #
 #--- set html pages
 #
@@ -600,8 +593,14 @@ $cdo_http     = 'https://icxc.cfa.harvard.edu/cgi-bin/cdo/';	    #--- CDO web si
 #------------------------------------------------------------------------
 #--- find obsid requested if there are group id, it may append a new name
 #------------------------------------------------------------------------
+=begin
+@Ltemp = split(":",$ARGV[0]);
+$version = $Ltemp[1];#allows passing an arguement as to whether this is a test version or the real version.
+$temp = $Ltemp[0];
+=cut
 
 $temp  = $ARGV[0];
+
 chomp $temp;
 $temp  =~ s/\s+//g;	
 @atemp = split(/\./, $temp);	
@@ -626,6 +625,16 @@ if($otemp[0] eq '0'){
 $pass      = $atemp[1];
 $submitter = $atemp[2];
 $user      = $atemp[2];
+
+#
+#--- if this is a test case, use the first directory, otherwise use the real one
+#
+
+if($usint_on =~ /test/i){
+	$ocat_dir = $test_dir;
+}else{
+	$ocat_dir = $real_dir;
+}
 
 
 
@@ -658,6 +667,13 @@ while(<FH>){
 }
 
 $submitter = $ENV{REMOTE_USER};
+
+#
+#---- set a name and email address of a test/tech person
+#
+$test_user = $submitter;
+$test_email = $test_user.'@head.cfa.harvard.edu';
+
 
 
 
@@ -709,7 +725,6 @@ print "</head>";
 
 print "<body style='color:#000000;background-color:#FFFFE0'>";
 
-test_display();
 #---------------------------------------
 #------ read database to get the values
 #---------------------------------------
@@ -3327,9 +3342,14 @@ sub data_input_page{
     print <<endofhtml;
 
 endofhtml
+	
+    if ($usint_on =~ /test/){
+	print "<h1> Obscat Data Page: Test Version</h1>";
+	print "<h3> User: $submitter	Directory: $ocat_dir </h3>";
+    }else{
+	print "<h1>Obscat Data Page</h1>";
+    }
 
-    print '	<h1>Obscat Data Page Test</h1>';
-    print " <h1> Acting User: $submitter</h1>";
     $schk = 0;
     if(length($soe_st_sched_date) > 0){
         $obs_time = $soe_st_sched_date;

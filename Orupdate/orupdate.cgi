@@ -235,6 +235,13 @@ if($usint_on =~ /yes/){
 }
 
 $ac_user = $ENV{REMOTE_USER};
+#
+#---- set a name and email address of a test person
+#
+$test_user  = $ac_user;
+$test_email = $test_user.'@head.cfa.harvard.edu';
+
+
 print header(-type => 'text/html; charset=utf-8');
 
 print "<!DOCTYPE html>";
@@ -499,9 +506,12 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
 #------------------------------------------------------------------------------------------
 
 	@pass_list = ();
-
-	print "<h1>Target Parameter Update Status Form Test</h1>";
-	print "<h3> Acting User: $ac_user</h3>";
+	if ($usint_on =~ /test/){
+		print "<h1>Target Parameter Update Status Form: Test Version</h1>";
+		print "<h3> User: $ac_user	---	Directory: $ocat_dir</h3>";
+	}else{
+		print "<h1>Target Parameter Update Status Form</h1>";
+	}
 	print "<p style='text-align:justify; padding-right:4em'><strong>";
 	print "This form contains all requested updates which ";
     print "have either not been verified or ";

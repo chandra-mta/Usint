@@ -206,9 +206,12 @@ sub remve_submission{
 #----@pass_list will hold all editable entries so that we can pass them as parameters later
 #------------------------------------------------------------------------------------------
 	@pass_list = ();
-
-	print "<h2 style='text-decoration:underline'>Obs Data Submission Cancellation Page Test</h2>";
-	print "<h3>Acting User: $ac_user</h3>";
+	if ($usint_on =~ /test/){
+		print "<h2 style='text-decoration:underline'>Obs Data Submission Cancellation Page: Test Version</h2>";
+		print "<h3> User: $ac_user	---	Directory: $ocat_dir</h3>";
+	}else{	
+		print "<h2 style='text-decoration:underline'>Obs Data Submission Cancellation Page</h2>";
+	}
 	print "<h3>If you need to remove an accidental submission, please choose the obsid and";
 	print " and click a button from \"Remove\" side. If it says \"NO ACCESS\", it means that someone already";
 	print " made parameter changes, and cannot remove that submission.</h3>";
@@ -221,7 +224,7 @@ sub remve_submission{
 #	print "Support Observation Search Form</A></B><BR>";
 #	print "<B><A HREF=\"https://cxc.cfa.harvard.edu/~mta/CUS/\">Chandra Uplink Support Organizational Page";
 	print '<p>';
-	print "<strong><a href=\"https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi\">Back to Target Parameter Update Status Form</a></strong>";
+	print "<strong><a href=\"https://cxc.cfa.harvard.edu/mta/CUS/Usint/test_dir/orupdate.cgi\">Back to Target Parameter Update Status Form</a></strong>";
 	print '</p>';
 ########
 

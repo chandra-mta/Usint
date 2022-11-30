@@ -656,6 +656,14 @@ while(<FH>){
 
 $submitter = $ENV{REMOTE_USER};
 
+#
+#---- set a name and email address of a test/tech person
+#
+$test_user  = $submitter;
+$test_email = $test_user.'@head.cfa.harvard.edu';
+
+
+
 print header(-type => 'text/html;  charset=utf-8');
 
 print "<!DOCTYPE html>";
@@ -3288,11 +3296,13 @@ sub data_input_page{
     print <<endofhtml;
 
 endofhtml
-
-    print '	<h1>Obscat Data Page Test</h1>';
-    print "<h3> Acting User: $submitter</h3>";
-
-    $schk = 0;
+    if ($usint_on =~ /test/){
+	print "<h1>Obscat Data Page: Test Version</h1>";
+	print "<h3> User: $submitter	Directory: $ocat_dir</h3>";
+    }else{
+	print "<h1> Obscat Data Page</h1.";
+    }
+       $schk = 0;
     if(length($soe_st_sched_date) > 0){
         $obs_time = $soe_st_sched_date;
         $schk = 1;
