@@ -159,11 +159,6 @@ $usint_on = 'test_yes';                 ##### Test Version USINT
 @color_table = ('#E6E6FA', '#F5F5DC', '#FFDAB9', '#90EE90', '#BDB76B',\
                 '#DDA0DD', '#808000', '#FF69B4', '#9ACD32', '#6A5ACD', '#228B22');
 #
-#---- set a name and email address of a test person
-#
-$test_user  = 'waaron';
-$test_email = 'william.aaron@cfa.harvard.edu';
-#
 #--- sot contact email address etc
 #
 $sot_contact = 'bwargelin@head.cfa.harvard.edu';
@@ -1722,7 +1717,7 @@ sub update_info {
 #
 #						if($usint_on =~ /test/){
 #							$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
-#							$cmd = "$cmd"."Subject: TOO ACIS Status Signed Off Request: ";
+#							$cmd = "$cmd"."Subject: TEST!! TOO ACIS Status Signed Off Request: ";
 #							$cmd = "$cmd"."OBSID: $newobsid\n\" -rcus\@head.cfa.harvard.edu ";
 #							$cmd = "$cmd"." $test_email";
 #							system($cmd);
@@ -1755,7 +1750,7 @@ sub update_info {
 	
 							if($usint_on =~ /test/){
                                 $cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: TOO SI Status Signed Off Request: OBSID: ";
+                                $cmd = "$cmd"."Subject: TEST!! TOO SI Status Signed Off Request: OBSID: ";
                                 $cmd = "$cmd"." $newobsid\"  $test_email";
 								system($cmd);
 
@@ -1792,7 +1787,7 @@ sub update_info {
 							if($usint_on =~ /test/){
                 
 								$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: TOO Verification Signed Off Request: OBSID: ";
+                                $cmd = "$cmd"."Subject: TEST!! TOO Verification Signed Off Request: OBSID: ";
                                 $cmd = "$cmd"."$newobsid\"  $test_email";
                                 system($cmd);
 
@@ -1987,7 +1982,7 @@ sub update_info {
 	
 							if($usint_on =~ /test/){
 								$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: TOO Verification Signed Off Request: OBSID: ";
+                                $cmd = "$cmd"."Subject: TEST!! TOO Verification Signed Off Request: OBSID: ";
                                 $cmd = "$cmd"."$newobsid\"  $test_email";
                                 system($cmd);
 							}else{
@@ -2063,7 +2058,7 @@ sub update_info {
 	
 							if($usint_on =~ /test/){
 								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: DDT SI Status Signed Off Request: OBSID: ";
+                                $cmd = "$cmd"."Subject: TEST!! DDT SI Status Signed Off Request: OBSID: ";
                                 $cmd = "$cmd"."$newobsid\"  $test_email";
                                 system($cmd);
 
@@ -2100,7 +2095,7 @@ sub update_info {
 	
 							if($usint_on =~ /test/){
 								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: DDT Verification Signed Off Request: OBSID: ";
+                                $cmd = "$cmd"."Subject: TEST!! DDT Verification Signed Off Request: OBSID: ";
                                 $cmd = "$cmd"."$newobsid\"  $test_email";
                                 system($cmd);
 
@@ -2298,7 +2293,7 @@ sub update_info {
 	
 							if($usint_on =~ /test/){
 								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: DDT Verification Signed Off Request: OBSID: ";
+                                $cmd = "$cmd"."Subject: TEST!! DDT Verification Signed Off Request: OBSID: ";
                                 $cmd = "$cmd"."$newobsid\"  $test_email";
                                 system($cmd);
 
@@ -2418,7 +2413,7 @@ sub update_info {
 			        if(${si_sign.$e_id} > 0){
 				        if($usint_on =~ /test/){
 			                $cmd = "cat $temp_dir/si_mail.$e_id.tmp |mailx -s\"";
-                            $cmd = "$cmd"."Subject: Signed Off Notice\" ";
+                            $cmd = "$cmd"."Subject: TEST!! Signed Off Notice\" ";
                             $cmd = "$cmd"."-rcus\@head.cfa.harvard.edu  $test_email";
                             system($cmd);
 
@@ -2448,7 +2443,7 @@ sub update_info {
                     if(${last_sign.$e_id} > 0 ){
 			            if($usint_on =~ /test/){
  	                        $cmd = "cat $temp_dir/dutysci_mail.$e_id.tmp |mailx -s\"";
-                            $cmd = "$cmd"."Subject: Signed Off Notice\" ";
+                            $cmd = "$cmd"."Subject: TEST!! Signed Off Notice\" ";
                             $cmd = "$cmd"."-rcus\@head.cfa.harvard.edu  $test_email";
                             system($cmd);
 
@@ -4457,7 +4452,7 @@ sub oredit{
 #---------------------------#
 
     if($usint_on =~ /test/){
-        #system("cat $temp_dir/ormail_$obsid.tmp| tr -d '\015'  |mailx -s\"Subject:TEST!! \
+        #system("cat $temp_dir/ormail_$obsid.tmp| tr -d '\015'  |mailx -s\"Subject: TEST!! \
         #    Parameter Changes (Approved) log  $obsid.$rev\n\" $test_email");
     }else{
         #system("cat $temp_dir/ormail_$obsid.tmp| tr -d '\015'  |mailx -s\"Subject: \
@@ -4823,7 +4818,7 @@ sub send_email_to_mp{
 
 	if($usint_on =~ /test/){
     	$cmd = "cat $temp_file | mailx -s\"";
-        $cmd = "$cmd"."Subject: Change to Obsids Which Is in Active OR List ";
+        $cmd = "$cmd"."Subject: TEST!! Change to Obsids Which Is in Active OR List ";
         $cmd = "$cmd"."($mp_email)\"  $test_email";
         system($cmd);
 	}else{
@@ -4891,7 +4886,7 @@ sub check_apporved_list{
 
 	if($usint_on =~ /test/i){
 		$cmd = "cat $temp_dir/alist.tmp |mailx -s\"";
-        $cmd = "$cmd"."Subject: Approved Obsids by  $email_address \"  $test_email";
+        $cmd = "$cmd"."Subject: TEST!! Approved Obsids by  $email_address \"  $test_email";
         system($cmd);
 	}else{
 		$cmd = "cat $temp_dir/alist.tmp |mailx -s\"";

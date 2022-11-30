@@ -526,11 +526,6 @@ $blank2 = '<Blank>';
 #$usint_on = 'yes';			##### USINT Version
 $usint_on = 'test_yes';			##### Test Version USINT
 #
-#---- set a name and email address of a test/tech person
-#
-$test_user = 'waaron';
-$test_email = 'waaron@head.cfa.harvard.edu';
-#
 #--- admin contact email address
 #
 $sot_contact = 'bwargelin@head.cfa.harvard.edu';
@@ -9782,7 +9777,7 @@ sub send_email_to_mp{
 	
 
 	if($usint_on =~ /test/){
-        $cmd = "cat $temp_file | mailx -s\"Subject:TEST!! Change to ";
+        $cmd = "cat $temp_file | mailx -s\"Subject: TEST!! Change to ";
         $cmd = "$cmd"."Obsid $obsid Which Is in Active OR List ($mp_email)\" $test_email";
 		system($cmd);
 	}else{
@@ -9878,7 +9873,7 @@ sub send_email_to_cdo{
 	close(ZOUT);
 
 	if($usint_on =~ /test/){
-        $cmd = "cat $temp_file | mailx -s\"Subject:TEST!! Change to ";
+        $cmd = "cat $temp_file | mailx -s\"Subject: TEST!! Change to ";
         $cmd = "$cmd"."Obsid $obsid Which Requires CDO Approval ($cdo_email)\" $test_email";
 		system($cmd);
 	}else{
@@ -9968,7 +9963,7 @@ sub send_email_to_mp{
 	close(ZOUT);
 
 	if($usint_on =~ /test/){
-        $cmd = "cat $temp_file | mailx -s\"Subject:TEST!! Change to ";
+        $cmd = "cat $temp_file | mailx -s\"Subject: TEST!! Change to ";
         $cmd = "$cmd"."Obsid $obsid Which Requires MP Approval ($mp_email)\" $test_email";
 		system($cmd);
 	}else{
@@ -10258,7 +10253,7 @@ sub oredit_sub{
 			close(ASIS);
 
 			if($usint_on =~ /test/){
-                $cmd = "cat $temp_dir/asis.$sf| tr -d '\015'  |mailx -s\"Subject:TEST!!  ";
+                $cmd = "cat $temp_dir/asis.$sf| tr -d '\015'  |mailx -s\"Subject: TEST!!  ";
                 $cmd = "$cmd"."$obsid is approved\" $test_email";
 				system($cmd);
 			}else{
@@ -10269,7 +10264,7 @@ sub oredit_sub{
 			system("rm $temp_dir/asis.$sf");
 		}else{
 			if($usint_on =~ /test/){
-                $cmd = "cat $temp_dir/ormail_$obsid.$sf| tr -d '\015'  |mailx -s\"Subject:TEST!! ";
+                $cmd = "cat $temp_dir/ormail_$obsid.$sf| tr -d '\015'  |mailx -s\"Subject: TEST!! ";
                 $cmd = "$cmd"."Parameter Changes (Approved) log  $obsid.$rev\" $test_email";
 				system($cmd);
 			}else{
@@ -10287,7 +10282,7 @@ sub oredit_sub{
 			close(USER);
 
 			if($usint_on =~ /test/){
-                $cmd = "cat $temp_dir/user.$sf| tr -d '\015'  |mailx -s\"Subject:TEST!!  ";
+                $cmd = "cat $temp_dir/user.$sf| tr -d '\015'  |mailx -s\"Subject: TEST!!  ";
                 $cmd = "$cmd"."Parameter Changes log  $obsid.$rev\n\"  $test_email";
 				system($cmd);
 			}else{
@@ -10298,7 +10293,7 @@ sub oredit_sub{
 			system("rm $temp_dir/user.$sf");
 		}else{
 			if($usint_on =~ /test/){
-                $cmd = "cat $temp_dir/ormail_$obsid.$sf| tr -d '\015'  |mailx -s\"Subject:TEST!! ";
+                $cmd = "cat $temp_dir/ormail_$obsid.$sf| tr -d '\015'  |mailx -s\"Subject: TEST!! ";
                 $cmd = "$cmd"."Parameter Changes log  $obsid.$rev\" $test_email";
 				system($cmd);
 			}else{
@@ -10309,7 +10304,7 @@ sub oredit_sub{
 		}
 
 		if($usint_on =~ /test/){
-            $cmd = "cat $temp_dir/ormail_$obsid.$sf| tr -d '\015'  |mailx -s\"Subject:TEST!! ";
+            $cmd = "cat $temp_dir/ormail_$obsid.$sf| tr -d '\015'  |mailx -s\"Subject: TEST!! ";
             $cmd = "$cmd"."Parameter Changes log  $obsid.$rev\" $test_email";
 			system($cmd);
 		}else{
@@ -10541,7 +10536,7 @@ sub send_lt_warning_email{
 
 
 	if($usint_on =~ /test/){
-        $cmd = "cat $temp_file | mailx -s\"Subject:TEST!! Change to Obsid $dobsid ";
+        $cmd = "cat $temp_file | mailx -s\"Subject: TEST!! Change to Obsid $dobsid ";
         $cmd = "$cmd"."Which Is Scheduled in $dsot_diff days ($mp_email)\" $test_email";
 		system($cmd);
 	}else{
@@ -10646,7 +10641,7 @@ sub send_lt_warning_email2{
     close(ZOUT);
     
     if($usint_on =~ /test/){
-        $cmd = "cat $temp_file | mailx -s\"Subject:TEST!! Change to Obsid $dobsid ";
+        $cmd = "cat $temp_file | mailx -s\"Subject: TEST!! Change to Obsid $dobsid ";
         $cmd = "$cmd"."Which Is Scheduled in $dsot_diff days ($email_address)\" $test_email";
         system($cmd);
     }else{

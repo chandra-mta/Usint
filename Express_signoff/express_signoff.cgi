@@ -34,17 +34,7 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 #$usint_on = 'no';                      ##### USER Version
 $usint_on = 'test_yes';                 ##### Test Version USINT
 #$usint_on = 'test_no';                 ##### Test Version USER
-#
-#---- set a name and email address of a test person
-#
-$test_user  = 'waaron';
-$test_email = 'william.aaron@cfa.harvard.edu';
 
-#$test_user  = 'mta';
-#$test_email = 'isobe@head.cfa.harvard.edu';
-
-#$test_user  = 'bwargelin';
-#$test_email = 'bwargelin@head.cfa.harvard.edu';
 #
 #---- set directory paths : updated to read from a file (02/25/2011)
 #
@@ -2564,7 +2554,7 @@ $send_email = 'yes';
 			print ASIS "$obsid is approved for flight. Thank you \n";
 			close(ASIS);
 
-			if($unint_on =~ /test/){
+			if($usint_on =~ /test/){
                 $cmd = "cat $temp_dir/asis.tmp |mailx -s\"Subject:  TEST!! ";
                 $cmd = "$cmd"."$obsid is approved\"  $test_email";
 			    system($cmd);
@@ -2580,7 +2570,7 @@ $send_email = 'yes';
 
 		}else{
 
-			if($unint_on =~ /test/){
+			if($usint_on =~ /test/){
                 $cmd = "cat $temp_dir/ormail_$obsid.tmp |mailx -s\"Subject: TEST!! ";
                 $cmd = "$cmd"."Parameter Changes (Approved) log  $obsid.$rev\"  $test_email";
 			    system($cmd);
@@ -3073,7 +3063,7 @@ sub send_email_to_mp{
     $mp_email = "$mp_contact".'@head.cfa.harvard.edu';
 
 	if($usint_on =~ /test/){
-        $cmd = "cat $temp_file | mailx -s\"Subject: Change to Obsids Which ";
+        $cmd = "cat $temp_file | mailx -s\"Subject: TEST!! Change to Obsids Which ";
         $cmd = "$cmd"."Is in Active OR List ($mp_email)\"  $test_email";
     	system($cmd);
 
@@ -3136,7 +3126,7 @@ sub check_apporved_list{
 	}
 
 	if($usint_on =~ /test/i){
-        $cmd = "cat $temp_dir/alist.tmp |mailx -s\"Subject: Approved Obsids ";
+        $cmd = "cat $temp_dir/alist.tmp |mailx -s\"Subject: TEST!! Approved Obsids ";
         $cmd = "$cmd"."by $email_address \"  $test_email";
 		system($cmd);
 	}else{
