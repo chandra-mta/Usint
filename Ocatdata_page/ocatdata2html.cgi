@@ -645,11 +645,6 @@ $prev_app      = 0;
 #----- here are non CXC GTOs who have an access to data modification.
 #--------------------------------------------------------------------
 
-$no_sp_user    = 2;				#--- number of special users
-
-@special_user  = ("$test_user",  'mta');
-@special_email = ("$test_email", "$test_email");
-
 open(FH, "$pass_dir/usint_users");
 while(<FH>){
 	chomp $_;
@@ -668,6 +663,11 @@ $submitter = $ENV{REMOTE_USER};
 #
 $test_user = $submitter;
 $test_email = $test_user.'@head.cfa.harvard.edu';
+
+$no_sp_user    = 2;				#--- number of special users
+
+@special_user  = ("$test_user",  'mta');
+@special_email = ("$test_email", "$test_email");
 
 
 
@@ -781,13 +781,14 @@ $ordr_special      = 'no';
 $check             = param("Check");			#--- a param which indicates which page to be displayed 
 
 
+
 if ($check eq ''){
+	$sp_user = 'yes';
+	$access_ok = 'yes';
 	special_user();			#--- sub to check whether s/he is a special user
 	pi_check();			#--- sub to check whether the pi has an access
 	data_input_page();		#--- sub to display data for edit
-}else{
-	print 'Something wrong. Exit<br/>';
-	exit(1);
+	
 }
 
 
@@ -796,6 +797,7 @@ pass_param();			                        #--- sub to pass parameters between subm
 #-------------------------------------------------------------------------
 #--- only if a user can access to the observation data, s/he can go futher
 #-------------------------------------------------------------------------
+
 
 if($access_ok eq 'yes'){	
 
@@ -1083,6 +1085,7 @@ print "</html>";
 sub test_display{
 	print_ARGV();
 	print_QUERY();
+	print_FORM();
 }
 
 ##############################################################
@@ -1109,6 +1112,23 @@ sub print_QUERY{
 		print "<p>Empty Query String</p>";
 	}else{
 		print"<p> QUERY: $ENV{QUERY_STRING}</p>";
+	}
+}
+
+###############################################
+### print_FORM: prints the HTML form parameters
+###############################################
+#For testing purposes. Not needed for function of script
+
+sub print_FORM{
+	print"<p> print_FORM() is running</p>";
+	@param = param();
+	if (@param == 0){
+		print"<p>No Form Parameters</p>";
+	}else{
+		for (@param){
+			print"<p> Param: $_,  Value: ".param($_)."</p>";
+		}
 	}
 }
 
