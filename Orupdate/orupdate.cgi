@@ -859,6 +859,8 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
 
 			if($usint_on =~  /no/){
 				print "<a href=\"$obs_ss_http/chkupdata.cgi";
+			}elsif ($usint_on =~ /test/){
+				print "<a href=\"$test_http/chkupdata.cgi";
 			}else{
 				print "<a href=\"$usint_http/chkupdata.cgi";
 			}

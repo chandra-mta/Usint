@@ -54,8 +54,8 @@ while(<IN>){
 close(IN);
 
 ###############################
-$dtest = 0;
-#$dtest = 1;      #---- this is a test case. 
+#$dtest = 0;
+$dtest = 1;      #---- this is a test case. 
 ###############################
 
 if($dtest == 1){
