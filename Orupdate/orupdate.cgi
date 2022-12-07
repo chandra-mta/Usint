@@ -142,6 +142,9 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 # T. Isobe Sep. 20, 2021                                                                #
 # a couple more cosmetic updates                                                        #
 #                                                                                       #
+# T. Isobe Oct 04, 2021                                                                 #
+#  a bug to find the highest rev # for a given obsid fixed                              #
+#                                                                                       #
 #########################################################################################
 
 ###############################################################################
@@ -314,7 +317,14 @@ print start_form();
 #if-then block for page generation without password checks
 
 
-special_user();
+print hidden(-name=>'ac_user',  -value=>"$ac_user");
+$pass = 'yes';
+$sp_user = 'no';
+if ($usint_on =~ /yes/){
+	$sp_user = 'yes';
+}else{
+	special_user();
+}
 
 
 #-------------------------------------------------------
@@ -479,7 +489,7 @@ sub orupdate_main{
 
 $cj      = 0;		#--- counter for the color table 0 - 10.
 
-
+print hidden(-name=>'ac_user', -value=>"$ac_user"); #Passed on just in case it's pulled by other scripts, but no longer necessary for this script.
 #
 #--- read CDO warning list--- only large coordinate shift case recorded
 #
@@ -1201,7 +1211,7 @@ sub check_obsid_in_approve{
     if($usint_on eq 'yes'){
         open(FH, "/data/mta4/CUS/www/Usint/ocat/approved");
     }else{
-        open(FH, "/proj/web-cxc-dmz/cgi-gen/mta/Obscat/ocat/approved");
+        open(FH, "/proj/web-cxc/cgi-gen/mta/Obscat/ocat/approved");
     }
     while(<FH>){
         chomp $_;
@@ -4981,16 +4991,19 @@ sub find_highest_rev{
     if($usint_on eq 'yes'){
         open(FH, '/data/mta4/CUS/www/Usint/ocat/updates_table.list');
     }else{
-        open(FH, '/proj/web-cxc-dmz/cgi-gen/mta/Obscat/ocat/updates_table.list');
+        open(FH, '/proj/web-cxc/cgi-gen/mta/Obscat/ocat/updates_table.list');
     }
     @save = ();
     $cnt  = 0;
     while(<FH>){
         chomp $_;
         if($_ =~ /$obsid/){
-            @atemp = split(/\./, $_);
-            push(@save, $atemp[1]);
-            $cnt++;
+            @atemp = split(/\s+/, $_);
+            @btemp = split(/\./,  $atemp[0]);
+            if($btemp[0] == $obsid){
+                push(@save, $btemp[1]);
+                $cnt++;
+            }
         }
     }
     close(FH);
