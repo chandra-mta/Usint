@@ -645,16 +645,6 @@ $prev_app      = 0;
 #----- here are non CXC GTOs who have an access to data modification.
 #--------------------------------------------------------------------
 
-open(FH, "$pass_dir/usint_users");
-while(<FH>){
-	chomp $_;
-	@atemp = split(//,$_);
-	if($atemp[0] ne '#'){
-		@btemp = split(/\s+/,$_);
-		push(@special_user,  $btemp[0]);
-		push(@special_email, $btemp[1]);
-	}
-}
 
 $submitter = $ENV{REMOTE_USER};
 
@@ -669,7 +659,16 @@ $no_sp_user    = 2;				#--- number of special users
 @special_user  = ("$test_user",  'mta');
 @special_email = ("$test_email", "$test_email");
 
-
+open(FH, "$pass_dir/usint_users");
+while(<FH>){
+	chomp $_;
+	@atemp = split(//,$_);
+	if($atemp[0] ne '#'){
+		@btemp = split(/\s+/,$_);
+		push(@special_user,  $btemp[0]);
+		push(@special_email, $btemp[1]);
+	}
+}
 
 
 print header(-type => 'text/html;  charset=utf-8');
@@ -797,7 +796,6 @@ pass_param();			                        #--- sub to pass parameters between subm
 #-------------------------------------------------------------------------
 #--- only if a user can access to the observation data, s/he can go futher
 #-------------------------------------------------------------------------
-
 
 if($access_ok eq 'yes'){	
 

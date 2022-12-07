@@ -450,7 +450,11 @@ sub input_obsid{
     print '</div>';
 
     print '<hr />';
+    print "<h3 style='padding-top:20px'>If you are not a user  ";
+    print "<span style='color:blue'>$submitter</span>, please change a user name: ";
+    print '<input type="submit" name="Change" value="Change"> </h3>';
 
+    print hidden(-name=>'submitter',-override=>"$submitter", -value=>"$submitter");
 }
 
 ################################################################################
@@ -2429,9 +2433,10 @@ sub oredit{
 
     $dutysci_status = "NA";
 
-  	$general_status = "NULL";			        #--- these are for the status verification page
-    $acis_status    = "NULL";			        #--- orupdate.cgi
-    $si_mode_status = "NULL";
+#  	$general_status = "NULL";			        #--- these are for the status verification page
+#    $acis_status    = "NULL";			        #--- orupdate.cgi
+#    $si_mode_status = "NULL";
+#    $hrc_si_mode_status = "NULL";
 
 	$dutysci_status = "$dutysci $date";
 	
@@ -2502,7 +2507,8 @@ sub oredit{
             $lpass = 1;
 
             flock($update, LOCK_EX) or die "died while trying to lock the file<br />\n";
-            print $update "$obsid.$rev\tNULL\tNULL\tNULL\t$dutysci_status\t$seq_nbr\t$dutysci\n";
+            print $update "$obsid.$rev\tNULL\tNULL\tNULL\tNULL\t$dutysci_status\t$seq_nbr\t$dutysci\n";
+#--- UPDATED 06/24/21
             close $update;
 
 #---------------------
