@@ -449,12 +449,6 @@ sub input_obsid{
     print '<input type="submit" name="Approve" value="Approve">';
     print '</div>';
 
-    print '<hr />';
-    print "<h3 style='padding-top:20px'>If you are not a user  ";
-    print "<span style='color:blue'>$submitter</span>, please change a user name: ";
-    print '<input type="submit" name="Change" value="Change"> </h3>';
-
-    print hidden(-name=>'submitter',-override=>"$submitter", -value=>"$submitter");
 }
 
 ################################################################################
@@ -3133,7 +3127,7 @@ sub check_apporved_list{
 
 	if($usint_on =~ /test/i){
         $cmd = "cat $temp_dir/alist.tmp |mailx -s\"Subject: TEST!! Approved Obsids ";
-        $cmd = "$cmd"."by $email_address \"  $test_email";
+        $cmd = "$cmd"."by $test_email \"  $test_email";
 		system($cmd);
 	}else{
         $cmd = "cat $temp_dir/alist.tmp |mailx -s\"Subject: Approved Obsids ";

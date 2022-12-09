@@ -20,6 +20,9 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 # Jul 16, 2022 MS                                                                       #
 # /soft/ascds/DS.release/ots/bin/perl -> /home/ascds/DS.release/ots/bin/perl            #
 #########################################################################################
+
+$sot_contact = 'waaron@head.cfa.harvard.edu';
+
 #
 #---- if this is usint version, set the following param to 'yes', otherwise 'no'
 #
@@ -132,6 +135,16 @@ remve_submission();		# this sub creates a html page
 
 
 print end_form();
+
+print '<hr>';
+print '<p style="padding-top:5px; padding-bottom:20px;">';
+print 'If you have any questions, please contact: ';
+print "<a href='mailto:$sot_contact'>$sot_contact</a>.";
+print '<br>';
+print '<em>Last Update: Dec 09, 2022</em>';
+print '</p>';
+
+
 print "</body>";
 print "</html>";
 

@@ -15,11 +15,11 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 
 #################################################################################
 #                                                                               #
-#   ocatdat2html_lite.cgi: smaller version of ocatdata2html.cgi                 #
+#       ocatdata2html.cgi: smaller version of ocatdata2html.cgi                 #
 #                                                                               #
 #       author: t. isobe (tisobe@cfa.harvard.edu)                               #
 #                                                                               #
-#       last update: Sep 21, 2021                                               #
+#       last update: Dec 09, 2022                                               #
 #                                                                               #
 #################################################################################
 
@@ -528,7 +528,7 @@ $usint_on = 'test_yes';			##### Test Version USINT
 #
 #--- admin contact email address
 #
-$sot_contact = 'bwargelin@head.cfa.harvard.edu';
+$sot_contact = 'waaron@head.cfa.harvard.edu';
 $cus_email   = 'cus@head.cfa.harvard.edu';
 #
 #--- mp contact email address
@@ -588,12 +588,6 @@ $cdo_http     = 'https://icxc.cfa.harvard.edu/cgi-bin/cdo/';	    #--- CDO web si
 #------------------------------------------------------------------------
 #--- find obsid requested if there are group id, it may append a new name
 #------------------------------------------------------------------------
-=begin
-@Ltemp = split(":",$ARGV[0]);
-$version = $Ltemp[1];#allows passing an arguement as to whether this is a test version or the real version.
-$temp = $Ltemp[0];
-=cut
-
 $temp  = $ARGV[0];
 
 chomp $temp;
@@ -5399,9 +5393,9 @@ endofhtml
     print '<hr>';
     print '<p style="padding-top:5px; padding-bottom:20px;">';
     print 'If you have any questions, please contact: ';
-    print '<a href="mailto:bwargelin@head.cfa.harvard.edu">bwargelin@head.cfa.harvard.edu</a>.';
+    print "<a href='mailto:$sot_contact'>$sot_contact</a>.";
     print '<br>';
-    print '<em>Last Update: Oct 29, 2020</em>';
+    print '<em>Last Update: Dec 09, 2022</em>';
     print '</p>';
 
 }           #---- end of sub "data_input_page"

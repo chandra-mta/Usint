@@ -164,7 +164,7 @@ $usint_on = 'test_yes';                 ##### Test Version USINT
 #
 #--- sot contact email address etc
 #
-$sot_contact = 'bwargelin@head.cfa.harvard.edu';
+$sot_contact = 'waaron@head.cfa.harvard.edu';
 $cus_email   = 'cus@head.cfa.harvard.edu';
 #
 #---- set directory pathes
@@ -592,6 +592,8 @@ print hidden(-name=>'ac_user', -value=>"$ac_user"); #Passed on just in case it's
 	print hidden(-name=>"reorder", -value=>"$reorder");
 	print hidden(-name=>"userid", -value=>"$userid");
 	print '<div style="padding-bottom:20px"></div>';
+
+	
 
 #-----------------------------------------------------------------------------
 #--- limit the data reading to the only part which has not been signed off yet
@@ -1180,6 +1182,15 @@ print hidden(-name=>'ac_user', -value=>"$ac_user"); #Passed on just in case it's
 	foreach $ap_cnt (@ap_cnt_val){
 		print hidden(-name=>'ap_cnt', -value=>"$ap_cnt", override=>"$ap_cnt");
 	}
+	
+	print '<hr>';
+    	print '<p style="padding-top:5px; padding-bottom:20px;">';
+    	print 'If you have any questions, please contact: ';
+    	print "<a href='mailto:$sot_contact'>$sot_contact</a>.";
+    	print '<br>';
+    	print '<em>Last Update: Dec 09, 2022</em>';
+    	print '</p>';
+
 }  
 
 ###################################################################################
