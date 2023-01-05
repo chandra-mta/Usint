@@ -212,18 +212,6 @@ $test_http    = 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/test_dir'; #--- websi
 #----- end of settings
 ############################
 
-
-$ac_user = $ENV{REMOTE_USER};
-#
-#---- set a name and email address of a test person
-#
-if ($usint_on =~ /test/){
-	$test_user  = $ac_user;
-	$test_email = $test_user.'@head.cfa.harvard.edu';
-}
-
-
-
 #---------------------------------------------------------------------
 # ----- here are non CXC GTOs who have an access to data modification.
 #---------------------------------------------------------------------
@@ -243,6 +231,13 @@ if($usint_on =~ /yes/){
                 }
         }
 }
+
+$ac_user = $ENV{REMOTE_USER};
+#
+#---- set a name and email address of a test person
+#
+$test_user  = $ac_user;
+$test_email = $test_user.'@head.cfa.harvard.edu';
 
 
 print header(-type => 'text/html; charset=utf-8');
@@ -1795,7 +1790,10 @@ sub update_info {
                                 }
 								system($cmd);
 
-                                
+                                $cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
+                                $cmd = "$cmd"."Subject: TOO SI Status Signed Off Request: OBSID: ";
+                                $cmd = "$cmd"." $newobsid\"  $test_email";
+                                system($cmd);
 							}
 							system("rm $temp_dir/too_gen_change");
 
@@ -1823,7 +1821,11 @@ sub update_info {
                                 $cmd = "$cmd"."$email_address";
                                 system($cmd);
 
-															}
+								$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
+                                $cmd = "$cmd"."Subject: TOO Verification Signed Off Request: OBSID: ";
+                                $cmd = "$cmd"."$newobsid\"  $test_email";
+                                system($cmd);
+							}
 							system("rm $temp_dir/too_gen_change");
 						}
 					}
@@ -2013,7 +2015,11 @@ sub update_info {
                                 $cmd = "$cmd"."$email_address";
                                 system($cmd);
 
-															}
+								$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
+                                $cmd = "$cmd"."Subject: TOO Verification Signed Off Request: OBSID: ";
+                                $cmd = "$cmd"."$newobsid\"  $test_email";
+                                system($cmd);
+							}
 							system("rm $temp_dir/too_gen_change");
 						}
 					}
@@ -2093,7 +2099,11 @@ sub update_info {
                                 }
                                 system($cmd);
 
-															}
+								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
+                                $cmd = "$cmd"."Subject: DDT SI Status Signed Off Request: OBSID: ";
+                                $cmd = "$cmd"."$newobsid\"  $test_email";
+                                system($cmd);
+							}
 							system("rm $temp_dir/ddt_gen_change");
 
 						}else{
@@ -2119,7 +2129,11 @@ sub update_info {
                                 $cmd = "$cmd"."$email_address";
                                 system($cmd);
 
-															}
+								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
+                                $cmd = "$cmd"."Subject: DDT Verification Signed Off Request: OBSID: ";
+                                $cmd = "$cmd"."$newobsid\"  $test_email";
+                                system($cmd);
+							}
 							system("rm $temp_dir/ddt_gen_change");
 						}
 					}
@@ -2313,7 +2327,11 @@ sub update_info {
                                 $cmd = "$cmd"."$email_address";
                                 system($cmd);
 
-															}
+								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
+                                $cmd = "$cmd"."Subject: DDT Verification Signed Off Request: OBSID: ";
+                                $cmd = "$cmd"."$newobsid\"  $test_email";
+                                system($cmd);
+							}
 							system("rm $temp_dir/ddt_gen_change");
 						}
 					}
@@ -2458,7 +2476,10 @@ sub update_info {
                             $cmd = "$cmd"."cus\@head.cfa.harvard.edu  $email_address";
                             system($cmd);
 
-                   	                                }
+                   	        $cmd = "cat $temp_dir/dutysci_mail.$e_id.tmp |mailx -s\"";
+                            $cmd = "$cmd"."Subject: Signed Off Notice\" $test_email";
+                            system($cmd);
+                        }
                         system("rm $temp_dir/dutysci_mail.$e_id.tmp");
                     }
 		        }
@@ -2480,7 +2501,7 @@ sub ocat_approve{
 #--- read poc email address and create a hash table
 #
     %poc_email;
-    $poc_email{'mta'} = "$test_email" || "mtadude\@cfa.harvard.edu";
+    $poc_email{'mta'} = "$test_email";
 
     open(FH, "$pass_dir/usint_users");
     while(<FH>){
