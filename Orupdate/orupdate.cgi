@@ -616,7 +616,7 @@ print hidden(-name=>'ac_user', -value=>"$ac_user"); #Passed on just in case it's
     print "<th style='background-color:rgb(0,179,170);'>General edits by</th>";
     print "<th style='background-color:rgb(0,179,170);'>ACIS edits by</th>";
 	print "<th>ACIS SI Mode edits by</th><th>HRC SI MODE edits by</th><th>Verified by";
-	print "</th><th>&nbsp;</th><th>Note</th></tr>";
+	print "</th><th>Update/Approval</th><th>Note</th></tr>";
 #
 #---- save "hidden" value pass till the end of the table
 #
@@ -1705,7 +1705,7 @@ sub update_info {
                 while(<FH>){
                     chomp $_;
                     @atemp = split(/\s+/, $_);
-                    if($atemp[0] eq $newuser){
+                    if($atemp[2] eq $newuser){
                         $email_address = $atemp[3];
                         last OUTER;
                     }
