@@ -219,7 +219,18 @@ $ac_user = $ENV{REMOTE_USER};
 #
 if ($usint_on =~ /test/){
 	$test_user  = $ac_user;
-	$test_email = $test_user.'@head.cfa.harvard.edu';
+#	$test_email = $test_user.'@head.cfa.harvard.edu';# Not specific enough becasue it disregards MIT users. use user_email_list instead
+	open(FH, "$pass_dir/user_email_list");
+			OUTER:
+			while(<FH>){
+			    chomp $_;
+			    @atemp = split(/\s+/, $_);
+			    if($atemp[2] eq $test_user){
+				$test_email = $atemp[3];
+				last OUTER;
+			    }
+			}
+			close(FH);
 }
 
 
@@ -229,6 +240,7 @@ if ($usint_on =~ /test/){
 #---------------------------------------------------------------------
 
 @special_user = ("$test_user", 'mta');
+@special_email = ("$test_email");
 $no_sp_user   = 2;
 
 if($usint_on =~ /yes/){
