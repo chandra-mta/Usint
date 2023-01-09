@@ -1717,7 +1717,7 @@ sub update_info {
                 while(<FH>){
                     chomp $_;
                     @atemp = split(/\s+/, $_);
-                    if($atemp[2] eq $newuser){
+                    if($atemp[0] eq $newuser){
                         $email_address = $atemp[3];
                         last OUTER;
                     }
