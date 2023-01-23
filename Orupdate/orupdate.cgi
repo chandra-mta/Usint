@@ -142,6 +142,9 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 # T. Isobe Sep. 20, 2021                                                                #
 # a couple more cosmetic updates                                                        #
 #                                                                                       #
+# T. Isobe Oct 04, 2021                                                                 #
+#  a bug to find the highest rev # for a given obsid fixed                              #
+#                                                                                       #
 #########################################################################################
 
 ###############################################################################
@@ -151,22 +154,17 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 #---- if this is usint version, set the following param to 'yes', otherwise 'no'
 #
 
-$usint_on = 'yes';                     ##### USINT Version
+#$usint_on = 'yes';                     ##### USINT Version
 #$usint_on = 'no';                      ##### USER Version
-#$usint_on = 'test_yes';                 ##### Test Version USINT
+$usint_on = 'test_yes';                 ##### Test Version USINT
 #$usint_on = 'test_no';                 ##### Test Version USER
 
 @color_table = ('#E6E6FA', '#F5F5DC', '#FFDAB9', '#90EE90', '#BDB76B',\
                 '#DDA0DD', '#808000', '#FF69B4', '#9ACD32', '#6A5ACD', '#228B22');
 #
-#---- set a name and email address of a test person
-#
-$test_user  = 'isobe';
-$test_email = 'isobe@head.cfa.harvard.edu';
-#
 #--- sot contact email address etc
 #
-$sot_contact = 'bwargelin@head.cfa.harvard.edu';
+$sot_contact = 'waaron@head.cfa.harvard.edu';
 $cus_email   = 'cus@head.cfa.harvard.edu';
 #
 #---- set directory pathes
@@ -208,17 +206,41 @@ if($usint_on =~ /test/i){
 $usint_http   = 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/';      #--- web site for usint users
 $main_http    = 'https://cxc.cfa.harvard.edu/cus/index.html';      #--- USINT page
 $obs_ss_http  = 'https://cxc.cfa.harvard.edu/cgi-bin/obs_ss/';     #--- web site for none usint users (GO Expert etc)
-$test_http    = 'https://cxc.cfa.harvard.edu/mta/CUS/Obscat/';     #--- web site for test
-
+#$test_http    = 'https://cxc.cfa.harvard.edu/mta/CUS/Obscat/';     #--- web site for test
+$test_http    = 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/test_dir'; #--- website for test
 ############################
 #----- end of settings
 ############################
+
+
+$ac_user = $ENV{REMOTE_USER};
+#
+#---- set a name and email address of a test person
+#
+if ($usint_on =~ /test/){
+	$test_user  = $ac_user;
+#	$test_email = $test_user.'@head.cfa.harvard.edu';# Not specific enough becasue it disregards MIT users. use user_email_list instead
+	open(FH, "$pass_dir/user_email_list");
+			OUTER:
+			while(<FH>){
+			    chomp $_;
+			    @atemp = split(/\s+/, $_);
+			    if($atemp[2] eq $test_user){
+				$test_email = $atemp[3];
+				last OUTER;
+			    }
+			}
+			close(FH);
+}
+
+
 
 #---------------------------------------------------------------------
 # ----- here are non CXC GTOs who have an access to data modification.
 #---------------------------------------------------------------------
 
 @special_user = ("$test_user", 'mta');
+@special_email = ("$test_email");
 $no_sp_user   = 2;
 
 if($usint_on =~ /yes/){
@@ -234,99 +256,8 @@ if($usint_on =~ /yes/){
         }
 }
 
-#------------------------------
-#---- read a user-password list
-#------------------------------
 
-open(FH, "<$pass_dir/.htpasswd");
-
-%pwd_list = ();				# save the user-password list
-while(<FH>) {
-        chomp $_;
-        @passwd                 = split(/:/, $_);
-        $pwd_list{"$passwd[0]"} = $passwd[1];
-
-        push(@user_name_list, $passwd[0]);
-}
-close(FH);
-
-#---------------------------------------------------
-#---- read cookies for a user name and the password
-#---------------------------------------------------
-
-#-----------------------------------------
-#--- treat special charactors for cookies
-#-----------------------------------------
-
-@Cookie_Encode_Chars = ('\%', '\+', '\;', '\,', '\=', '\&', '\:\:', '\s');
-
-%Cookie_Encode_Chars = ('\%',   '%25',
-                        '\+',   '%2B',
-                        '\;',   '%3B',
-                        '\,',   '%2C',
-                        '\=',   '%3D',
-                        '\&',   '%26',
-                        '\:\:', '%3A%3A',
-                        '\s',   '+');
-
-@Cookie_Decode_Chars = ('\+', '\%3A\%3A', '\%26', '\%3D', '\%2C', '\%3B', '\%2B', '\%25');
-
-%Cookie_Decode_Chars = ('\+',       ' ',
-                        '\%3A\%3A', '::',
-                        '\%26',     '&',
-                        '\%3D',     '=',
-                        '\%2C',     ',',
-                        '\%3B',     ';',
-                        '\%2B',     '+',
-                        '\%25',     '%');
-#----------------
-#--- read cookies
-#----------------
-
-$ac_user  = cookie('ac_user');
-$password = cookie('password');
-
-#-------------------
-#--- de code cookies
-#-------------------
-foreach $char (@Cookie_Decode_Chars) {
-        $ac_user   =~ s/$char/$Cookie_Decode_Chars{$char}/g;
-        $password  =~ s/$char/$Cookie_Decode_Chars{$char}/g;
-}
-
-#-----------------------------------------------
-#---- find out whether there are param passed on
-#-----------------------------------------------
-
-$ac_user  = param('ac_user')   || $ac_user;
-$password = param('password')  || $pass_word;
-
-#-------------------
-#--- refresh cookies
-#-------------------
-
-$en_ac_user   = $ac_user;
-$en_pass_word = $password;
-
-foreach $char (@Cookie_Encode_Chars) {
-        $en_ac_user   =~ s/$char/$Cookie_Encode_Chars{$char}/g;
-        $en_pass_word =~ s/$char/$Cookie_Encode_Chars{$char}/g;
-}
-
-$user_cookie = cookie(-name    =>'ac_user',
-                      -value   =>"$en_ac_user",
-                      -path    =>'/',
-                      -expires => '+8h');
-$pass_cookie = cookie(-name    =>'password',
-                      -value   =>"$en_pass_word",
-                      -path    =>'/',
-                      -expires => '+8h');
-
-#-------------------------
-#---- new cookies worte in
-#-------------------------
-
-print header(-cookie=>[$user_cookie, $pass_cookie], -type => 'text/html; charset=utf-8');
+print header(-type => 'text/html; charset=utf-8');
 
 print "<!DOCTYPE html>";
 print "<html>";
@@ -400,118 +331,49 @@ print "<body style='color:#000000;background-color:#FFFFE0'>";
 #-------------------
 
 print start_form();
+#if-then block for page generation without password checks
 
-#------------------------------------
-#---- check inputed user and password
-#------------------------------------
 
-if($usint_on =~ /yes/){
-	$pass = 'yes';
+print hidden(-name=>'ac_user',  -value=>"$ac_user");
+$pass = 'yes';
+$sp_user = 'no';
+if ($usint_on =~ /yes/){
+	$sp_user = 'yes';
 }else{
-	match_user();			# this sub match a user to a password
+	special_user();
 }
 
-#--------------------------------------------------------------
-#--------- if a user and a password do not match ask to re-type
-#--------------------------------------------------------------
 
-if($pass eq '' || $pass eq 'no'){
-	if(($pass eq 'no') && ($ac_user  ne ''|| $pass_word ne '')){
-		print "<p style='color:red;padding-bottom:20px'>Name and/or ";
-		print "Password are not valid. Please try again.</p>";
-	}
-	password_check();	# this one create password input page
-
-}elsif($pass eq 'yes'){		# ok a user and a password matched
-
-	$sp_user = 'no';
-
-#-------------------------------------------
-#------ check whether s/he is a special user
-#-------------------------------------------
-
-	if($usint_on =~ /yes/){
-		$sp_user = 'yes';
-	}else{
-		special_user();
-	}
-	
 #-------------------------------------------------------
 #----- go to the main part to print a verification page
 #----- check whether there are any changes, if there are
 #----- go into update_info sub to update the table
 #-------------------------------------------------------
 
-	$ap_cnt     = param('ap_cnt');
-	@name_list  = ();
-	@value_list = ();
-	$chk_cnt    = 0;
-	for($k = 0; $k < $ap_cnt; $k++){
-		$name  = param("pass_name.$k");
-		$value = param("$name");
-		push(@name_list,  $name);
-		push(@value_list, $value);
-		if($value =~ /\w/){
-			$chk_cnt++;
-		}
+$ap_cnt     = param('ap_cnt');
+@name_list  = ();
+@value_list = ();
+$chk_cnt    = 0;
+for($k = 0; $k < $ap_cnt; $k++){
+	$name  = param("pass_name.$k");
+	$value = param("$name");
+	push(@name_list,  $name);
+	push(@value_list, $value);
+	if($value =~ /\w/){
+		$chk_cnt++;
 	}
-	if($chk_cnt > 0){
-		update_info();		# this sub update updates_table.list
-	}
-
-	orupdate_main();		# this sub creates and displays a html page
-
-}else{
-	print '<p>Something wrong. Exiting.</p>';
-	exit(1);
 }
+if($chk_cnt > 0){
+	update_info();		# this sub update updates_table.list
+}
+
+orupdate_main();		# this sub creates and displays a html page
+
+
 
 print end_form();
 print end_html();
 
-
-#########################################################################
-### password_check: open a user - a password input page               ###
-#########################################################################
-
-sub password_check{
-	print '<h3>Please type your user name and password</h3>';
-	print '<table style="border-width:0px"><tr><th>Name</th><td>';
-	print textfield(-name=>'ac_user', -value=>'', -size=>20);
-	print '</td></tr><tr><th>Password</th><td>';
-	print password_field( -name=>'password', -value=>'', -size=>20);
-	print '</td></tr></table><br />';
-	
-	print '<input type="submit" name="Check" value="Submit">';
-}
-
-#########################################################################
-### match_user: check a user and a password matches                   ###
-#########################################################################
-
-sub match_user{
-	$ac_user   = param('ac_user');
-	$ac_user   =~ s/^\s+//g; 
-	$pass_word = param('password');
-	$pass_word =~ s/^\s+//g;
-
-	OUTER:
-	foreach $test_name (@user_name_list){
-		$ppwd  = $pwd_list{"$ac_user"};
-		$ptest = crypt("$pass_word","$ppwd");
-
-		if(($ac_user eq $test_name) && ($ptest  eq $ppwd)){
-			$pass_status = 'match';
-			last OUTER;
-		}
-	}
-
-	if($pass_status eq 'match'){
-		$pass = 'yes';
-	}else{
-		$pass = 'no';
-	}
-}
 
 #########################################################################
 ### special_user: check whether the user is a special user            ###
@@ -644,13 +506,7 @@ sub orupdate_main{
 
 $cj      = 0;		#--- counter for the color table 0 - 10.
 
-#-------------------------------------------
-#----- a couple of hidden parameters to pass
-#-------------------------------------------
-
-    $ac_user  = cookie('ac_user');
-	print hidden(-name=>'ac_user',  -value=>"$ac_user");
-	print hidden(-name=>'password', -value=>"$password");
+print hidden(-name=>'ac_user', -value=>"$ac_user"); #Passed on just in case it's pulled by other scripts, but no longer necessary for this script.
 #
 #--- read CDO warning list--- only large coordinate shift case recorded
 #
@@ -672,9 +528,12 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
 #------------------------------------------------------------------------------------------
 
 	@pass_list = ();
-
-	print "<h1>Target Parameter Update Status Form</h1>";
-
+	if ($usint_on =~ /test/){
+		print "<h1>Target Parameter Update Status Form: Test Version</h1>";
+		print "<h3> User: $ac_user	---	Directory: $ocat_dir</h3>";
+	}else{
+		print "<h1>Target Parameter Update Status Form</h1>";
+	}
 	print "<p style='text-align:justify; padding-right:4em'><strong>";
 	print "This form contains all requested updates which ";
     print "have either not been verified or ";
@@ -751,6 +610,8 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
 	print hidden(-name=>"userid", -value=>"$userid");
 	print '<div style="padding-bottom:20px"></div>';
 
+	
+
 #-----------------------------------------------------------------------------
 #--- limit the data reading to the only part which has not been signed off yet
 #-----------------------------------------------------------------------------
@@ -767,7 +628,7 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
     print "<th style='background-color:rgb(0,179,170);'>General edits by</th>";
     print "<th style='background-color:rgb(0,179,170);'>ACIS edits by</th>";
 	print "<th>ACIS SI Mode edits by</th><th>HRC SI MODE edits by</th><th>Verified by";
-	print "</th><th>&nbsp;</th><th>Note</th></tr>";
+	print "</th><th>Update/Approval</th><th>Note</th></tr>";
 #
 #---- save "hidden" value pass till the end of the table
 #
@@ -1027,6 +888,8 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
 
 			if($usint_on =~  /no/){
 				print "<a href=\"$obs_ss_http/chkupdata.cgi";
+			}elsif ($usint_on =~ /test/){
+				print "<a href=\"$test_http/chkupdata.cgi";
 			}else{
 				print "<a href=\"$usint_http/chkupdata.cgi";
 			}
@@ -1336,6 +1199,15 @@ $cj      = 0;		#--- counter for the color table 0 - 10.
 	foreach $ap_cnt (@ap_cnt_val){
 		print hidden(-name=>'ap_cnt', -value=>"$ap_cnt", override=>"$ap_cnt");
 	}
+	
+	print '<hr>';
+    	print '<p style="padding-top:5px; padding-bottom:20px;">';
+    	print 'If you have any questions, please contact: ';
+    	print "<a href='mailto:$sot_contact'>$sot_contact</a>.";
+    	print '<br>';
+    	print '<em>Last Update: Dec 09, 2022</em>';
+    	print '</p>';
+
 }  
 
 ###################################################################################
@@ -1367,7 +1239,7 @@ sub check_obsid_in_approve{
     if($usint_on eq 'yes'){
         open(FH, "/data/mta4/CUS/www/Usint/ocat/approved");
     }else{
-        open(FH, "/proj/web-cxc-dmz/cgi-gen/mta/Obscat/ocat/approved");
+        open(FH, "/proj/web-cxc/cgi-gen/mta/Obscat/ocat/approved");
     }
     while(<FH>){
         chomp $_;
@@ -1885,7 +1757,7 @@ sub update_info {
 #
 #						if($usint_on =~ /test/){
 #							$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
-#							$cmd = "$cmd"."Subject: TOO ACIS Status Signed Off Request: ";
+#							$cmd = "$cmd"."Subject: TEST!! TOO ACIS Status Signed Off Request: ";
 #							$cmd = "$cmd"."OBSID: $newobsid\n\" -rcus\@head.cfa.harvard.edu ";
 #							$cmd = "$cmd"." $test_email";
 #							system($cmd);
@@ -1918,7 +1790,7 @@ sub update_info {
 	
 							if($usint_on =~ /test/){
                                 $cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: TOO SI Status Signed Off Request: OBSID: ";
+                                $cmd = "$cmd"."Subject: TEST!! TOO SI Status Signed Off Request: OBSID: ";
                                 $cmd = "$cmd"." $newobsid\"  $test_email";
 								system($cmd);
 
@@ -1935,10 +1807,7 @@ sub update_info {
                                 }
 								system($cmd);
 
-                                $cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: TOO SI Status Signed Off Request: OBSID: ";
-                                $cmd = "$cmd"." $newobsid\"  $test_email";
-                                system($cmd);
+                                
 							}
 							system("rm $temp_dir/too_gen_change");
 
@@ -1955,7 +1824,7 @@ sub update_info {
 							if($usint_on =~ /test/){
                 
 								$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: TOO Verification Signed Off Request: OBSID: ";
+                                $cmd = "$cmd"."Subject: TEST!! TOO Verification Signed Off Request: OBSID: ";
                                 $cmd = "$cmd"."$newobsid\"  $test_email";
                                 system($cmd);
 
@@ -1966,11 +1835,7 @@ sub update_info {
                                 $cmd = "$cmd"."$email_address";
                                 system($cmd);
 
-								$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: TOO Verification Signed Off Request: OBSID: ";
-                                $cmd = "$cmd"."$newobsid\"  $test_email";
-                                system($cmd);
-							}
+															}
 							system("rm $temp_dir/too_gen_change");
 						}
 					}
@@ -2150,7 +2015,7 @@ sub update_info {
 	
 							if($usint_on =~ /test/){
 								$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: TOO Verification Signed Off Request: OBSID: ";
+                                $cmd = "$cmd"."Subject: TEST!! TOO Verification Signed Off Request: OBSID: ";
                                 $cmd = "$cmd"."$newobsid\"  $test_email";
                                 system($cmd);
 							}else{
@@ -2160,11 +2025,7 @@ sub update_info {
                                 $cmd = "$cmd"."$email_address";
                                 system($cmd);
 
-								$cmd = "cat $temp_dir/too_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: TOO Verification Signed Off Request: OBSID: ";
-                                $cmd = "$cmd"."$newobsid\"  $test_email";
-                                system($cmd);
-							}
+															}
 							system("rm $temp_dir/too_gen_change");
 						}
 					}
@@ -2226,7 +2087,7 @@ sub update_info {
 	
 							if($usint_on =~ /test/){
 								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: DDT SI Status Signed Off Request: OBSID: ";
+                                $cmd = "$cmd"."Subject: TEST!! DDT SI Status Signed Off Request: OBSID: ";
                                 $cmd = "$cmd"."$newobsid\"  $test_email";
                                 system($cmd);
 
@@ -2244,11 +2105,7 @@ sub update_info {
                                 }
                                 system($cmd);
 
-								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: DDT SI Status Signed Off Request: OBSID: ";
-                                $cmd = "$cmd"."$newobsid\"  $test_email";
-                                system($cmd);
-							}
+															}
 							system("rm $temp_dir/ddt_gen_change");
 
 						}else{
@@ -2263,7 +2120,7 @@ sub update_info {
 	
 							if($usint_on =~ /test/){
 								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: DDT Verification Signed Off Request: OBSID: ";
+                                $cmd = "$cmd"."Subject: TEST!! DDT Verification Signed Off Request: OBSID: ";
                                 $cmd = "$cmd"."$newobsid\"  $test_email";
                                 system($cmd);
 
@@ -2274,11 +2131,7 @@ sub update_info {
                                 $cmd = "$cmd"."$email_address";
                                 system($cmd);
 
-								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: DDT Verification Signed Off Request: OBSID: ";
-                                $cmd = "$cmd"."$newobsid\"  $test_email";
-                                system($cmd);
-							}
+															}
 							system("rm $temp_dir/ddt_gen_change");
 						}
 					}
@@ -2461,7 +2314,7 @@ sub update_info {
 	
 							if($usint_on =~ /test/){
 								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: DDT Verification Signed Off Request: OBSID: ";
+                                $cmd = "$cmd"."Subject: TEST!! DDT Verification Signed Off Request: OBSID: ";
                                 $cmd = "$cmd"."$newobsid\"  $test_email";
                                 system($cmd);
 
@@ -2472,11 +2325,7 @@ sub update_info {
                                 $cmd = "$cmd"."$email_address";
                                 system($cmd);
 
-								$cmd = "cat $temp_dir/ddt_gen_change|mailx -s\"";
-                                $cmd = "$cmd"."Subject: DDT Verification Signed Off Request: OBSID: ";
-                                $cmd = "$cmd"."$newobsid\"  $test_email";
-                                system($cmd);
-							}
+															}
 							system("rm $temp_dir/ddt_gen_change");
 						}
 					}
@@ -2581,7 +2430,7 @@ sub update_info {
 			        if(${si_sign.$e_id} > 0){
 				        if($usint_on =~ /test/){
 			                $cmd = "cat $temp_dir/si_mail.$e_id.tmp |mailx -s\"";
-                            $cmd = "$cmd"."Subject: Signed Off Notice\" ";
+                            $cmd = "$cmd"."Subject: TEST!! Signed Off Notice\" ";
                             $cmd = "$cmd"."-rcus\@head.cfa.harvard.edu  $test_email";
                             system($cmd);
 
@@ -2611,7 +2460,7 @@ sub update_info {
                     if(${last_sign.$e_id} > 0 ){
 			            if($usint_on =~ /test/){
  	                        $cmd = "cat $temp_dir/dutysci_mail.$e_id.tmp |mailx -s\"";
-                            $cmd = "$cmd"."Subject: Signed Off Notice\" ";
+                            $cmd = "$cmd"."Subject: TEST!! Signed Off Notice\" ";
                             $cmd = "$cmd"."-rcus\@head.cfa.harvard.edu  $test_email";
                             system($cmd);
 
@@ -2621,10 +2470,7 @@ sub update_info {
                             $cmd = "$cmd"."cus\@head.cfa.harvard.edu  $email_address";
                             system($cmd);
 
-                   	        $cmd = "cat $temp_dir/dutysci_mail.$e_id.tmp |mailx -s\"";
-                            $cmd = "$cmd"."Subject: Signed Off Notice\" $test_email";
-                            system($cmd);
-                        }
+                   	                                }
                         system("rm $temp_dir/dutysci_mail.$e_id.tmp");
                     }
 		        }
@@ -2646,7 +2492,7 @@ sub ocat_approve{
 #--- read poc email address and create a hash table
 #
     %poc_email;
-    $poc_email{'mta'} = "$test_email";
+    $poc_email{'mta'} = "$test_email" || "mtadude\@cfa.harvard.edu";
 
     open(FH, "$pass_dir/usint_users");
     while(<FH>){
@@ -4620,7 +4466,7 @@ sub oredit{
 #---------------------------#
 
     if($usint_on =~ /test/){
-        #system("cat $temp_dir/ormail_$obsid.tmp| tr -d '\015'  |mailx -s\"Subject:TEST!! \
+        #system("cat $temp_dir/ormail_$obsid.tmp| tr -d '\015'  |mailx -s\"Subject: TEST!! \
         #    Parameter Changes (Approved) log  $obsid.$rev\n\" $test_email");
     }else{
         #system("cat $temp_dir/ormail_$obsid.tmp| tr -d '\015'  |mailx -s\"Subject: \
@@ -4986,7 +4832,7 @@ sub send_email_to_mp{
 
 	if($usint_on =~ /test/){
     	$cmd = "cat $temp_file | mailx -s\"";
-        $cmd = "$cmd"."Subject: Change to Obsids Which Is in Active OR List ";
+        $cmd = "$cmd"."Subject: TEST!! Change to Obsids Which Is in Active OR List ";
         $cmd = "$cmd"."($mp_email)\"  $test_email";
         system($cmd);
 	}else{
@@ -5054,7 +4900,7 @@ sub check_apporved_list{
 
 	if($usint_on =~ /test/i){
 		$cmd = "cat $temp_dir/alist.tmp |mailx -s\"";
-        $cmd = "$cmd"."Subject: Approved Obsids by  $email_address \"  $test_email";
+        $cmd = "$cmd"."Subject: TEST!! Approved Obsids by  $email_address \"  $test_email";
         system($cmd);
 	}else{
 		$cmd = "cat $temp_dir/alist.tmp |mailx -s\"";
@@ -5147,16 +4993,19 @@ sub find_highest_rev{
     if($usint_on eq 'yes'){
         open(FH, '/data/mta4/CUS/www/Usint/ocat/updates_table.list');
     }else{
-        open(FH, '/proj/web-cxc-dmz/cgi-gen/mta/Obscat/ocat/updates_table.list');
+        open(FH, '/proj/web-cxc/cgi-gen/mta/Obscat/ocat/updates_table.list');
     }
     @save = ();
     $cnt  = 0;
     while(<FH>){
         chomp $_;
         if($_ =~ /$obsid/){
-            @atemp = split(/\./, $_);
-            push(@save, $atemp[1]);
-            $cnt++;
+            @atemp = split(/\s+/, $_);
+            @btemp = split(/\./,  $atemp[0]);
+            if($btemp[0] == $obsid){
+                push(@save, $btemp[1]);
+                $cnt++;
+            }
         }
     }
     close(FH);

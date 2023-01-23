@@ -30,21 +30,11 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 #--- a few settings ....
 ############################
 
-$usint_on = 'yes';                     ##### USINT Version
+#$usint_on = 'yes';                     ##### USINT Version
 #$usint_on = 'no';                      ##### USER Version
-#$usint_on = 'test_yes';                 ##### Test Version USINT
+$usint_on = 'test_yes';                 ##### Test Version USINT
 #$usint_on = 'test_no';                 ##### Test Version USER
-#
-#---- set a name and email address of a test person
-#
-$test_user  = 'isobe';
-$test_email = 'isobe@head.cfa.harvard.edu';
 
-#$test_user  = 'mta';
-#$test_email = 'isobe@head.cfa.harvard.edu';
-
-#$test_user  = 'bwargelin';
-#$test_email = 'bwargelin@head.cfa.harvard.edu';
 #
 #---- set directory paths : updated to read from a file (02/25/2011)
 #
@@ -85,7 +75,8 @@ $usint_http   = 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/';       #--- web sit
 $chandra_http = 'https://cxc.harvard.edu/';                         #--- chandra main web site
 $cdo_http     = 'https://icxc.cfa.harvard.edu/cgi-bin/cdo/';        #--- CDO web site
 
-$test_http    = 'https://cxc.cfa.harvard.edu/cgi-gen/mta/Obscat/';  #--- web site for test
+#$test_http    = 'https://cxc.cfa.harvard.edu/cgi-gen/mta/Obscat/';  #--- web site for test    
+$test_http    = 'https://cxc.harvard.edu/mta/CUS/Usint/test_dir/';  #--- web site for test
 $obs_ss_http  = 'https://cxc.cfa.harvard.edu/cgi-bin/obs_ss/';      #--- test site
 
 ############################
@@ -133,100 +124,18 @@ if($usint_on =~ /yes/){
     }
 }
 
-#-------------------------------
-#---- read a user-password list
-#-------------------------------
 
-open(FH, "<$pass_dir/.htpasswd");
+$submitter = $ENV{REMOTE_USER};
 
-%pwd_list = ();                                     #--- save the user-password list
-while(<FH>) {
-    chomp $_;
-    @passwd                 = split(/:/,$_);
-    $pwd_list{"$passwd[0]"} = $passwd[1];
-    push(@user_name_list, $passwd[0]);
-}
-close(FH);
+#
+#---- set a name and email address of a test person
+#
+$test_user  = $submitter;
+$test_email = $test_user.'@head.cfa.harvard.edu';
 
-#---------------------------------------------------
-#---- read cookies for a user name and the password
-#---------------------------------------------------
 
-#-----------------------------------------
-#--- treat special charactors for cookies
-#-----------------------------------------
 
-@Cookie_Encode_Chars = ('\%', '\+', '\;', '\,', '\=', '\&', '\:\:', '\s');
-
-%Cookie_Encode_Chars = ('\%',   '%25',
-                        '\+',   '%2B',
-                        '\;',   '%3B',
-                        '\,',   '%2C',
-                        '\=',   '%3D',
-                        '\&',   '%26',
-                        '\:\:', '%3A%3A',
-                        '\s',   '+');
-
-@Cookie_Decode_Chars = ('\+', '\%3A\%3A', '\%26', '\%3D', '\%2C', '\%3B', '\%2B', '\%25');
-
-%Cookie_Decode_Chars = ('\+',       ' ',
-                        '\%3A\%3A', '::',
-                        '\%26',     '&',
-                        '\%3D',     '=',
-                        '\%2C',     ',',
-                        '\%3B',     ';',
-                        '\%2B',     '+',
-                        '\%25',     '%');
-
-#----------------
-#--- read cookies
-#----------------
-
-$submitter = cookie('submitter');
-$pass_word = cookie('pass_word');
-
-#-------------------
-#--- de code cookies
-#-------------------
-
-foreach $char (@Cookie_Decode_Chars) {
-    $submitter  =~ s/$char/$Cookie_Decode_Chars{$char}/g;
-    $pass_word  =~ s/$char/$Cookie_Decode_Chars{$char}/g;
-}
-
-#-----------------------------------------------
-#---- find out whether there are param passed on
-#-----------------------------------------------
-
-$submitter = param('submitter') || $submitter;
-$pass_word = param('password')  || $pass_word;
-
-#-------------------
-#--- refresh cookies
-#-------------------
-
-$en_submitter = $submitter;
-$en_pass_word = $pass_word;
-
-foreach $char (@Cookie_Encode_Chars) {
-    $en_submitter =~ s/$char/$Cookie_Encode_Chars{$char}/g;
-    $en_pass_word =~ s/$char/$Cookie_Encode_Chars{$char}/g;
-}
-
-$user_cookie = cookie(-name    =>'submitter',
-                      -value   =>"$en_submitter",
-                      -path    =>'/',
-                      -expires => '+8h');
-$pass_cookie = cookie(-name    =>'pass_word',
-                      -value   =>"$en_pass_word",
-                      -path    =>'/',
-                      -expires => '+8h');
-
-#-------------------------
-#---- new cookies wrote in
-#-------------------------
-
-print header(-cookie=>[$user_cookie, $pass_cookie], -type => 'text/html;charset=utf-8');
+print header(-type => 'text/html;charset=utf-8');
 
 #----------------------------------------------------------------------------------
 #------- start printing a html page here.
@@ -282,39 +191,11 @@ if($email_adress !~ /\w/){
 	$email_address = param('email_adress');
 }
 
-if($change =~ /Change/){
-    password_check();
-}elsif($approve !~ /Approve/ && $final !~ /Finalize/ 
-		&& ($check eq '' || $check =~ /Submit/ || $back =~ /Back to the Previous Page/)){
+#New if-then blocks for page generation without password checks
 
-    $chg_user_ind = param('chg_user_ind');
-    match_user();
 
-    if($pass =~ /yes/){
-        input_obsid();
-
-    }else{
-        print "<h1>Ocat Data Express Approval Page</h1>";
-        print "<h3>";
-        print "On this page, you can approve more than one observations ";
-        print " consequently. To use this page, however,  your name must be registered. ";
-        print " If you are not, please contact Dr. Wargelin ";
-        print ' at <a href="mailto:bwargelin@head.cfa.harvard.edu">bwargelin@head.cfa.harvard.edu</a>';
-        print "</h3>";
-
-        if(($submitter ne '' || $password ne '') && $pass =~ /no/){
-            print "<p style='color:red;padding-top:20px;padding-bottom:20px'><strong>";
-            print 'Your user name and/or password were entered incorrectly. ';
-            print 'please try again.';
-            print "</p>";
-        }
-
-        password_check();
-    }
-
-}elsif($final !~ /Finalize/ && ($pass eq '' || $pass =~ /no/)){
-
-    password_check();
+if ($approve !~ /Approve/ && $final !~ /Finalize/ && ($check eq '' || $check =~ /Submit/ || $back =~ /Back to the Previous Page/)){
+	input_obsid();
 
 }elsif($approve =~ /Approve/){
 #
@@ -522,59 +403,26 @@ if($change =~ /Change/){
 	exit 1;
 }
 
+
 print end_form();
 print "</body>";
 print "</html>";
 
-#########################################################################
-### password_check: open a user - a password input page               ###
-#########################################################################
+###########################################################################################################
+### print_param: prints html text of the form parameters for testing purposes. Not necessary beyond testing
+###########################################################################################################
 
-sub password_check{
-    print '<h2>Express Approval Page</h2>';
-    print '<h3>Please type your user name and password</h3>';
-    print '<table><tr><th>Name</th><td>';
-    print textfield(-name=>'submitter', -value=>'', -size=>20);
-    print '</td></tr><tr><th>Password</th><td>';
-    print password_field( -name=>'password', -value=>'', -size=>20);
-    print '</td></tr></table><br>';
-
-    print '<input type="submit" name="Check" value="Submit">';
+sub print_param{
+	print "<p>Print_param() is Running</p>";
+	if (param() == 0){
+		print "<p>No Form Parameters!</p>";
+	}else{
+		for $i (param()){
+			print "<p>Parameter: $i, Value: ".param($i)."</p>";
+		}
+	}
 }
 
-#########################################################################
-### match_user: check a user and a password matches                   ###
-#########################################################################
-
-sub match_user{
-    if($submitter eq ''){
-        $submitter = param('submitter');
-        $submitter =~s/^\s+//g;
-        $pass_word = param('password');
-        $pass_word =~s/^\s+//g;
-    }
-
-    if($pass eq 'yes'){
-        $pass_status = 'match';
-    }else{
-        OUTER:
-        foreach $test_name (@user_name_list){
-            $ppwd  = $pwd_list{"$submitter"};
-            $ptest = crypt("$pass_word","$ppwd");
-
-            if(($submitter =~ /$test_name/i) && ($ptest  eq $ppwd)){
-                $pass_status = 'match';
-                last OUTER;
-            }
-        }
-    }
-    if($pass_status eq 'match'){
-        $pass = 'yes';
-        print hidden(-name=>'pass', -override=>"$pass", -value=>"$pass");
-    }else{
-        $pass = 'no';
-    }
-}
 
 ################################################################################
 ### input_obsid: a page to write in list of obsids                           ###
@@ -582,7 +430,12 @@ sub match_user{
 
 sub input_obsid{
 
-    print "<h2 style='padding-bottom:20px'>Welcome to Express Approval Page.</h2>";
+    if ($usint_on =~ /test/){
+	print "<h2 style='padding-bottom:20px'>Welcome to Express Approval Page: Test Version</h2>";
+	print "<h3> User: $submitter	----	Directory: $ocat_dir</h3>";
+    }else{	
+	print "<h2 style='padding-bottom:20px'>Welcome to Express Approval Page</h2>";
+    }
     print '<h3>Please type all obsids which you want to approve. ';
     print 'You can use <i>comma, colon, semi-colon</i>, "/", or by "  " ';
     print '(&lt;<i> blank space</i>&gt;) to separate them. ';
@@ -596,12 +449,6 @@ sub input_obsid{
     print '<input type="submit" name="Approve" value="Approve">';
     print '</div>';
 
-    print '<hr />';
-    print "<h3 style='padding-top:20px'>If you are not a user  ";
-    print "<span style='color:blue'>$submitter</span>, please change a user name: ";
-    print '<input type="submit" name="Change" value="Change"> </h3>';
-
-    print hidden(-name=>'submitter',-override=>"$submitter", -value=>"$submitter");
 }
 
 ################################################################################
@@ -2580,9 +2427,10 @@ sub oredit{
 
     $dutysci_status = "NA";
 
-  	$general_status = "NULL";			        #--- these are for the status verification page
-    $acis_status    = "NULL";			        #--- orupdate.cgi
-    $si_mode_status = "NULL";
+#  	$general_status = "NULL";			        #--- these are for the status verification page
+#    $acis_status    = "NULL";			        #--- orupdate.cgi
+#    $si_mode_status = "NULL";
+#    $hrc_si_mode_status = "NULL";
 
 	$dutysci_status = "$dutysci $date";
 	
@@ -2653,7 +2501,8 @@ sub oredit{
             $lpass = 1;
 
             flock($update, LOCK_EX) or die "died while trying to lock the file<br />\n";
-            print $update "$obsid.$rev\tNULL\tNULL\tNULL\t$dutysci_status\t$seq_nbr\t$dutysci\n";
+            print $update "$obsid.$rev\tNULL\tNULL\tNULL\tNULL\t$dutysci_status\t$seq_nbr\t$dutysci\n";
+#--- UPDATED 06/24/21
             close $update;
 
 #---------------------
@@ -2705,7 +2554,7 @@ $send_email = 'yes';
 			print ASIS "$obsid is approved for flight. Thank you \n";
 			close(ASIS);
 
-			if($unint_on =~ /test/){
+			if($usint_on =~ /test/){
                 $cmd = "cat $temp_dir/asis.tmp |mailx -s\"Subject:  TEST!! ";
                 $cmd = "$cmd"."$obsid is approved\"  $test_email";
 			    system($cmd);
@@ -2721,7 +2570,7 @@ $send_email = 'yes';
 
 		}else{
 
-			if($unint_on =~ /test/){
+			if($usint_on =~ /test/){
                 $cmd = "cat $temp_dir/ormail_$obsid.tmp |mailx -s\"Subject: TEST!! ";
                 $cmd = "$cmd"."Parameter Changes (Approved) log  $obsid.$rev\"  $test_email";
 			    system($cmd);
@@ -3214,7 +3063,7 @@ sub send_email_to_mp{
     $mp_email = "$mp_contact".'@head.cfa.harvard.edu';
 
 	if($usint_on =~ /test/){
-        $cmd = "cat $temp_file | mailx -s\"Subject: Change to Obsids Which ";
+        $cmd = "cat $temp_file | mailx -s\"Subject: TEST!! Change to Obsids Which ";
         $cmd = "$cmd"."Is in Active OR List ($mp_email)\"  $test_email";
     	system($cmd);
 
@@ -3277,8 +3126,8 @@ sub check_apporved_list{
 	}
 
 	if($usint_on =~ /test/i){
-        $cmd = "cat $temp_dir/alist.tmp |mailx -s\"Subject: Approved Obsids ";
-        $cmd = "$cmd"."by $email_address \"  $test_email";
+        $cmd = "cat $temp_dir/alist.tmp |mailx -s\"Subject: TEST!! Approved Obsids ";
+        $cmd = "$cmd"."by $test_email \"  $test_email";
 		system($cmd);
 	}else{
         $cmd = "cat $temp_dir/alist.tmp |mailx -s\"Subject: Approved Obsids ";

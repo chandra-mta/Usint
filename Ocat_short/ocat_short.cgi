@@ -15,7 +15,7 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 
 #################################################################################
 #                                                                               #
-#       ocatdata2html.cgi: smaller version of ocatdata2html.cgi                 #
+#          ocat_short.cgi: smaller version of ocatdata2html.cgi                 #
 #                                                                               #
 #       author: t. isobe (tisobe@cfa.harvard.edu)                               #
 #                                                                               #
@@ -410,15 +410,7 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 # comparing o_val/n_val in null value cases updated
 # (Nov 01, 2021)
 #
-# added the PREVIOUS PAGE button and unintentional reset to NULL warning
-# (May 10, 2022)
-#
 #-----Up to here were done by t. isobe (tisobe@cfa.harvard.edu)-----
-#
-# Removing Password Cookies in favor of using .htaccess authentication
-# (Nov, 17,2022)
-#
-#-----Up to here changes were done by William Aaron (waaron@cfa.harvard.edu)----
 #
 # ----------
 # sub list:
@@ -523,8 +515,9 @@ $blank2 = '<Blank>';
 #
 #---- if this is usint version, set the following param to 'yes', otherwise 'no'
 #
-#$usint_on = 'yes';			##### USINT Version
+###$usint_on = 'yes';			##### USINT Version
 $usint_on = 'test_yes';			##### Test Version USINT
+
 #
 #--- admin contact email address
 #
@@ -563,13 +556,21 @@ while(<IN>){
     }
 }
 close(IN);
-
+#
+#--- if this is a test case, use the first directory, otherwise use the real one
+#
+if($usint_on =~ /test/i){
+	$ocat_dir = $test_dir;
+}else{
+	$ocat_dir = $real_dir;
+}
 #
 #--- set html pages
 #
 
 $usint_http   = 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/';	    #--- web site for usint users
-$test_http    = 'https://cxc.cfa.harvard.edu/cgi-gen/mta/Obscat/';	#--- web site for test (not alive)
+#$test_http    = 'https://cxc.cfa.harvard.edu/cgi-gen/mta/Obscat/';	#--- web site for test (not alive)
+$test_http    = 'https://cxc.harvard.edu/mta/CUS/Usint/test_dir';
 $mp_http      = 'https://cxc.cfa.harvard.edu/';			            #--- web site for mission planning related
 $chandra_http = 'https://cxc.harvard.edu/';			                #--- chandra main web site
 $cdo_http     = 'https://icxc.cfa.harvard.edu/cgi-bin/cdo/';	    #--- CDO web site
@@ -588,8 +589,8 @@ $cdo_http     = 'https://icxc.cfa.harvard.edu/cgi-bin/cdo/';	    #--- CDO web si
 #------------------------------------------------------------------------
 #--- find obsid requested if there are group id, it may append a new name
 #------------------------------------------------------------------------
-$temp  = $ARGV[0];
 
+$temp  = $ARGV[0];
 chomp $temp;
 $temp  =~ s/\s+//g;	
 @atemp = split(/\./, $temp);	
@@ -615,18 +616,6 @@ $pass      = $atemp[1];
 $submitter = $atemp[2];
 $user      = $atemp[2];
 
-#
-#--- if this is a test case, use the first directory, otherwise use the real one
-#
-
-if($usint_on =~ /test/i){
-	$ocat_dir = $test_dir;
-}else{
-	$ocat_dir = $real_dir;
-}
-
-
-
 #-------------------------------------------------------------------
 #---- read approved list, and check whether this obsid is listed.
 #---- if it does, send warning.
@@ -638,15 +627,6 @@ $prev_app      = 0;
 #--------------------------------------------------------------------
 #----- here are non CXC GTOs who have an access to data modification.
 #--------------------------------------------------------------------
-
-
-$submitter = $ENV{REMOTE_USER};
-
-#
-#---- set a name and email address of a test/tech person
-#
-$test_user = $submitter;
-$test_email = $test_user.'@head.cfa.harvard.edu';
 
 $no_sp_user    = 2;				#--- number of special users
 
@@ -664,9 +644,17 @@ while(<FH>){
 	}
 }
 
+$submitter = $ENV{REMOTE_USER};
+
+#
+#---- set a name and email address of a test/tech person
+#
+$test_user  = $submitter;
+$test_email = $test_user.'@head.cfa.harvard.edu';
+
+
 
 print header(-type => 'text/html;  charset=utf-8');
-
 
 print "<!DOCTYPE html>";
 print "<html>";
@@ -774,14 +762,17 @@ $ordr_special      = 'no';
 $check             = param("Check");			#--- a param which indicates which page to be displayed 
 
 
+#recreation of if-then blocks generating the ocat page without password checks
 
-if ($check eq ''){
-	$sp_user = 'yes';
-	$access_ok = 'yes';
-	special_user();			#--- sub to check whether s/he is a special user
-	pi_check();			#--- sub to check whether the pi has an access
-	data_input_page();		#--- sub to display data for edit
-	
+if($check eq ''){
+
+
+	special_user();
+	pi_check();
+	data_input_page();
+}else{
+	print 'Something wrong. Exit<br />';
+	exit(1);
 }
 
 
@@ -1069,60 +1060,6 @@ print "</html>";
 #---- the main script finishes here. sub-scripts start here.
 #################################################################################################
 
-
-##############################################################
-### test_display: prints input arguments for testing purposes
-##############################################################
-
-sub test_display{
-	print_ARGV();
-	print_QUERY();
-	print_FORM();
-}
-
-##############################################################
-### print_ARGV: prints system arguments
-##############################################################
-sub print_ARGV{
-
-	print "<p> print_ARGV() is running</p>";
-	if (@ARGV == 0){
-		print "<p>No Interpreted SYS ARGS</p>";
-	}else{
-		print "<p> ARGV: ".join(", ",@ARGV)."</p>";
-	}
-}
-#######################################
-### print_QUERY: prints the input query
-#######################################
-#Note that for an input .cgi query. It is registered as html form parameters if an only if the 
-#query is structured around name=value pairs all separated by ampersand &
-
-sub print_QUERY{
-	print "<p> print_QUERY() is running</p>";
-	if ($ENV{QUERY_STRING} == ''){
-		print "<p>Empty Query String</p>";
-	}else{
-		print"<p> QUERY: $ENV{QUERY_STRING}</p>";
-	}
-}
-
-###############################################
-### print_FORM: prints the HTML form parameters
-###############################################
-#For testing purposes. Not needed for function of script
-
-sub print_FORM{
-	print"<p> print_FORM() is running</p>";
-	@param = param();
-	if (@param == 0){
-		print"<p>No Form Parameters</p>";
-	}else{
-		for (@param){
-			print"<p> Param: $_,  Value: ".param($_)."</p>";
-		}
-	}
-}
 
 #########################################################################
 ### special_user: check whether the user is a special user            ###
@@ -3349,15 +3286,13 @@ sub data_input_page{
     print <<endofhtml;
 
 endofhtml
-	
     if ($usint_on =~ /test/){
-	print "<h1> Obscat Data Page: Test Version</h1>";
-	print "<h3> User: $submitter	Directory: $ocat_dir </h3>";
+	print "<h1>Obscat Data Page: Test Version</h1>";
+	print "<h3> User: $submitter	Directory: $ocat_dir</h3>";
     }else{
-	print "<h1>Obscat Data Page</h1>";
+	print "<h1> Obscat Data Page</h1.";
     }
-
-    $schk = 0;
+       $schk = 0;
     if(length($soe_st_sched_date) > 0){
         $obs_time = $soe_st_sched_date;
         $schk = 1;
@@ -5390,13 +5325,14 @@ endofhtml
 	print 'Chandra User Observation Search Page</A><p>  ';
     print '</p>';
 
-    print '<hr>';
-    print '<p style="padding-top:5px; padding-bottom:20px;">';
-    print 'If you have any questions, please contact: ';
-    print "<a href='mailto:$sot_contact'>$sot_contact</a>.";
-    print '<br>';
-    print '<em>Last Update: Dec 09, 2022</em>';
-    print '</p>';
+	print '<hr>';
+	print '<p style="padding-top:5px; padding-bottom:20px;">';
+    	print 'If you have any questions, please contact: ';
+    	print "<a href='mailto:$sot_contact'>$sot_contact</a>.";
+    	print '<br>';
+    	print '<em>Last Update: Dec 09, 2022</em>';
+    	print '</p>';
+
 
 }           #---- end of sub "data_input_page"
 
@@ -7890,11 +7826,6 @@ sub submit_entry{
 #----- print the verification webpage
 #------------------------------------
 
-        $pline = "$pline"."<p style='color:red;padding-bottom:10'><strong> Do not use the PREVIOUS PAGE button. ";
-        $pline = "$pline"."Some parameters may be unintentionally reset to NULL.</strong></p> ";
-        $pline = "$pline"."<p style='padding-bottom:10'><strong>If you need to re-edit your change request, start from scratch-- ";
-        $pline = "$pline"."delete the current tab/window and start over in a new one.</strong></p>";
-
 	$pline = "$pline"."<p style='padding-bottom:10'><strong>You have submitted the following ";
     $pline = "$pline"."values for obsid $obsid:</strong> </p>";
 
@@ -8453,14 +8384,10 @@ sub submit_entry{
 
 	if($wrong_si == 0){
 		$pline = "$pline"."<br /><hr />";
-		$pline = "$pline"."<p style='padding-top:15px;padding-bottom:5px'><strong>";
-		$pline = "$pline"."If these values are correct, click the FINALIZE button.</strong></p>";
-                $pline = "$pline"."<p style='color:red'>Do not use the PREVIOUS PAGE button. ";
-                $pline = "$pline"."Some parameters may be unintentionally reset to NULL.<p> ";
-                $pline = "$pline"."<p><strong>If you need to re-edit your change request, start from scratch--";
-                $pline = "$pline"."delete the current tab/window and start over in a new one.</strong></p><br>";
-		#$pline = "$pline"."Otherwise, use the previous page button to edit.</strong><br />";
-		#$pline = "$pline"."</p>";
+		$pline = "$pline"."<p style='padding-top:15px;padding-bottom:5px'>";
+		$pline = "$pline"."<strong>If these values are correct, click the FINALIZE button.<br />";
+		$pline = "$pline"."Otherwise, use the previous page button to edit.</strong><br />";
+		$pline = "$pline"."</p>";
 	}
 	$j = 0;
 
@@ -8999,6 +8926,7 @@ sub print_table_row{
 	
     $test1 = check_null_ent($o_value);
     $test2 = check_null_ent($n_value);
+print "$t_name <--> $o_value <---> $n_value <--> $test1 <-->$test2<br>";
     if(($test1 == 1) && ($test2 == 1)){
         $color == '';
         $o_value = 'same';
@@ -9026,7 +8954,7 @@ sub check_null_ent{
     ($val) = @_;
 
     foreach $test ('NA',  'NULL', 'None', 'NONE',   'null', 'none', '', ' '){
-        if($val =~ /$test/i){
+        if($val eq $test){
             return 1;
         }
     }

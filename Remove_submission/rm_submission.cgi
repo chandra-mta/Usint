@@ -1,8 +1,8 @@
-#!/soft/ascds/DS.release/ots/bin/perl
+#!/home/ascds/DS.release/ots/bin/perl
 
 BEGIN
 {
-    $ENV{SYBASE} = "/soft/SYBASE_OCS15.5";
+    $ENV{SYBASE} = "/soft/SYBASE_OCS16.0";
 } 
 
 use CGI qw/:standard :netscape /;
@@ -10,31 +10,31 @@ use CGI qw/:standard :netscape /;
 use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 
 #########################################################################################
-#											#
-# rm_submission.cgi: remove an accidental submission from database			#
-#											#
-# 		Author: t. isobe (tisobe@cfa.harvard.edu)				#
-#		Last Update: Sept 05, 2013 						#
-# This script removes an obsid from database.    	                            	#
-#											#
+#                                           						#
+# rm_submission.cgi: remove an accidental submission from database          		#
+#                                           						#
+# 		Author: t. isobe (tisobe@cfa.harvard.edu)                    		#
+#		Last Update: Sep  21, 2021                              		#
+# This script removes an obsid from database.          	                            	#
+#                                           						#
+# Jul 16, 2022 MS                                                                       #
+# /soft/ascds/DS.release/ots/bin/perl -> /home/ascds/DS.release/ots/bin/perl            #
 #########################################################################################
+
+$sot_contact = 'waaron@head.cfa.harvard.edu';
 
 #
 #---- if this is usint version, set the following param to 'yes', otherwise 'no'
 #
 
-$usint_on = 'yes';                     ##### USINT Version
+#$usint_on = 'yes';                     ##### USINT Version
 #$usint_on = 'no';                      ##### USER Version
-#$usint_on = 'test_yes';                 ##### Test Version USINT
+$usint_on = 'test_yes';                 ##### Test Version USINT
 #$usint_on = 'test_no';                 ##### Test Version USER
-
-
 #
 #---- set directory paths : updated to read from a file (02/25/2011)
 #
 
-#open(IN, '/data/udoc1/ocat/Info_save/dir_list');
-#open(IN, '/proj/web-cxc-dmz/htdocs/mta/CUS/Usint/ocat/Info_save/dir_list');
 open(IN, '/data/mta4/CUS/www/Usint/ocat/Info_save/dir_list');
 
 while(<IN>){
@@ -74,32 +74,25 @@ print "<html>";
 print "<head>";
 print "<title>Obscat Submission Cancellation  Form</title>";
 print "<style  type='text/css'>";
-print "table{text-align:center;margin-left:auto;margin-right:auto;border-style:solid;border-spacing:8px;border-width:2px;border-collapse:separate}";
+print "table{text-align:center;margin-left:auto;margin-right:auto;";
+print "border-style:solid;border-spacing:8px;border-width:2px;border-collapse:separate}";
 print "a:link {color:blue;}";
 print "a:visited {color:teal;}";
 print "</style>";
 print "</head>";
 
-
 print "<body style='color:#000000;background-color:#FFFFE0'>";
 
-
 print start_form();			# starting a form
-
 
 #---------------------------------------------------------------------
 # ----- here are non CXC GTOs who have an access to data modification.
 #---------------------------------------------------------------------
 
-@special_user = ('isobe','mta');
+@special_user = ('lina.pulgarin-duque','mta');
 $no_sp_user = 2;
 
-#######################
-$usint_on = 'yes';
-#$usint_on = 'no';
-#######################
-
-if($usint_on eq 'yes'){
+if($usint_on =~ /yes/i){
         open(FH, "$pass_dir/usint_users");
         while(<FH>){
                 chomp $_;
@@ -112,52 +105,20 @@ if($usint_on eq 'yes'){
         }
 }
 
-#------------------------------
-#---- read a user-password list
-#------------------------------
+#if-then blocks for removing submission without password checks from previous version
 
-open(FH, "<$pass_dir/.htpasswd");
-
-%pwd_list = ();				# save the user-password list
-while(<FH>) {
-        chomp $_;
-        @passwd = split(/:/,$_);
-        $pwd_list{"$passwd[0]"} = $passwd[1];
-        push(@user_name_list, $passwd[0]);
-}
-close(FH);
-
-
-#------------------------------------
-#---- check inputed user and password
-#------------------------------------
-
-match_user();			# this sub match a user to a password
-
-#--------------------------------------------------------------
-#--------- if a user and a password do not match ask to re-type
-#--------------------------------------------------------------
-
-if($pass eq '' || $pass eq 'no'){
-	if(($pass eq 'no') && ($ac_user  ne ''|| $pass_word ne '')){
-		print "<h2 style='color:red;padding-bottom:10px'>Name and/or Password are not valid.";
-		print " Please try again.</hr>";
-	}
-	password_check();	# this one create password input page
-
-}elsif($pass eq 'yes'){		# ok a user and a password matched
-
-	$sp_user = 'no';
-
+$sp_user = 'no';
+$ac_user = $ENV{REMOTE_USER};
+$pass = 'yes'; #Defaults variable $pass in case password verification is needed in older versions of functions. Now password is verified outside of script.
 #-------------------------------------------
 #------ check whether s/he is a special user
 #-------------------------------------------
 
-	if($usint_on eq 'yes'){
-		$sp_user = 'yes';
-	}else{
-		special_user();
-	}
+if($usint_on =~ /yes/i){
+	$sp_user = 'yes';
+}else{
+	special_user();
+}
 	
 #-------------------------------------------------------
 #----- go to the main part to print a verification page
@@ -165,67 +126,27 @@ if($pass eq '' || $pass eq 'no'){
 #----- go into update_info sub to update the table
 #-------------------------------------------------------
 
-	$rm_obsrev = '';
-	$rm_obsrev = param('Remove');
-	if($rm_obsrev){
-		update_info();		# this sub update updates_table.list
-	}
-
-	remve_submission();		# this sub creates a html page
-
-}else{
-	print '<h2 style="color:red">Something wrong. Exiting</h2>';
-	exit(1);
+$rm_obsrev = '';
+$rm_obsrev = param('Remove');
+if($rm_obsrev){
+	update_info();		# this sub update updates_table.list
 }
+remve_submission();		# this sub creates a html page
+
 
 print end_form();
+
+print '<hr>';
+print '<p style="padding-top:5px; padding-bottom:20px;">';
+print 'If you have any questions, please contact: ';
+print "<a href='mailto:$sot_contact'>$sot_contact</a>.";
+print '<br>';
+print '<em>Last Update: Dec 09, 2022</em>';
+print '</p>';
+
+
 print "</body>";
 print "</html>";
-
-
-#########################################################################
-### password_check: open a user - a password input page               ###
-#########################################################################
-
-sub password_check{
-	print '<h3>Please type your user name and password</h3>';
-	print '<table><tr><th>Name</th><td>';
-	print textfield(-name=>'ac_user', -value=>'', -size=>20);
-	print '</td></tr><tr><th>Password</th><td>';
-	print password_field( -name=>'password', -value=>'', -size=>20);
-	print '</td></tr></table><br>';
-	
-	print '<input type="submit" name="Check" value="Submit">';
-}
-
-
-#########################################################################
-### match_user: check a user and a password matches                   ###
-#########################################################################
-
-sub match_user{
-	$ac_user = param('ac_user');
-	$ac_user =~s/^\s+//g; 
-	$pass_word = param('password');
-	$pass_word =~s/^\s+//g;
-	OUTER:
-	foreach $test_name (@user_name_list){
-		$ppwd  = $pwd_list{"$ac_user"};
-		$ptest = crypt("$pass_word","$ppwd");
-
-		if(($ac_user eq $test_name) && ($ptest  eq $ppwd)){
-			$pass_status = 'match';
-			last OUTER;
-		}
-	}
-
-	if($pass_status eq 'match'){
-		$pass = 'yes';
-	}else{
-		$pass = 'no';
-	}
-}
-
 
 #########################################################################
 ### special_user: check whether the user is a special user            ###
@@ -298,21 +219,25 @@ sub remve_submission{
 #----@pass_list will hold all editable entries so that we can pass them as parameters later
 #------------------------------------------------------------------------------------------
 	@pass_list = ();
-
-	print "<h2 style='text-decoration:underline'>Obs Data Submission Cancellation Page</h2>";
-
+	if ($usint_on =~ /test/){
+		print "<h2 style='text-decoration:underline'>Obs Data Submission Cancellation Page: Test Version</h2>";
+		print "<h3> User: $ac_user	---	Directory: $ocat_dir</h3>";
+	}else{	
+		print "<h2 style='text-decoration:underline'>Obs Data Submission Cancellation Page</h2>";
+	}
 	print "<h3>If you need to remove an accidental submission, please choose the obsid and";
 	print " and click a button from \"Remove\" side. If it says \"NO ACCESS\", it means that someone already";
 	print " made parameter changes, and cannot remove that submission.</h3>";
 
 	print "<h3 style='color:red;padding-bottom:10px'>If it is once removed, the change is permanent; be careful to select a correct one</h3>";
+    print "<h3>It may take a while to load the data. Please be patient...</h3>";
 ########
 #	print "<B><A HREF=\"https://cxc.cfa.harvard.edu/cgi-bin/obs_ss/index.html\">Verification Page ";
 #
 #	print "Support Observation Search Form</A></B><BR>";
 #	print "<B><A HREF=\"https://cxc.cfa.harvard.edu/~mta/CUS/\">Chandra Uplink Support Organizational Page";
 	print '<p>';
-	print "<strong><a href=\"https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi\">Back to Target Parameter Update Status Form</a></strong>";
+	print "<strong><a href=\"https://cxc.cfa.harvard.edu/mta/CUS/Usint/test_dir/orupdate.cgi\">Back to Target Parameter Update Status Form</a></strong>";
 	print '</p>';
 ########
 
@@ -321,8 +246,6 @@ sub remve_submission{
 	@revisions = <FILE>;
 	close (FILE);
 	print "<form name=\"update\" Method=\"post\" action=\"https://cxc.cfa.harvard.edu/mta/CUS/Usint/rm_submission.cgi\">";
-#	print "<FORM NAME=\"update\" METHOD=\"post\" ACTION=\"https://cxc.cfa.harvard.edu/cgi-gen/mta/Obscat/rm_submission.cgi\">";
-#	print "<FORM NAME=\"update\" METHOD=\"post\" ACTION=\"https://cxc.cfa.harvard.edu/cgi-bin/obs_ss/rm_submission.cgi\">";
 #####
 
 	print "<div style='text-align:center;margin-left:auto;margin-right;auto;'>";
@@ -335,18 +258,19 @@ sub remve_submission{
 #---------------------------------------------------------
 
 	if($cancelled_line){
-    		@values= split ("\t", $cancelled_line);
-    		$obsrev = $values[0];
-    		@atemp = split(/\./,$obsrev);
-    		$obsid = $atemp[0];
+    		@values         = split ("\t", $cancelled_line);
+    		$obsrev         = $values[0];
+    		@atemp          = split(/\./,$obsrev);
+    		$obsid          = $atemp[0];
     		$general_status = $values[1];
-    		$acis_status = $values[2];
+    		$acis_status    = $values[2];
     		$si_mode_status = $values[3];
-    		$dutysci_status = $values[4];
-    		$seqnum = $values[5];
-    		$user = $values[6];
-    		@atemp = split(/\./,$obsrev);
-    		$tempid = $atemp[0];
+    		$hrc_si_mode_status = $values[4];
+    		$dutysci_status = $values[5];
+    		$seqnum         = $values[6];
+    		$user           = $values[7];
+    		@atemp          = split(/\./,$obsrev);
+    		$tempid         = $atemp[0];
 
 		print "<td>$obsrev<br />$seqnum<br />$ftime<br />$user</td>";
 		print "</td><td style='color:red'>Cancelled</td></tr> ";
@@ -358,18 +282,19 @@ sub remve_submission{
 
 	foreach $line (@revisions){
     		chop $line;
-    		@values= split ("\t", $line);
-    		$obsrev = $values[0];
-    		@atemp = split(/\./,$obsrev);
-    		$obsid = $atemp[0];
+    		@values         = split ("\t", $line);
+    		$obsrev         = $values[0];
+    		@atemp          = split(/\./,$obsrev);
+    		$obsid          = $atemp[0];
     		$general_status = $values[1];
-    		$acis_status = $values[2];
+    		$acis_status    = $values[2];
     		$si_mode_status = $values[3];
-    		$dutysci_status = $values[4];
-    		$seqnum = $values[5];
-    		$user = $values[6];
-    		@atemp = split(/\./,$obsrev);
-    		$tempid = $atemp[0];
+    		$hrc_si_mode_status = $values[4];
+    		$dutysci_status = $values[5];
+    		$seqnum         = $values[6];
+    		$user           = $values[7];
+    		@atemp          = split(/\./,$obsrev);
+    		$tempid         = $atemp[0];
 
 #-------------------------------------------------------------------------
 #---- checking whether a ac_user has a permission to sign off the case.
@@ -389,8 +314,13 @@ sub remve_submission{
 			}
 		}
 
-    		($na0,$na1,$na2,$na3,$na4,$na5,$na6,$na7,$na8,$mtime,$na10,$na11,$na12) 
+            if($usint_on =~ /test/i){
+    		    ($na0,$na1,$na2,$na3,$na4,$na5,$na6,$na7,$na8,$mtime,$na10,$na11,$na12) 
+					= stat "/proj/web-cxc/cgi-gen/mta/Obscat/ocat/updates/$obsrev";
+            }else{
+    		    ($na0,$na1,$na2,$na3,$na4,$na5,$na6,$na7,$na8,$mtime,$na10,$na11,$na12) 
 					= stat "/data/mta4/CUS/www/Usint/ocat/updates/$obsrev";
+            }
 #    		($na0,$na1,$na2,$na3,$na4,$na5,$na6,$na7,$na8,$mtime,$na10,$na11,$na12) 
 #			= stat "/proj/ascwww/AXAF/extra/science/cgi-gen/mta/Obscat/ocat/updates/$obsrev";
 
@@ -400,8 +330,8 @@ sub remve_submission{
     		($t0,$t1,$t2,$t3,$t4,$t5,$t6,$t7,$t8) = localtime($mtime);
 
     		$month = $t4 + 1;
-    		$day = $t3;
-    		$year = $t5 + 1900;
+    		$day   = $t3;
+    		$year  = $t5 + 1900;
     		$ftime ="$month/$day/$year";
 
 #----------------------------------------------------------------------------------------------
@@ -448,6 +378,12 @@ sub remve_submission{
 #----- si mode
 #-------------
 			if ($si_mode_status ne 'NULL' && $si_mode_status ne 'NA'){
+				$rm_permission = 'no';
+			}
+#-------------
+#----- hrc si mode
+#-------------
+			if ($hrc_si_mode_status ne 'NULL' && $hrc_si_mode_status ne 'NA'){
 				$rm_permission = 'no';
 			}
 
@@ -500,14 +436,15 @@ sub update_info {
 	$cancelled_line = '';
 	foreach $newline (@revcopy){
                	chop $newline;
-               	@newvalues= split ("\t", $newline);
-               	$newobsrev = $newvalues[0];
-               	$newgeneral_status = $newvalues[1];
-               	$newacis_status = $newvalues[2];
-               	$newsi_mode_status = $newvalues[3];
-               	$newdutysci_status = $newvalues[4];
-               	$newseqnum = $newvalues[5];
-               	$newuser = $newvalues[6];
+               	@newvalues         = split ("\t", $newline);
+               	$newobsrev         = $newvalues[0];
+               	#$newgeneral_status = $newvalues[1];
+               	#$newacis_status    = $newvalues[2];
+               	#$newsi_mode_status = $newvalues[3];
+               	#$newhrc_si_mode_status = $newvalues[4];
+               	#$newdutysci_status = $newvalues[5];
+               	#$newseqnum         = $newvalues[6];
+               	#$newuser           = $newvalues[7];
 #-------------------------------------------
 #---- there is obs id match, remove the line
 #-------------------------------------------
