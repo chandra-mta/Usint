@@ -523,8 +523,8 @@ $blank2 = '<Blank>';
 #
 #---- if this is usint version, set the following param to 'yes', otherwise 'no'
 #
-#$usint_on = 'yes';			##### USINT Version
-$usint_on = 'test_yes';			##### Test Version USINT
+$usint_on = 'yes';			##### USINT Version
+#$usint_on = 'test_yes';			##### Test Version USINT
 #
 #--- admin contact email address
 #
@@ -569,7 +569,8 @@ close(IN);
 #
 
 $usint_http   = 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/';	    #--- web site for usint users
-$test_http    = 'https://cxc.cfa.harvard.edu/cgi-gen/mta/Obscat/';	#--- web site for test (not alive)
+#$test_http    = 'https://cxc.cfa.harvard.edu/cgi-gen/mta/Obscat/';	#--- web site for test (not alive)
+$test_http    = 'https://cxc.harvard.edu/mta/CUS/Usint/test_dir';
 $mp_http      = 'https://cxc.cfa.harvard.edu/';			            #--- web site for mission planning related
 $chandra_http = 'https://cxc.harvard.edu/';			                #--- chandra main web site
 $cdo_http     = 'https://icxc.cfa.harvard.edu/cgi-bin/cdo/';	    #--- CDO web site
@@ -3426,7 +3427,7 @@ endofhtml
     }
     
     print '<p><b>A brief description of the listed parameters is given in: ';
-    print '<a href="javascript:WindowOpener(\'./user_help.html\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/user_help.html\')">';
     print '<span style="background-color:lime;">Ocat Data Help Page</span></a>';
     print " </b></p>";
     
@@ -3493,7 +3494,7 @@ endofhtml
 
 	print '<h2>General Parameters';
     print "<span style='font-size:65%;'>";
-    print '<a href="javascript:WindowOpener(\'./user_help.html#general_parameters\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/user_help.html#general_parameters\')">';
     print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
     print " </span>";
     print '</h2>';
@@ -3805,7 +3806,7 @@ endofhtml
 
 	print '<h2>Dither';
     print "<span style='font-size:65%;'>";
-    print '<a href="javascript:WindowOpener(\'./user_help.html#dither_flag\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/user_help.html#dither_flag\')">';
     print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
     print " </span>";
     print '</h2>';
@@ -3873,13 +3874,13 @@ endofhtml
 
 	print '<h2>Time Constraints';
     print "<span style='font-size:65%;'>";
-    print '<a href="javascript:WindowOpener(\'./user_help.html#time_constraints\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/user_help.html#time_constraints\')">';
     print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
     print " </span>";
     print '</h2>';
 
     print '<p><span style="color:red;">New</span>: "';
-    print '<a href="javascript:WindowOpener(\'./ranked_entries.html\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/ranked_entries.html\')">';
     print 'How To Change The Same Parameter Values In Multiple ObsIDs: Ranked Entries for Constraints';
     print '</a></p>';
 
@@ -4064,13 +4065,13 @@ endofhtml
 
     print '<h2>Roll Constraints';
     print "<span style='font-size:65%;'>";
-    print '<a href="javascript:WindowOpener(\'./user_help.html#roll_constraints\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/user_help.html#roll_constraints\')">';
     print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
     print " </span>";
     print ' </h2>';
 
     print '<p><span style="color:red;">New</span>: "';
-    print '<a href="javascript:WindowOpener(\'./ranked_entries.html\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/ranked_entries.html\')">';
     print 'How To Change The Same Parameter Values In Multiple ObsIDs: Ranked Entries for Constraints';
     print '</a></p>';
 
@@ -4174,7 +4175,7 @@ endofhtml
 	print '<hr />';
 	print '<h2>Other Constraints'; 
     print "<span style='font-size:65%;'>";
-    print '<a href="javascript:WindowOpener(\'./user_help.html#other_constraints\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/user_help.html#other_constraints\')">';
     print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
     print " </span>";
     print '</h2>';
@@ -4380,7 +4381,7 @@ endofhtml
 
 	print '<h2>HRC Parameters';
     print "<span style='font-size:65%;'>";
-    print '<a href="javascript:WindowOpener(\'./user_help.html#hrc_parameters\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/user_help.html#hrc_parameters\')">';
     print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
     print " </span>";
     print '</h2>';
@@ -4422,7 +4423,7 @@ endofhtml
 
 	print '<h2>ACIS Parameters';
     print "<span style='font-size:65%;'>";
-    print '<a href="javascript:WindowOpener(\'./user_help.html#acis_parameters\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/user_help.html#acis_parameters\')">';
     print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
     print " </span>";
     print '</h2>';
@@ -4662,13 +4663,13 @@ endofhtml
 	print '<hr />';
 	print '<h2> ACIS Window Constraints';
     print "<span style='font-size:65%;'>";
-    print '<a href="javascript:WindowOpener(\'./user_help.html#acis_window\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/user_help.html#acis_window\')">';
     print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
     print " </span>";
     print '</h2>';
 
     print '<p><span style="color:red;">New</span>: "';
-    print '<a href="javascript:WindowOpener(\'./ranked_entries.html\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/ranked_entries.html\')">';
     print 'How To Change The Same Parameter Values In Multiple ObsIDs: Ranked Entries for Constraints';
     print '</a></p>';
 
@@ -5114,7 +5115,7 @@ endofhtml
 	print '<hr />';
 	print '<h2>TOO Parameters';
     print "<span style='font-size:65%;'>";
-    print '<a href="javascript:WindowOpener(\'./user_help.html#too_parameters\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/user_help.html#too_parameters\')">';
     print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
     print " </span>";
     print '</h2>';
@@ -5176,7 +5177,7 @@ endofhtml
 	print '<hr />';
 	print '<h2>Comments and Remarks';
     print "<span style='font-size:65%;'>";
-    print '<a href="javascript:WindowOpener(\'./user_help.html#comments\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/user_help.html#comments\')">';
     print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
     print " </span>";
     print '</h2>';
@@ -5339,7 +5340,7 @@ endofhtml
     print "If you want to apply the same changes to other obsids, please list ";
     print "them below.<br> ";
     print 'Please read: ';
-    print '<a href="javascript:WindowOpener(\'./multi_obsids.html\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/multi_obsids.html\')">';
     print 'how to use multiple obsid editing</a> for more details.<br><br>';
 
     print textfield(-name=>'split_list', 
