@@ -19,7 +19,7 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 #                                                                               #
 #       author: t. isobe (tisobe@cfa.harvard.edu)                               #
 #                                                                               #
-#       last update: Dec 09, 2022                                               #
+#       last update: Feb 01, 2023                                               #
 #                                                                               #
 #################################################################################
 
@@ -132,7 +132,7 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 #  A warning "CDO approval is requred" is changed to "Has CDO approved this instrument change?"
 #  (Nov 24, 2008)
 #
-# https://icxc.harvard.edu/mta/CUS/ ---> https://icxc.harvard.edu/cus/index.html
+# https://icxc.cfa.harvard.edu/mta/CUS/ ---> https://icxc.cfa.harvard.edu/cus/index.html
 #  (Aug 26, 2009)
 #
 # sub oredit is exported to oredit_sub.perl to increase speed and avoid double entiries of obsid
@@ -226,7 +226,7 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 # https://cxc version
 # (Mar 26, 2013)
 #
-# link to cdo changed to https://icxc.harvard.edu
+# link to cdo changed to https://icxc.cfa.harvard.edu
 # (Apr 03, 2013)
 #
 # mailx's  -r$cus_email option removed
@@ -345,7 +345,7 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 # (Nov 18, 2018)
 #
 # permanent aimppoint values updated
-# ref: https://cxc.harvard.edu/cal/Hrma/OpticalAxisAndAimpoint.html
+# ref: https://cxc.cfa.harvard.edu/cal/Hrma/OpticalAxisAndAimpoint.html
 # (Jul 17, 2019)
 #
 # if inst is hrc and hrc_si_mode is not changed, si_mode_status will be set 'NULL'
@@ -417,6 +417,8 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 #
 # Removing Password Cookies in favor of using .htaccess authentication
 # (Nov, 17,2022)
+#
+# Fixed Links to go only through CUS wbe directory
 #
 #-----Up to here changes were done by William Aaron (waaron@cfa.harvard.edu)----
 #
@@ -523,8 +525,8 @@ $blank2 = '<Blank>';
 #
 #---- if this is usint version, set the following param to 'yes', otherwise 'no'
 #
-$usint_on = 'yes';			##### USINT Version
-#$usint_on = 'test_yes';			##### Test Version USINT
+#$usint_on = 'yes';			##### USINT Version
+$usint_on = 'test_yes';			##### Test Version USINT
 #
 #--- admin contact email address
 #
@@ -568,11 +570,11 @@ close(IN);
 #--- set html pages
 #
 
-$usint_http   = 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/';	    #--- web site for usint users
+$usint_http   = 'https://cxc.cfa.harvard.edu/cus/Usint/';	    #--- web site for usint users
 #$test_http    = 'https://cxc.cfa.harvard.edu/cgi-gen/mta/Obscat/';	#--- web site for test (not alive)
-$test_http    = 'https://cxc.harvard.edu/mta/CUS/Usint/test_dir';
+$test_http    = 'https://cxc.cfa.harvard.edu/cus/Usint/test_dir';	#--- workaround for inability to host apache web test server. Unideal to place test web scripts in the same web directory
 $mp_http      = 'https://cxc.cfa.harvard.edu/';			            #--- web site for mission planning related
-$chandra_http = 'https://cxc.harvard.edu/';			                #--- chandra main web site
+$chandra_http = 'https://cxc.cfa.harvard.edu/';			                #--- chandra main web site
 $cdo_http     = 'https://icxc.cfa.harvard.edu/cgi-bin/cdo/';	    #--- CDO web site
 #
 #--- set a few lists
@@ -3427,7 +3429,7 @@ endofhtml
     }
     
     print '<p><b>A brief description of the listed parameters is given in: ';
-    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/user_help.html\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.cfa.harvard.edu/cus/Usint/user_help.html\')">';
     print '<span style="background-color:lime;">Ocat Data Help Page</span></a>';
     print " </b></p>";
     
@@ -3494,7 +3496,7 @@ endofhtml
 
 	print '<h2>General Parameters';
     print "<span style='font-size:65%;'>";
-    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/user_help.html#general_parameters\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.cfa.harvard.edu/cus/Usint/user_help.html#general_parameters\')">';
     print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
     print " </span>";
     print '</h2>';
@@ -3661,13 +3663,13 @@ endofhtml
 
 	$test = `ls /data/targets/'."$seq_nbr".'/*.gif`;
 	if($test =~ /soe/){
-        $rass  = 'https://cxc.harvard.edu/targets/'."$seq_nbr/$seq_nbr.$obsid".'.soe.rass.gif';
-        $rosat = 'https://cxc.harvard.edu/targets/'."$seq_nbr/$seq_nbr.$obsid".'.soe.pspc.gif';
-        $dss   = 'https://cxc.harvard.edu/targets/'."$seq_nbr/$seq_nbr.$obsid".'.soe.dss.gif';
+        $rass  = 'https://cxc.cfa.harvard.edu/targets/'."$seq_nbr/$seq_nbr.$obsid".'.soe.rass.gif';
+        $rosat = 'https://cxc.cfa.harvard.edu/targets/'."$seq_nbr/$seq_nbr.$obsid".'.soe.pspc.gif';
+        $dss   = 'https://cxc.cfa.harvard.edu/targets/'."$seq_nbr/$seq_nbr.$obsid".'.soe.dss.gif';
 	}else{
-        $rass  = 'https://cxc.harvard.edu/targets/'."$seq_nbr/$seq_nbr.$obsid".'.rass.gif';
-        $rosat = 'https://cxc.harvard.edu/targets/'."$seq_nbr/$seq_nbr.$obsid".'.pspc.gif';
-        $dss   = 'https://cxc.harvard.edu/targets/'."$seq_nbr/$seq_nbr.$obsid".'.dss.gif';
+        $rass  = 'https://cxc.cfa.harvard.edu/targets/'."$seq_nbr/$seq_nbr.$obsid".'.rass.gif';
+        $rosat = 'https://cxc.cfa.harvard.edu/targets/'."$seq_nbr/$seq_nbr.$obsid".'.pspc.gif';
+        $dss   = 'https://cxc.cfa.harvard.edu/targets/'."$seq_nbr/$seq_nbr.$obsid".'.dss.gif';
 	}
 
     print '<a href="javascript:ImageOpener(\''."$dss".'\')">DSS</a>, ';
@@ -3806,7 +3808,7 @@ endofhtml
 
 	print '<h2>Dither';
     print "<span style='font-size:65%;'>";
-    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/user_help.html#dither_flag\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.cfa.harvard.edu/cus/Usint/user_help.html#dither_flag\')">';
     print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
     print " </span>";
     print '</h2>';
@@ -3874,13 +3876,13 @@ endofhtml
 
 	print '<h2>Time Constraints';
     print "<span style='font-size:65%;'>";
-    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/user_help.html#time_constraints\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.cfa.harvard.edu/cus/Usint/user_help.html#time_constraints\')">';
     print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
     print " </span>";
     print '</h2>';
 
     print '<p><span style="color:red;">New</span>: "';
-    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/ranked_entries.html\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.cfa.harvard.edu/cus/Usint/ranked_entries.html\')">';
     print 'How To Change The Same Parameter Values In Multiple ObsIDs: Ranked Entries for Constraints';
     print '</a></p>';
 
@@ -4065,13 +4067,13 @@ endofhtml
 
     print '<h2>Roll Constraints';
     print "<span style='font-size:65%;'>";
-    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/user_help.html#roll_constraints\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.cfa.harvard.edu/cus/Usint/user_help.html#roll_constraints\')">';
     print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
     print " </span>";
     print ' </h2>';
 
     print '<p><span style="color:red;">New</span>: "';
-    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/ranked_entries.html\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.cfa.harvard.edu/cus/Usint/ranked_entries.html\')">';
     print 'How To Change The Same Parameter Values In Multiple ObsIDs: Ranked Entries for Constraints';
     print '</a></p>';
 
@@ -4175,7 +4177,7 @@ endofhtml
 	print '<hr />';
 	print '<h2>Other Constraints'; 
     print "<span style='font-size:65%;'>";
-    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/user_help.html#other_constraints\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.cfa.harvard.edu/cus/Usint/user_help.html#other_constraints\')">';
     print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
     print " </span>";
     print '</h2>';
@@ -4200,7 +4202,7 @@ endofhtml
 	 		         -default=>"$dpointing_constraint",-override=>1000000);
 #### REMOVE AFTER 04-30-21   #####################
 #	print "<span style='color:red;font-size:90%;'>(New Field! ";
-#    print "<a href='https://cxc.harvard.edu/mta/CUS/Usint/user_help.html#pointing_constraint'>";
+#    print "<a href='https://cxc.cfa.harvard.edu/cus/Usint/user_help.html#pointing_constraint'>";
 #    print "Description</a>)</span></td>";
 ##################################################
     print '</tr>';
@@ -4381,7 +4383,7 @@ endofhtml
 
 	print '<h2>HRC Parameters';
     print "<span style='font-size:65%;'>";
-    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/user_help.html#hrc_parameters\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.cfa.harvard.edu/cus/Usint/user_help.html#hrc_parameters\')">';
     print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
     print " </span>";
     print '</h2>';
@@ -4423,7 +4425,7 @@ endofhtml
 
 	print '<h2>ACIS Parameters';
     print "<span style='font-size:65%;'>";
-    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/user_help.html#acis_parameters\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.cfa.harvard.edu/cus/Usint/user_help.html#acis_parameters\')">';
     print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
     print " </span>";
     print '</h2>';
@@ -4663,13 +4665,13 @@ endofhtml
 	print '<hr />';
 	print '<h2> ACIS Window Constraints';
     print "<span style='font-size:65%;'>";
-    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/user_help.html#acis_window\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.cfa.harvard.edu/cus/Usint/user_help.html#acis_window\')">';
     print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
     print " </span>";
     print '</h2>';
 
     print '<p><span style="color:red;">New</span>: "';
-    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/ranked_entries.html\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.cfa.harvard.edu/cus/Usint/ranked_entries.html\')">';
     print 'How To Change The Same Parameter Values In Multiple ObsIDs: Ranked Entries for Constraints';
     print '</a></p>';
 
@@ -5115,7 +5117,7 @@ endofhtml
 	print '<hr />';
 	print '<h2>TOO Parameters';
     print "<span style='font-size:65%;'>";
-    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/user_help.html#too_parameters\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.cfa.harvard.edu/cus/Usint/user_help.html#too_parameters\')">';
     print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
     print " </span>";
     print '</h2>';
@@ -5177,7 +5179,7 @@ endofhtml
 	print '<hr />';
 	print '<h2>Comments and Remarks';
     print "<span style='font-size:65%;'>";
-    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/user_help.html#comments\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.cfa.harvard.edu/cus/Usint/user_help.html#comments\')">';
     print '<span style="background-color:lime;"> (Open Help Page)</span></a>';
     print " </span>";
     print '</h2>';
@@ -5340,7 +5342,7 @@ endofhtml
     print "If you want to apply the same changes to other obsids, please list ";
     print "them below.<br> ";
     print 'Please read: ';
-    print '<a href="javascript:WindowOpener(\'https://cxc.harvard.edu/mta/CUS/Usint/multi_obsids.html\')">';
+    print '<a href="javascript:WindowOpener(\'https://cxc.cfa.harvard.edu/cus/Usint/multi_obsids.html\')">';
     print 'how to use multiple obsid editing</a> for more details.<br><br>';
 
     print textfield(-name=>'split_list', 
@@ -5396,7 +5398,7 @@ endofhtml
     print 'If you have any questions, please contact: ';
     print "<a href='mailto:$sot_contact'>$sot_contact</a>.";
     print '<br>';
-    print '<em>Last Update: Dec 09, 2022</em>';
+    print '<em>Last Update: Feb 01, 2023</em>';
     print '</p>';
 
 }           #---- end of sub "data_input_page"
@@ -9275,7 +9277,7 @@ sub oredit{
         if($schk == 1 && $asis ne "CLONE"){
             print "<p>Please make sure that all your obsids submitted are logged, ";
             print "either by checking emails you received, or going to: <br>";
-            print "<a href='https://icxc.harvard.edu/mta/CUS/Usint/orupdate.cgi'>";
+            print "<a href='https://icxc.cfa.harvard.edu/cus/Usint/orupdate.cgi'>";
             print "<i>Target Parameter Update Status Form</i> Page.</p>";
         }
     
@@ -9727,7 +9729,7 @@ sub send_email_to_mp{
         print ZOUT "Their Ocat Data Page are:\n";
     }
     foreach $tobsid (@tobs_list){
-        print ZOUT "https://cxc.cfa.harvard.edu/mta/CUS/Usint/ocatdata2html.cgi?$tobsid";
+        print ZOUT "https://cxc.cfa.harvard.edu/cus/Usint/ocatdata2html.cgi?$tobsid";
         $mchk = 0;
         foreach $mtest (@mp_scheduled_list){
             if($tobsid eq $mtest){
@@ -9747,7 +9749,7 @@ sub send_email_to_mp{
     foreach $tobsid (@tobs_list){   
         ($file_name, $la) = find_latest_rev($tobsid, @u_list);
          $file_name       = increment_obidrev($file_name, $tobsid);
-        print ZOUT "https://cxc.cfa.harvard.edu/mta/CUS/Usint/chkupdata.cgi?$file_name\n";
+        print ZOUT "https://cxc.cfa.harvard.edu/cus/Usint/chkupdata.cgi?$file_name\n";
     }
     print ZOUT "\n\n";
 
@@ -9843,7 +9845,7 @@ sub send_email_to_cdo{
         print ZOUT "Their Ocat Data Page are:\n";
     }
     foreach $tobsid (@tobs_list){
-        print ZOUT "https://cxc.cfa.harvard.edu/mta/CUS/Usint/ocatdata2html.cgi?$tobsid";
+        print ZOUT "https://cxc.cfa.harvard.edu/cus/Usint/ocatdata2html.cgi?$tobsid";
         print ZOUT "\n";
     }
     print ZOUT "\n";
@@ -9859,7 +9861,7 @@ sub send_email_to_cdo{
     foreach $tobsid (@tobs_list){   
         ($file_name, $la) = find_latest_rev($tobsid, @u_list);
          $file_name       = increment_obidrev($file_name, $tobsid);
-        print ZOUT "https://cxc.cfa.harvard.edu/mta/CUS/Usint/chkupdata.cgi?$file_name\n";
+        print ZOUT "https://cxc.cfa.harvard.edu/cus/Usint/chkupdata.cgi?$file_name\n";
     }
     print ZOUT "\n\n";
 
@@ -9938,7 +9940,7 @@ sub send_email_to_mp{
         print ZOUT "Their Ocat Data Page are:\n";
     }
     foreach $tobsid (@tobs_list){
-        print ZOUT "https://cxc.cfa.harvard.edu/mta/CUS/Usint/ocatdata2html.cgi?$tobsid";
+        print ZOUT "https://cxc.cfa.harvard.edu/cus/Usint/ocatdata2html.cgi?$tobsid";
         print ZOUT "\n";
     }
 
@@ -9949,7 +9951,7 @@ sub send_email_to_mp{
     foreach $tobsid (@tobs_list){   
         ($file_name, $la) = find_latest_rev($tobsid, @u_list);
          $file_name       = increment_obidrev($file_name, $tobsid);
-        print ZOUT "https://cxc.cfa.harvard.edu/mta/CUS/Usint/chkupdata.cgi?$file_name\n";
+        print ZOUT "https://cxc.cfa.harvard.edu/cus/Usint/chkupdata.cgi?$file_name\n";
     }
     print ZOUT "\n\n";
 
@@ -10343,7 +10345,7 @@ sub oredit_sub{
                     open(HOUT, ">$temp_dir/$hrc_si_file");
                     print HOUT "Obsid: $tobsid HRC SI Mode Check is requested. SI Mode: $hrc_si_mode\n";
                     print HOUT "If it is OK, please sign off si mode column on ";
-                    print HOUT "https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi.\n";
+                    print HOUT "https://cxc.cfa.harvard.edu/cus/Usint/orupdate.cgi.\n";
                     close(HOUT);
                     if($usint_on =~ /test/){
                         $cmd = "cat $temp_dir/$hrc_si_file |mailx -s\"Subject: ";
@@ -10473,9 +10475,9 @@ sub send_lt_warning_email{
         $aline = "$aline".'OBSID: '."$obsid".' which is scheduled in 10 days.'."\n\n";
         $aline = "$aline".'The contact email_address address is: '."$email_address"."\n\n";
         $aline = "$aline".'Its Ocat Data Page is:'."\n";
-        $aline = "$aline".'https://cxc.cfa.harvard.edu/mta/CUS/Usint/ocatdata2html.cgi?'."$obsid"."\n\n\n";
+        $aline = "$aline".'https://cxc.cfa.harvard.edu/cus/Usint/ocatdata2html.cgi?'."$obsid"."\n\n\n";
         $aline = "$aline".'If you like to see what were changed:'."\n";
-        $aline = "$aline".'https://cxc.cfa.harvard.edu/mta/CUS/Usint/chkupdata.cgi?'."$file_name"."\n\n\n";
+        $aline = "$aline".'https://cxc.cfa.harvard.edu/cus/Usint/chkupdata.cgi?'."$file_name"."\n\n\n";
     }else{
         @tobs_list = split_string_to_list($split_list, $obsid);
         unshift(@tobs_list, $obsid);
@@ -10486,7 +10488,7 @@ sub send_lt_warning_email{
         
         $aline = "$aline".'Ocat Data Pages are:'."\n";
         foreach $tobsid (@tobs_list){
-            $aline = "$aline".'https://cxc.cfa.harvard.edu/mta/CUS/Usint/ocatdata2html.cgi?';
+            $aline = "$aline".'https://cxc.cfa.harvard.edu/cus/Usint/ocatdata2html.cgi?';
             $aline = "$aline"."$tobsid"."\t\t";
 
             $tlts = find_planned_date($tobsid);
@@ -10511,7 +10513,7 @@ sub send_lt_warning_email{
         foreach $tobsid (@tobs_list){
             ($file_name, $la) = find_latest_rev($tobsid, @u_list);
             $file_name        = increment_obidrev($file_name, $tobsid);
-            $aline = "$aline".'https://cxc.cfa.harvard.edu/mta/CUS/Usint/chkupdata.cgi?'."$file_name"."\n";
+            $aline = "$aline".'https://cxc.cfa.harvard.edu/cus/Usint/chkupdata.cgi?'."$file_name"."\n";
         }
         $aline = "$aline"."\n\n";
     }
@@ -10602,9 +10604,9 @@ sub send_lt_warning_email2{
         $aline = "$aline".'OBSID: '."$obsid".' which is scheduled in 10 days.'."\n\n";
         $aline = "$aline".'The email_address of MP: mp\@cfa.harvard.edu.'."\n\n";
         $aline = "$aline".'Its Ocat Data Page is:'."\n";
-        $aline = "$aline".'https://cxc.cfa.harvard.edu/mta/CUS/Usint/ocatdata2html.cgi?'."$obsid"."\n\n\n";
+        $aline = "$aline".'https://cxc.cfa.harvard.edu/cus/Usint/ocatdata2html.cgi?'."$obsid"."\n\n\n";
         $aline = "$aline".'If you like to see what were changed:'."\n";
-        $aline = "$aline".'https://cxc.cfa.harvard.edu/mta/CUS/Usint/chkupdata.cgi?'."$file_name"."\n\n\n";
+        $aline = "$aline".'https://cxc.cfa.harvard.edu/cus/Usint/chkupdata.cgi?'."$file_name"."\n\n\n";
 
     }else{
         @tobs_list = split_string_to_list($split_list, $obsid);
@@ -10617,7 +10619,7 @@ sub send_lt_warning_email2{
         $aline = "$aline".'Ocat Data Pages are:'."\n";
 
         foreach $tobsid (@tobs_list){
-            $aline = "$aline".'https://cxc.cfa.harvard.edu/mta/CUS/Usint/ocatdata2html.cgi?';
+            $aline = "$aline".'https://cxc.cfa.harvard.edu/cus/Usint/ocatdata2html.cgi?';
             $aline = "$aline"."$tobsid"."\t\t";
             $tlts = find_planned_date($tobsid);
             if ($tlts eq ''){
@@ -10638,7 +10640,7 @@ sub send_lt_warning_email2{
         foreach $tobsid (@tobs_list){
             ($file_name, $la) = find_latest_rev($tobsid, @u_list);
             $file_name        = increment_obidrev($file_name, $tobsid);
-            $aline = "$aline".'https://cxc.cfa.harvard.edu/mta/CUS/Usint/chkupdata.cgi?'."$file_name"."\n";
+            $aline = "$aline".'https://cxc.cfa.harvard.edu/cus/Usint/chkupdata.cgi?'."$file_name"."\n";
         }
         $aline = "$aline"."\n\n";
     }

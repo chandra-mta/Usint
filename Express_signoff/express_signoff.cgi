@@ -12,14 +12,14 @@ use CGI qw/:standard :netscape /;
 use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 
 #################################################################################
-#										                                        #
-#	express_signoff.cgi: This script let a user to sign off multiple obsids	    #
-#				 at one process.				                                #
-#										                                        #
-#	author: t. isobe (tisobe@cfa.harvard.edu)				                    #
-#										                                        #
-#	last update: Jan 26, 2021	           				                        #
-#										                                        #
+#										#
+#	express_signoff.cgi: This script let a user to sign off multiple obsids	#
+#				 at one process.				#
+#										#
+#	author: t. isobe (tisobe@cfa.harvard.edu)				#
+#										#
+#	last update: Feb 01, 2023	           				#
+#										#
 #################################################################################
 
 #-------------------------------------------------------------------------------
@@ -71,12 +71,12 @@ if($usint_on =~ /test/i){
 #--- set html pages
 #
 $usint_home   = 'https://cxc.cfa.harvard.edu/cus/';                 #--- USINT page
-$usint_http   = 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/';       #--- web site for usint users
-$chandra_http = 'https://cxc.harvard.edu/';                         #--- chandra main web site
+$usint_http   = 'https://cxc.cfa.harvard.edu/cus/Usint';       #--- web site for usint users
+$chandra_http = 'https://cxc.cfa.harvard.edu/';                         #--- chandra main web site
 $cdo_http     = 'https://icxc.cfa.harvard.edu/cgi-bin/cdo/';        #--- CDO web site
 
 #$test_http    = 'https://cxc.cfa.harvard.edu/cgi-gen/mta/Obscat/';  #--- web site for test    
-$test_http    = 'https://cxc.harvard.edu/mta/CUS/Usint/test_dir/';  #--- web site for test
+$test_http    = 'https://cxc.cfa.harvard.edu/cus/Usint/test_dir';  #--- web site for test
 $obs_ss_http  = 'https://cxc.cfa.harvard.edu/cgi-bin/obs_ss/';      #--- test site
 
 ############################
