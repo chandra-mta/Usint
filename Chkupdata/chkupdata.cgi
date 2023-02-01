@@ -19,7 +19,7 @@ use CGI qw/:standard :netscape /;
 #											                                            #
 #	10/31/01:	first version							                                #
 #	07/22/02:	uninterrupt added						                                #
-#	last update	Dec 14, 2020							                                #
+#	last update	Feb 01, 2023							                                #
 #											                                            #
 #########################################################################################
 

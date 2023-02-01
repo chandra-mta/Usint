@@ -14,7 +14,7 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 # rm_submission.cgi: remove an accidental submission from database          		#
 #                                           						#
 # 		Author: t. isobe (tisobe@cfa.harvard.edu)                    		#
-#		Last Update: Sep  21, 2021                              		#
+#		Last Update: Feb 01, 2023                              		#
 # This script removes an obsid from database.          	                            	#
 #                                           						#
 # Jul 16, 2022 MS                                                                       #
@@ -149,7 +149,7 @@ print '<p style="padding-top:5px; padding-bottom:20px;">';
 print 'If you have any questions, please contact: ';
 print "<a href='mailto:$sot_contact'>$sot_contact</a>.";
 print '<br>';
-print '<em>Last Update: Jan 31, 2023</em>';
+print '<em>Last Update: Feb 01, 2023</em>';
 print '</p>';
 
 

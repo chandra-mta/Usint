@@ -19,7 +19,7 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 #                                                                               #
 #       author: t. isobe (tisobe@cfa.harvard.edu)                               #
 #                                                                               #
-#       last update: Dec 09, 2022                                               #
+#       last update: Feb 01, 2023                                               #
 #                                                                               #
 #################################################################################
 
@@ -417,6 +417,8 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 #
 # Removing Password Cookies in favor of using .htaccess authentication
 # (Nov, 17,2022)
+#
+# Fixed Links to go only through CUS wbe directory
 #
 #-----Up to here changes were done by William Aaron (waaron@cfa.harvard.edu)----
 #
@@ -5396,7 +5398,7 @@ endofhtml
     print 'If you have any questions, please contact: ';
     print "<a href='mailto:$sot_contact'>$sot_contact</a>.";
     print '<br>';
-    print '<em>Last Update: Jan 31, 2023</em>';
+    print '<em>Last Update: Feb 01, 2023</em>';
     print '</p>';
 
 }           #---- end of sub "data_input_page"

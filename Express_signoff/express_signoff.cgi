@@ -12,14 +12,14 @@ use CGI qw/:standard :netscape /;
 use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 
 #################################################################################
-#										                                        #
-#	express_signoff.cgi: This script let a user to sign off multiple obsids	    #
-#				 at one process.				                                #
-#										                                        #
-#	author: t. isobe (tisobe@cfa.harvard.edu)				                    #
-#										                                        #
-#	last update: Jan 26, 2021	           				                        #
-#										                                        #
+#										#
+#	express_signoff.cgi: This script let a user to sign off multiple obsids	#
+#				 at one process.				#
+#										#
+#	author: t. isobe (tisobe@cfa.harvard.edu)				#
+#										#
+#	last update: Feb 01, 2023	           				#
+#										#
 #################################################################################
 
 #-------------------------------------------------------------------------------
