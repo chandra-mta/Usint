@@ -53,7 +53,7 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 # add TOO/DDT notification								                                #
 #											                                            #
 # T. Isobe Aug 26, 2009									                                #
-# https://icxc.harvard.edu/mta/CUS/ ---> https://icxc.harvard.edu/cus/index.html 	    #
+# https://icxc.harvard.edu/cus/ ---> https://icxc.harvard.edu/cus/index.html 	    #
 #											                                            #
 # T. Isobe Oct 09, 2009									                                #
 #   mailx function input format modified						                        #
@@ -170,7 +170,7 @@ $cus_email   = 'cus@head.cfa.harvard.edu';
 #---- set directory pathes
 #
 #open(IN, '/data/udoc1/ocat/Info_save/dir_list');
-#open(IN, '/proj/web-cxc-dmz/htdocs/mta/CUS/Usint/ocat/Info_save/dir_list');
+#open(IN, '/proj/web-cxc-dmz/htdocs/cus/Usint/ocat/Info_save/dir_list');
 open(IN, '/data/mta4/CUS/www/Usint/ocat/Info_save/dir_list');
 
 while(<IN>){
@@ -203,11 +203,11 @@ if($usint_on =~ /test/i){
 #
 #--- set html pages
 #
-$usint_http   = 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/';      #--- web site for usint users
+$usint_http   = 'https://cxc.cfa.harvard.edu/cus/Usint/';      #--- web site for usint users
 $main_http    = 'https://cxc.cfa.harvard.edu/cus/index.html';      #--- USINT page
 $obs_ss_http  = 'https://cxc.cfa.harvard.edu/cgi-bin/obs_ss/';     #--- web site for none usint users (GO Expert etc)
-#$test_http    = 'https://cxc.cfa.harvard.edu/mta/CUS/Obscat/';     #--- web site for test
-$test_http    = 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/test_dir'; #--- website for test
+#$test_http    = 'https://cxc.cfa.harvard.edu/cus/Obscat/';     #--- web site for test
+$test_http    = 'https://cxc.cfa.harvard.edu/cus/Usint/test_dir'; #--- website for test
 ############################
 #----- end of settings
 ############################
@@ -1752,7 +1752,7 @@ sub update_info {
 #						print OUT "Editing of General entries of $newobsrev ";
 #						print OUT "were finished and signed off. ";
 #						print OUT "Please  update ACIS entries, then go to: ";
-#						print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
+#						print OUT 'https://cxc.cfa.harvard.edu/cus/Usint/orupdate.cgi ';
 #						print OUT "and sign off ACIS Status.\n";
 #
 #						if($usint_on =~ /test/){
@@ -1785,7 +1785,7 @@ sub update_info {
 							print OUT "Editing of General/ACIS entries of $newobsrev ";
 							print OUT "were finished and signed off. ";
 							print OUT "Please  update SI Mode entries, then go to: ";
-							print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
+							print OUT 'https://cxc.cfa.harvard.edu/cus/Usint/orupdate.cgi ';
 							print OUT "and sign off SI Mode Status.\n";
 	
 							if($usint_on =~ /test/){
@@ -1818,7 +1818,7 @@ sub update_info {
 							print OUT "Editing of all entries of $newobsrev ";
 							print OUT "were finished and signed off. ";
 							print OUT "Please  verify it, then go to: ";
-							print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
+							print OUT 'https://cxc.cfa.harvard.edu/cus/Usint/orupdate.cgi ';
 							print OUT "and sign off 'Verified By' column.\n";
 	
 							if($usint_on =~ /test/){
@@ -1852,7 +1852,7 @@ sub update_info {
 ##						print OUT "Editing of ACIS entries of $newobsrev ";
 ##						print OUT "were finished and signed off, but General entries are not yet. ";
 ##						print OUT "Please  update General entries, then go to: ";
-##						print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
+##						print OUT 'https://cxc.cfa.harvard.edu/cus/Usint/orupdate.cgi ';
 ##						print OUT "and sign off General Status.\n";
 ##
 ##						if($usint_on =~ /test/){
@@ -1883,7 +1883,7 @@ sub update_info {
 #							print OUT "Editing of ACIS entries of $newobsrev ";
 #							print OUT "were finished and signed off. ";
 #							print OUT "Please  update SI Mode entries, then go to: ";
-#							print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
+#							print OUT 'https://cxc.cfa.harvard.edu/cus/Usint/orupdate.cgi ';
 #							print OUT "and sign off SI Mode Status.\n";
 #	
 #							if($usint_on =~ /test/){
@@ -1912,7 +1912,7 @@ sub update_info {
 #							print OUT "Editing of all entries of $newobsrev ";
 #							print OUT "were finished and signed off. ";
 #							print OUT "Please  verify it, then go to: ";
-#							print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
+#							print OUT 'https://cxc.cfa.harvard.edu/cus/Usint/orupdate.cgi ';
 #							print OUT "and sign off 'Verified By' column.\n";
 #	
 #							if($usint_on =~ /test/){
@@ -1949,7 +1949,7 @@ sub update_info {
 #						print OUT "Editing of SI entries of $newobsrev ";
 #						print OUT "were finished and signed off, but General entries are not yet. ";
 #						print OUT "Please  update General entries, then go to: ";
-#						print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
+#						print OUT 'https://cxc.cfa.harvard.edu/cus/Usint/orupdate.cgi ';
 #						print OUT "and sign off General Status.\n";
 #
 #						if($usint_on =~ /test/){
@@ -1980,7 +1980,7 @@ sub update_info {
 #							print OUT "Editing of SI Mode entries of $newobsrev ";
 #							print OUT "were finished and signed off, but ACIS entires are not. ";
 #							print OUT "Please  update ACIS entries, then go to: ";
-#							print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
+#							print OUT 'https://cxc.cfa.harvard.edu/cus/Usint/orupdate.cgi ';
 #							print OUT "and sign off ACIS Status.\n";
 #	
 #							if($usint_on =~ /test/){
@@ -2010,7 +2010,7 @@ sub update_info {
 							print OUT "Editing of all entries of $newobsrev ";
 							print OUT "were finished and signed off. ";
 							print OUT "Please  verify it, then go to: ";
-							print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
+							print OUT 'https://cxc.cfa.harvard.edu/cus/Usint/orupdate.cgi ';
 							print OUT "and sign off 'Verified By' column.\n";
 	
 							if($usint_on =~ /test/){
@@ -2051,7 +2051,7 @@ sub update_info {
 #						print OUT "Editing of General entries of $newobsrev ";
 #						print OUT "were finished and signed off. ";
 #						print OUT "Please  update ACIS entries, then go to: ";
-#						print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
+#						print OUT 'https://cxc.cfa.harvard.edu/cus/Usint/orupdate.cgi ';
 #						print OUT "and sign off ACIS Status.\n";
 #
 #						if($usint_on =~ /test/){
@@ -2082,7 +2082,7 @@ sub update_info {
 							print OUT "Editing of General/ACIS entries of $newobsrev ";
 							print OUT "were finished and signed off. ";
 							print OUT "Please  update SI Mode entries, then go to: ";
-							print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
+							print OUT 'https://cxc.cfa.harvard.edu/cus/Usint/orupdate.cgi ';
 							print OUT "and sign off SI Mode Status.\n";
 	
 							if($usint_on =~ /test/){
@@ -2115,7 +2115,7 @@ sub update_info {
 							print OUT "Editing of all entries of $newobsrev ";
 							print OUT "were finished and signed off. ";
 							print OUT "Please  verify it, then go to: ";
-							print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
+							print OUT 'https://cxc.cfa.harvard.edu/cus/Usint/orupdate.cgi ';
 							print OUT "and sign off 'Verified By' column.\n";
 	
 							if($usint_on =~ /test/){
@@ -2148,7 +2148,7 @@ sub update_info {
 ##						print OUT "Editing of ACIS entries of $newobsrev ";
 ##						print OUT "were finished and signed off, but General entries are not yet. ";
 ##						print OUT "Please  update General entries, then go to: ";
-##						print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
+##						print OUT 'https://cxc.cfa.harvard.edu/cus/Usint/orupdate.cgi ';
 ##						print OUT "and sign off General Status.\n";
 ##
 ##						if($usint_on =~ /test/){
@@ -2179,7 +2179,7 @@ sub update_info {
 #							print OUT "Editing of ACIS entries of $newobsrev ";
 #							print OUT "were finished and signed off. ";
 #							print OUT "Please  update SI Mode entries, then go to: ";
-#							print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
+#							print OUT 'https://cxc.cfa.harvard.edu/cus/Usint/orupdate.cgi ';
 #							print OUT "and sign off SI Mode Status.\n";
 #	
 #							if($usint_on =~ /test/){
@@ -2210,7 +2210,7 @@ sub update_info {
 #							print OUT "Editing of all entries of $newobsrev ";
 #							print OUT "were finished and signed off. ";
 #							print OUT "Please  verify it, then go to: ";
-#							print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
+#							print OUT 'https://cxc.cfa.harvard.edu/cus/Usint/orupdate.cgi ';
 #							print OUT "and sign off 'Verified By' column.\n";
 #	
 #							if($usint_on =~ /test/){
@@ -2248,7 +2248,7 @@ sub update_info {
 #						print OUT "Editing of SI entries of $newobsrev ";
 #						print OUT "were finished and signed off, but General entries are not yet. ";
 #						print OUT "Please  update General entries, then go to: ";
-#						print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
+#						print OUT 'https://cxc.cfa.harvard.edu/cus/Usint/orupdate.cgi ';
 #						print OUT "and sign off General Status.\n";
 #
 #						if($usint_on =~ /test/){
@@ -2279,7 +2279,7 @@ sub update_info {
 #							print OUT "Editing of SI Mode entries of $newobsrev ";
 #							print OUT "were finished and signed off, but ACIS entires are not. ";
 #							print OUT "Please  update ACIS entries, then go to: ";
-#							print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
+#							print OUT 'https://cxc.cfa.harvard.edu/cus/Usint/orupdate.cgi ';
 #							print OUT "and sign off ACIS Status.\n";
 #	
 #							if($usint_on =~ /test/){
@@ -2309,7 +2309,7 @@ sub update_info {
 							print OUT "Editing of all entries of $newobsrev ";
 							print OUT "were finished and signed off. ";
 							print OUT "Please  verify it, then go to: ";
-							print OUT 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi ';
+							print OUT 'https://cxc.cfa.harvard.edu/cus/Usint/orupdate.cgi ';
 							print OUT "and sign off 'Verified By' column.\n";
 	
 							if($usint_on =~ /test/){
@@ -2506,7 +2506,7 @@ sub ocat_approve{
 #
 #--- set html pages
 #
-    $usint_http   = 'https://icxc.cfa.harvard.edu/mta/CUS/Usint/';      #--- web site for usint users
+    $usint_http   = 'https://icxc.cfa.harvard.edu/cus/Usint/';      #--- web site for usint users
 #
 #
 #--- start main part

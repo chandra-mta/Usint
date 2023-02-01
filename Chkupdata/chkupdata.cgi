@@ -66,6 +66,13 @@ if($dtest == 1){
 
 
 #
+#--- set html pages
+#
+$usint_http   = 'https://cxc.cfa.harvard.edu/cus/Usint';       #--- web site for usint users 
+$test_http    = 'https://cxc.cfa.harvard.edu/cus/Usint/test_dir';  #--- web site for test
+
+
+#
 #--- find the last submission of the given obsid
 #
 
@@ -211,7 +218,11 @@ close(PRE);
 #print '<td><a href="./orupdate.cgi">Back to Target Parameter Update Status Form</a></td></tr>';
 #
 #print "</table>";
-print '<a href="./orupdate.cgi" style="float:right">Back to Target Parameter Update Status Form</a>';
+if ($dtest == 1){
+	print "<a href=\"$test_http/orupdate.cgi\" style=\"float:right\">Back to Target Parameter Update Status Form</a>";
+}else{
+	print "<a href=\"$usint_http/orupdate.cgi\" style=\"float:right\">Back to Target Parameter Update Status Form</a>";
+}
 print "<h1>OBSERVATION: $dat</h1>";
 
 print "<p style='text-align:right'><strong>(submitted:  $latest_upate)</strong></p>";
@@ -873,8 +884,11 @@ foreach $ent (@paramarray2){
 #
 
 html_print();
-
-print "<p  style='text-align:right'><a href=\"https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi\">Back to Target Parameter Update Status Form</a></p>";
+if ($dtest == 1){
+	print "<p  style='text-align:right'><a href=\"$test_http/orupdate.cgi\">Back to Target Parameter Update Status Form</a></p>";
+}else{
+	print "<p  style='text-align:right'><a href=\"$usint_http/orupdate.cgi\">Back to Target Parameter Update Status Form</a></p>";
+}
 
 print "</body>";
 print "</html>";

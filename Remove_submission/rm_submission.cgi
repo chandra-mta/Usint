@@ -67,6 +67,14 @@ if($usint_on =~ /test/i){
         $ocat_dir = $real_dir;
 }
 
+#
+#--- Set html pages
+#
+$usint_http   = 'https://cxc.cfa.harvard.edu/cus/Usint';       #--- web site for usint users
+$test_http    = 'https://cxc.cfa.harvard.edu/cus/Usint/test_dir';  #--- web site for test
+
+
+
 print header(-type => 'text/html; charset=utf-8');
 
 print "<!DOCTYPE html>";
@@ -141,7 +149,7 @@ print '<p style="padding-top:5px; padding-bottom:20px;">';
 print 'If you have any questions, please contact: ';
 print "<a href='mailto:$sot_contact'>$sot_contact</a>.";
 print '<br>';
-print '<em>Last Update: Dec 09, 2022</em>';
+print '<em>Last Update: Jan 31, 2023</em>';
 print '</p>';
 
 
@@ -225,19 +233,23 @@ sub remve_submission{
 	}else{	
 		print "<h2 style='text-decoration:underline'>Obs Data Submission Cancellation Page</h2>";
 	}
-	print "<h3>If you need to remove an accidental submission, please choose the obsid and";
-	print " and click a button from \"Remove\" side. If it says \"NO ACCESS\", it means that someone already";
+	print "<h3>If you need to remove an accidental submission, please choose the obsid";
+	print " and click a button from the \"Remove\" side. If it says \"NO ACCESS\", it means that someone already";
 	print " made parameter changes, and cannot remove that submission.</h3>";
 
-	print "<h3 style='color:red;padding-bottom:10px'>If it is once removed, the change is permanent; be careful to select a correct one</h3>";
+	print "<h3 style='color:red;padding-bottom:10px'>Once it is removed, the change is permanent; be careful to select a correct one</h3>";
     print "<h3>It may take a while to load the data. Please be patient...</h3>";
 ########
 #	print "<B><A HREF=\"https://cxc.cfa.harvard.edu/cgi-bin/obs_ss/index.html\">Verification Page ";
 #
 #	print "Support Observation Search Form</A></B><BR>";
-#	print "<B><A HREF=\"https://cxc.cfa.harvard.edu/~mta/CUS/\">Chandra Uplink Support Organizational Page";
+#	print "<B><A HREF=\"https://cxc.cfa.harvard.edu/cus/\">Chandra Uplink Support Organizational Page";
 	print '<p>';
-	print "<strong><a href=\"https://cxc.cfa.harvard.edu/mta/CUS/Usint/test_dir/orupdate.cgi\">Back to Target Parameter Update Status Form</a></strong>";
+	if ($usint_on =~ /test/){
+		print "<strong><a href=\"$test_http/orupdate.cgi\">Back to Target Parameter Update Status Form</a></strong>";
+	}else{
+		print "<strong><a href=\"$usint_http/orupdate.cgi\">Back to Target Parameter Update Status Form</a></strong>";
+	}
 	print '</p>';
 ########
 
@@ -245,7 +257,7 @@ sub remve_submission{
 	open (FILE, "< $ocat_dir/updates_table.list");
 	@revisions = <FILE>;
 	close (FILE);
-	print "<form name=\"update\" Method=\"post\" action=\"https://cxc.cfa.harvard.edu/mta/CUS/Usint/rm_submission.cgi\">";
+	print "<form name=\"update\" Method=\"post\" action=\"https://cxc.cfa.harvard.edu/cus/Usint/rm_submission.cgi\">";
 #####
 
 	print "<div style='text-align:center;margin-left:auto;margin-right;auto;'>";
@@ -357,7 +369,7 @@ sub remve_submission{
 			}
 ##########
 #			print "<TD><A HREF=\"https://cxc.cfa.harvard.edu/cgi-bin/obs_ss/chkupdata.cgi";
-			print "<td><a href=\"https://cxc.cfa.harvard.edu/mta/CUS/Usint/chkupdata.cgi";
+			print "<td><a href=\"https://cxc.cfa.harvard.edu/cus/Usint/chkupdata.cgi";
 ##########
 			print "\?$obsrev\">$obsrev</a><br />$seqnum<br />$ftime<br />$user</td>";
 
