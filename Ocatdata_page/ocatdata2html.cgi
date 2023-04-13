@@ -10302,7 +10302,7 @@ sub oredit_sub{
 				system($cmd);
 			}else{
                 $cmd = "cat $temp_dir/user.$sf| tr -d '\015'  |mailx -s\"Subject: ";
-                $cmd = "$cmd"."Parameter Changes log  $obsid.$rev\"  -c$cus_email $email_address";
+                $cmd = "$cmd"."Parameter Changes log  $obsid.$rev\"  -c$cus_email $email_address  $arcops_email";
 				system($cmd);
 			}
 			system("rm $temp_dir/user.$sf");
@@ -10313,7 +10313,7 @@ sub oredit_sub{
 				system($cmd);
 			}else{
                 $cmd = "cat $temp_dir/ormail_$obsid.$sf| tr -d '\015'  |mailx -s\"Subject: ";
-                $cmd = "$cmd"."Parameter Changes log  $obsid.$rev\" -c$cus_email  $email_address";
+                $cmd = "$cmd"."Parameter Changes log  $obsid.$rev\" -c$cus_email  $email_address  $arcops_email";
 				system($cmd);
 			}
 		}
@@ -10324,7 +10324,7 @@ sub oredit_sub{
 			system($cmd);
 		}else{
             $cmd = "cat $temp_dir/ormail_$obsid.$sf| tr -d '\015'  |mailx -s\"Subject: ";
-            $cmd = "$cmd"."Parameter Changes log  $obsid.$rev\" $cus_email";
+            $cmd = "$cmd"."Parameter Changes log  $obsid.$rev\" $cus_email  $arcops_email";
 			system($cmd);
 		}
 #
@@ -11331,7 +11331,7 @@ Note: email address is assume to be same as the global email address $email_addr
     if($usint_on =~ /test/){
         system("cat $obsidrev |mailx -s\"Subject: TEST!! $subject\" $test_email");
     }else{
-        system("cat $obsidrev |mailx -s\"Subject: $subject\"  -c $cus_email $email_address");
+        system("cat $obsidrev |mailx -s\"Subject: $subject\"  -c $cus_email $email_address $arcops_email");
     }
 }
     
