@@ -690,7 +690,7 @@ sub send_email{
 		print OUT "https://icxc.harvard.edu/mta/CUS/Usint/ocatdata2html.cgi?$obsid \n";
 		print OUT "for more information.\n";
 		print OUT "If this you are not the final support astronomer for this observations \n";
-		print OUT "please reply to isobe@head.cfa.harvard.edu cc:cus@head.cfa.harvard.edu.\n";
+		print OUT "please reply to isobe@head.cfa.harvard.edu cc:cus@cfa.harvard.edu.\n";
 		close(OUT);
 
 		system("cat $temp_dir/tmp_email |mailx -s\"Subject: New $uc_head Observation ($user: $poc_email)\n\" -r cus\@head.cfa.harvard.edu isobe\@head.cfa.harvard.edu");

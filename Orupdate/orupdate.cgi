@@ -165,7 +165,7 @@ $usint_on = 'test_yes';                 ##### Test Version USINT
 #--- sot contact email address etc
 #
 $sot_contact = 'waaron@head.cfa.harvard.edu';
-$cus_email   = 'cus@head.cfa.harvard.edu';
+$cus_email   = 'cus@cfa.harvard.edu';
 #
 #---- set directory pathes
 #
