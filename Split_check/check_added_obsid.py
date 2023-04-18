@@ -147,7 +147,7 @@ def compare_prop_lists():
                 cmd = 'cat ' + zspace + '| mailx -s"Subject: Possible Split Observation (poc: ' + email + ')" swolk@head.cfa.harvard.edu'
                 os.system(cmd)
 ##
-##                cmd = 'cat ' + zspace + '| mailx -s"Subject: Possible Split Observation (test version)" -ccus@head.cfa.harvard.edu ' + email
+##                cmd = 'cat ' + zspace + '| mailx -s"Subject: Possible Split Observation (test version)" -c cus@cfa.harvard.edu ' + email
 ##                os.system(cmd)
 
 #
@@ -155,7 +155,7 @@ def compare_prop_lists():
 #
 #            [observer, omail]  = find_observer_email(obsid)
 #
-#            cmd = 'cat ' + zspace + '| mailx -s"Subject: Possible Split Observation (test version)" -ccus@head.cfa.harvard.edu ' + omail
+#            cmd = 'cat ' + zspace + '| mailx -s"Subject: Possible Split Observation (test version)" -c cus@cfa.harvard.edu ' + omail
 #            os.system(cmd)
 
             cmd = 'rm ' + zspace

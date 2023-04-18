@@ -628,7 +628,7 @@ def send_email(type, list, tempdir='NA'):
             os.system(cmd)
 
             subject = 'Subject: New ' + type.upper() + ' Observation '
-##            cmd = 'cat ' + tempfile + ' | mailx -s"' + subject + '"  ' + email + ' -c"swolk@head.cfa.harvard.edu cus@head.cfa.harvard.edu" ' 
+##            cmd = 'cat ' + tempfile + ' | mailx -s"' + subject + '"  ' + email + ' -c"swolk@head.cfa.harvard.edu cus@cfa.harvard.edu" ' 
 ##            os.system(cmd)
 
             cmd = 'rm ' + tempfile
