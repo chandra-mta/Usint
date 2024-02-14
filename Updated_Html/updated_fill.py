@@ -6,7 +6,7 @@
 #                                                                                               #
 #               author: t. isobe (tisobe@cfa.harvard.edu)                                       #
 #                                                                                               #
-#               last update: Mar 17, 2021                                                       #
+#               last update: Sep 27, 2021                                                       #
 #                                                                                               #
 #################################################################################################
 
@@ -141,12 +141,12 @@ def extract_data():
     n_list = []
     for ent in data:
         atemp = re.split('\t+', ent)
-        if len(atemp) < 7:
+        if len(atemp) < 8:
             continue
-        if atemp[4] == 'NA':
+        if atemp[5] == 'NA':
             continue
 
-        btemp = re.split('\s+', atemp[4])
+        btemp = re.split('\s+', atemp[5])
         vdate = re.split('\/',  btemp[1])
 #
 #--- format for the year is <yy> e.g., 99 for 1999, or 20 for 2020
@@ -237,14 +237,17 @@ def create_sub_html_page(data_list, lmon, iyear):
     line = ''
     data_list.reverse()
     for ent in data_list:
-        atemp       = re.split('\t+', ent)
-        obsrev      = atemp[0]
-        gen_status  = atemp[1]
-        acis_status = atemp[2]
-        si_status   = atemp[3]
-        dsi_status  = atemp[4]
-        seqnum      = atemp[5]
-        user        = atemp[6]
+        atemp         = re.split('\t+', ent)
+        obsrev        = atemp[0]
+        gen_status    = atemp[1]
+        acis_status   = atemp[2]
+        if gen_status == 'NULL':
+            gen_status = acis_status
+        si_status     = atemp[3]
+        hrc_si_status = atemp[4]
+        dsi_status    = atemp[5]
+        seqnum        = atemp[6]
+        user          = atemp[7]
 #
 #--- find the file  modificaiton time
 #
@@ -260,11 +263,13 @@ def create_sub_html_page(data_list, lmon, iyear):
 #--- create each html data line
 #
         line = line + '<tr>\n'
-        line = line + '<td><a href="https://icxc.harvard.edu/uspp/updates/' + obsrev + '">'
+        line = line + '<td><a href="https://cxc.harvard.edu/mta/CUS/Usint/chkupdata.cgi?' + obsrev + '">'
+        ####line = line + '<td><a href="https://<NEW HTTP ADDRESS>/chkupdata./' + obsrev + '">'
+        
         line = line + obsrev + '</a><br />' + seqnum + '<br />'
         line = line + ftime  + '<br />' + user + '</td>\n'
-        line = line + '<td>' + gen_status + '</td><td>' + acis_status + '</td><td>'
-        line = line + si_status + '</td><td style="color=#005C00">' + dsi_status + '</td>\n'
+        line = line + '<td>' + gen_status + '</td><td>' + si_status + '</td><td>'
+        line = line + hrc_si_status + '</td><td style="color=#005C00">' + dsi_status + '</td>\n'
         line = line + '</tr>\n'
 #
 #--- combine header body and tail to crate a page
@@ -338,11 +343,11 @@ def update_main_page():
 #--- start a table part
 #
     line = '<tr><th>Year</th>\n'
-    for year in range(2000, tyear+1):
+    for year in range(2005, tyear+1):
         line = line + '<th>' + str(year) + '</th>\n'
     line = line + '</tr>\n'
 
-    yspan  = tyear - 1999
+    yspan  = tyear - 2004
     yspans = yspan - 1
 
     for mon in range(1, 13):
@@ -350,7 +355,7 @@ def update_main_page():
         line = line + '<tr><th>' + lmon + '</th>\n'
 
         for i in range(0, yspan):
-            year = 2000 + i
+            year = 2005 + i
             fname = lmon + '_' + str(year) + '.html'
             if i < yspans:
                 line = line + '<td><a href="./Save_month_html/'

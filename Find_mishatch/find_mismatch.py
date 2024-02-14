@@ -6,7 +6,7 @@
 #                                                                                               #
 #           author: t. isobe (tisobe@cfa.harvard.edu)                                           #
 #                                                                                               #
-#           last update: Mar 18, 2021                                                           #
+#           last update: Sep 21, 2021                                                           #
 #                                                                                               #
 #################################################################################################
 
@@ -47,7 +47,7 @@ zspace = '/tmp/zspace' + str(rtail)
 #
 #--- tech email address
 #
-tech  = 'tisobe@cfa.harvard.edu'
+tech  = 'lina.pulgarin-duque@cfa.harvard.edu'
 
 #-----------------------------------------------------------------------------------------------------
 #---find_mismatch: check update_table.list and check whether a phantom entry is created in the list --

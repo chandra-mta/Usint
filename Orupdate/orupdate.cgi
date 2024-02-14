@@ -154,9 +154,9 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 #---- if this is usint version, set the following param to 'yes', otherwise 'no'
 #
 
-#$usint_on = 'yes';                     ##### USINT Version
+$usint_on = 'yes';                     ##### USINT Version
 #$usint_on = 'no';                      ##### USER Version
-$usint_on = 'test_yes';                 ##### Test Version USINT
+#$usint_on = 'test_yes';                 ##### Test Version USINT
 #$usint_on = 'test_no';                 ##### Test Version USER
 
 @color_table = ('#E6E6FA', '#F5F5DC', '#FFDAB9', '#90EE90', '#BDB76B',\
@@ -2506,7 +2506,7 @@ sub ocat_approve{
 #
 #--- set html pages
 #
-    $usint_http   = 'https://icxc.cfa.harvard.edu/cus/Usint/';      #--- web site for usint users
+    $usint_http   = 'https://cxc.cfa.harvard.edu/cus/Usint/';      #--- web site for usint users
 #
 #
 #--- start main part

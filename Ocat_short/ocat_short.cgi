@@ -515,8 +515,8 @@ $blank2 = '<Blank>';
 #
 #---- if this is usint version, set the following param to 'yes', otherwise 'no'
 #
-###$usint_on = 'yes';			##### USINT Version
-$usint_on = 'test_yes';			##### Test Version USINT
+$usint_on = 'yes';			##### USINT Version
+#$usint_on = 'test_yes';			##### Test Version USINT
 
 #
 #--- admin contact email address

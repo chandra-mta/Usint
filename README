@@ -76,6 +76,18 @@ update updated.html page
 cronjob as cus on r2d2-v:
 20 2,10,12,14,16,18,20 * * * cd /data/mta4/CUS/www/Usint/; /data/mta4/CUS/www/Usint/updated_fill.py  > $HOME/Logs/update_fill_cus.cron 2>&1
 
+########     IMPORTANT!!!!     ###############
+NOTE: after the new Ocat Data Page is turned on,  you need to change the html pointing of all html pages in:
+        /data/mta4/CUS/www/Usint/Save_month_html
+
+Use sed command:
+sed -i "s/https:\/\/cxc.harvard.edu\/mta\/CUS\/Usint\/chkupdata.cgi?/http:\/\/<NEW HTTP ADDRESS>\/chkupdata\//g' *.html
+
+Comment out line 266 of updated_fill.py. Update http address on 267 and un-comment that line.
+
+##############################################
+
+
 write_this_week_too_poc.py
 ---------------------------
 write out this week's POC to /data/mta/TOO-POC 
@@ -92,6 +104,13 @@ cus_common_functions.py
 ------------------------
 python function library
 
+./ocat/Backup/backup_database.py
+---------------------------------
+backup updates_table.list and approved and if something seems wrong, notify admin
+
+cronjob as cus on r2d2-v:
+19 * * * * cd /data/mta4/CUS/www/Usint/ocat/Backup; /data/mta4/CUS/www/Usint/ocat/Backup/backup_database.py > $HOME/Logs/backup_database.cron
+
 
 TOO_Obs
 ------
@@ -100,14 +119,6 @@ see: /data/mta4/CUS/www/Usint/TOO_Obs/Scripts/README
 
 cronjob as cus on r2d2-v:
 50 *  * * * cd  /data/mta4/CUS/www/Usint/TOO_Obs/Scripts; /data/mta4/CUS/www/Usint/TOO_Obs/Scripts/too_ddt_wrap_script >> $HOME/Logs/too_ddt_update.cron 2>&1
-
-Split_check
------------
-check whether a newly added obsid is a split observation, and send notify to PO
-see: /data/mta4/CUS/www/Usint/Split_check/Scripts/README
-
-cronjob as cus on r2d2-v:
-20 8,12,16 * * * cd /data/mta4/CUS/www/Usint/Split_check/Scripts; /data/mta4/CUS/www/Usint/Split_check/Scripts/check_split_obs.py > /data/mta4/CUS/www/Usint/Split_check/Data/test_log 2>&1
 
 
 ================
@@ -213,6 +224,12 @@ Note: there is a php version available for test/approval.
     mk_info_dict.py
 
 Note2: This set of scripts are own by mta, not cus.
+
+===============
+Related Scripts
+===============
+
+Please also read: /data/mta4/obs_ss/README
 
 ==========
 HTML pages

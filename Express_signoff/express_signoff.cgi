@@ -30,9 +30,9 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 #--- a few settings ....
 ############################
 
-#$usint_on = 'yes';                     ##### USINT Version
+$usint_on = 'yes';                     ##### USINT Version
 #$usint_on = 'no';                      ##### USER Version
-$usint_on = 'test_yes';                 ##### Test Version USINT
+#$usint_on = 'test_yes';                 ##### Test Version USINT
 #$usint_on = 'test_no';                 ##### Test Version USER
 
 #
