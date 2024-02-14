@@ -6,7 +6,7 @@
 #                                                                                           #
 #           author: t. isobe (tisobe@cfa.harvard.edu)                                       #
 #                                                                                           #
-#           last update: Jul 27, 2021                                                       #
+#           last update: Sep 21, 2021                                                       #
 #                                                                                           #
 #############################################################################################
 
@@ -91,7 +91,7 @@ def check_hrc_si_status():
         cmd = 'cat ' + zspace + ' | mailx -s"HRC SI Mode Sign Off Request" ' + email
         os.system(cmd)
 
-        cmd = 'cat ' + zspace + ' | mailx -s"HRC SI Mode Sign Off Request" tisobe@cfa.harvard.edu'
+        cmd = 'cat ' + zspace + ' | mailx -s"HRC SI Mode Sign Off Request" lina.pulgarin-duque@cfa.harvard.edu'
         os.system(cmd)
 
 #------------------------------------------------------------------------------
