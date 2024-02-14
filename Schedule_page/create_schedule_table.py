@@ -49,7 +49,7 @@ zspace    = '/tmp/zspace' + str(rtail)
 #
 cus       = 'cus@cfa.harvard.edu'
 admin     = 'bwargelin@cfa.harvard.edu'
-tech      = 'tisobe@cfa.harvard.edu'
+tech      = 'lina.pulgarin-duque@cfa.harvard.edu'
 #
 #--- constant related dates
 #

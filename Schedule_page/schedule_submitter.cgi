@@ -7,7 +7,7 @@ use CGI qw/:standard :netscape /;
 #														                            #
 #		author: t. isobe (tisobe@cfa.harvard.edu)							        #
 #														                            #
-#		last update: Jan 26, 2021									                #
+#		last update: Sep 21, 2021									                #
 #														                            #
 #####################################################################################
 
@@ -127,6 +127,9 @@ print "column so that other people can identify who modified the entry later.</p
 
 print "<p style='padding-right:10em'><strong><em style='color:orange'>IMPORTANT</em>: After click 'Update', or 'Unlock', ";
 print "please do not click any other buttons until the page is completely reloaded.</strong></p>"; 
+
+print '<a href="https://cxc.cfa.harvard.edu/cus/PeoplePhones.txt"><strong><em style="background-color:red;color:yellow;">POC phone numbers</em></strong></a>';
+print  '<br /><br />',"\n";
 
 print '<br />',"\n";
 
@@ -1695,8 +1698,8 @@ print hidden(-name=>'total', -value=>"$total");
 print '<input type="submit" name="submit" value="Submit Updates">',"\n";
 
 print  '<br /><br />',"\n";
-print '<a href="https://cxc.cfa.harvard.edu/mta/CUS/Usint/too_contact_schedule.html">';
-print '<strong><em style="background-color:red;color:yellow;">Back to USINT TOO Point of Contact</em></strong></a>',"\n";
+print '<a href="https://cxc.cfa.harvard.edu/cus/PeoplePhones.txt"><strong><em style="background-color:red;color:yellow;">POC phone numbers</em></strong></a>';
+print  '<br /><br />',"\n";
 print '<br />',"\n";
 
 print '<hr />',"\n";
@@ -1962,7 +1965,7 @@ sub update_database{
 			print OUT "$mail_line"."Brad Wargelin: bwargelin\@head.cfa.harvard.edu\n";
 			close(OUT);
 
-			system("cat $temp_dir/zztemp|mailx -s\"Subject: TOO Schedule Change: $contact1<->$contact2\" -rcus\@head.cfa.harvard.edu isobe\@head.cfa.harvard.edu");
+			system("cat $temp_dir/zztemp|mailx -s\"Subject: TOO Schedule Change: $contact1<->$contact2\" -rcus\@head.cfa.harvard.edu msobolewska\@cfa.harvard.edu");
 
 			if($contact1 eq $contact2){
 				$contact2 = '';
@@ -2014,7 +2017,7 @@ sub update_database{
 			print OUT "$mail_line"."Brad Wargelin: bwargelin\@head.cfa.harvard.edu\n";
 			close(OUT);
 
-			system("cat $temp_dir/zztemp|mailx -s\"Subject: TOO Schedule Updated: $contact1\" -rcus\@head.cfa.harvard.edu isobe\@head.cfa.harvard.edu");
+			system("cat $temp_dir/zztemp|mailx -s\"Subject: TOO Schedule Updated: $contact1\" -rcus\@head.cfa.harvard.edu msobolewska\@cfa.harvard.edu");
 			system("cat $temp_dir/zztemp|mailx -s\"Subject: TOO Schedule Updated\" -rcus\@head.cfa.harvard.edu -ccus\@head.cfa.harvard.edu bwargelin\@head.cfa.harvard.edu $contact1");
 
 			system("rm $temp_dir/zztemp");
@@ -2159,7 +2162,7 @@ sub cut_line_on_database{
 			print OUT "$mail_line"."Brad Wargelin: bwargelin\@head.cfa.harvard.edu\n";
 			close(OUT);
 
-			system("cat $temp_dir/zztemp|mailx -s\"Subject: TOO Schedule Updated: $contact1\" -rcus\@head.cfa.harvard.edu isobe\@head.cfa.harvard.edu");
+			system("cat $temp_dir/zztemp|mailx -s\"Subject: TOO Schedule Updated: $contact1\" -rcus\@head.cfa.harvard.edu msobolewska\@cfa.harvard.edu");
 			system("cat $temp_dir/zztemp|mailx -s\"Subject: TOO Schedule Updated\" -rcus\@head.cfa.harvard.edu -ccus\@head.cfa.harvard.edu bwargelin\@head.cfa.harvard.edu $contact1");
 
 			system("rm $temp_dir/zztemp");
