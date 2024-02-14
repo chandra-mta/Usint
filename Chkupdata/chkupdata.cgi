@@ -54,8 +54,8 @@ while(<IN>){
 close(IN);
 
 ###############################
-#$dtest = 0;
-$dtest = 1;      #---- this is a test case. 
+$dtest = 0;
+#$dtest = 1;      #---- this is a test case. 
 ###############################
 
 if($dtest == 1){
@@ -112,7 +112,10 @@ print "<body style='color:#000000;background-color:#FFFFE0'>";
 #
 
 if($version_warning > 0){
-
+	if ($dtest == 1){
+	print "<h1> Chkupdata Test Version</h1>";
+	print "<h3> User: $ENV{REMOTE_USER}	Directory: $ocat_dir</h3>";
+	}
 	print '<h2 style="padding-top:25px;color:red">Warning!!</h2>';
 	print "<h2>The last updated version of Obsid $obsid_base is <span style='color:red'> $latest_version</span>,";
 	print " but you requested version: <span style='color:red'>$c_version</span>. ";
@@ -219,6 +222,8 @@ close(PRE);
 #
 #print "</table>";
 if ($dtest == 1){
+	print "<h1> Chkupdata Test Version </<h1>";
+	print "<h3> Login User: $ENV{REMOTE_USER}	Directory: $ocat_dir</h3>";
 	print "<a href=\"$test_http/orupdate.cgi\" style=\"float:right\">Back to Target Parameter Update Status Form</a>";
 }else{
 	print "<a href=\"$usint_http/orupdate.cgi\" style=\"float:right\">Back to Target Parameter Update Status Form</a>";
@@ -1865,7 +1870,7 @@ sub color_coding{
 			}else{
 				print "<td style='background-color:#00AA00'>&#160;<br />\n";
 			}
-                }elsif(($snew ne $ddat) && ($snew =~ /\w/)){
+                }elsif(($snew ne $ddat) && ($snew =~ /\w/) && ($ddat ne '')){
 #
 #----red
 #
@@ -2390,9 +2395,9 @@ sub read_databases{
 		$roll_ordr = $rollreq_data[0];
 		$roll_ordr =~ s/\s+//g;
 	}
-	if($roll_ordr =~ /\D/ || $roll_ordr eq ''){
-		$roll_ordr = 1;
-	}
+#	if($roll_ordr =~ /\D/ || $roll_ordr eq ''){
+#		$roll_ordr = 0;
+#	}
 
 #-----------------------------------------------------------------
 #-------- get the rest of the roll requirement data for each order
@@ -2432,9 +2437,9 @@ sub read_databases{
 		$time_ordr = $timereq_data[0];				# here is time order
 		$time_ordr =~ s/\s+//g;
 	}
-	if($time_ordr =~ /\D/ || $time_ordr eq ''){
-		$time_ordr = 1;
-	}
+#	if($time_ordr =~ /\D/ || $time_ordr eq ''){
+#		$time_ordr = 0;
+#	}
 
 #--------------------------------------------------------------
 #----- get the rest of the time requirement data for each order
