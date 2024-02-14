@@ -525,8 +525,8 @@ $blank2 = '<Blank>';
 #
 #---- if this is usint version, set the following param to 'yes', otherwise 'no'
 #
-#$usint_on = 'yes';			##### USINT Version
-$usint_on = 'test_yes';			##### Test Version USINT
+$usint_on = 'yes';			##### USINT Version
+#$usint_on = 'test_yes';			##### Test Version USINT
 #
 #--- admin contact email address
 #
@@ -2041,7 +2041,7 @@ sub read_databases{
 		from target where group_id = \'$group_id\'));
 		$sqlh1->execute();
 
-		while(@group_obsid = $sqlh1->fetchrow_array){
+		while($group_obsid = $sqlh1->fetchrow_array){
     		$group_obsid = join("<td>", $group_obsid);
 			if($usint_on =~ /test/){
                 $line  = "<a href=\"$test_http\/ocatdata2html.cgi\?$group_obsid\">$group_obsid<\/a> ";
@@ -2583,7 +2583,8 @@ sub read_databases{
 #-----------------------------------------------------------------
 	$targid  		        =~ s/\s+//g; 
 	$seq_nbr 		        =~ s/\s+//g; 
-	$targname 		        =~ s/\s+//g; 
+#	$targname 		        =~ s/\s+//g; 
+    $targname               =~ s/^\s+|\s+$//g;
 	$obj_flag 		        =~ s/\s+//g; 
 	if($obj_flag 		    =~ /NONE/){
 		$obj_flag 	        = "NO";
@@ -4302,7 +4303,7 @@ endofhtml
                          -values=>['NO','YES','NULL'],
                	         -default=>"$dmonitor_flag",-override=>10000);
 
-	}elsif($sp_user eq 'yes' && $dmonitor_flag =~ /Y/i && $group_id =~ /\w/ ){
+	}elsif($sp_user eq 'yes' && $group_id =~ /\w/ ){
 		print popup_menu(-name=>'MONITOR_FLAG', 
                          -values=>['NO','YES','NULL'],
                	         -default=>"$dmonitor_flag",-override=>10000);
@@ -4320,7 +4321,7 @@ endofhtml
 		print "<br />";
 	}
 
-	if($group_id =~ /No Group ID/ || $group_id !~ /\d/){
+	if($group_id !~ /No Group ID/ || $group_id =~ /wd/){
 		print '<table style="border-width:0px">';
 
 		print '<tr><th>Follows ObsID#:</th>';
