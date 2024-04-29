@@ -332,7 +332,7 @@ def create_email(obs, catg):
     elif catg == 'sh':
         subject = subject + '(HRC SI sign-off)'
         tline   = tline   + 'HRC SI-specific changes:\n\n'
-        email   = 'kashyap@head.cfa.harvard.edu hrcdude@cfa.harvard.edu'
+        email   = 'vkashyap@cfa.harvard.edu hrcdude@cfa.harvard.edu'
 #
 #--- create a list of obsrev in that category
 #
