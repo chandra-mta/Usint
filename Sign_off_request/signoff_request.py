@@ -310,7 +310,6 @@ def create_email(obs, catg):
     if catg == 'g':
         subject = subject + '(General sign-off)'
         tline   = tline   + 'general (non-ACIS) changes:\n\n'
-        #email   = 'wink@head.cfa.harvard.edu arots@head.cfa.harvard.edu mccolml@head.cfa.harvard.edu'
         email   = 'arcops@cfa.harvard.edu'
 #
 #--- acis sign off
@@ -325,7 +324,7 @@ def create_email(obs, catg):
     elif catg == 'sa':
         subject = subject + '(ACIS SI sign-off)'
         tline   = tline   + 'ACIS SI-specific changes:\n\n'
-        email   = 'acisdude@head.cfa.harvard.edu'
+        email   = 'acisdude@cfa.harvard.edu'
 #
 #--- hrc si sign off
 # 
