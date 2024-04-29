@@ -310,7 +310,6 @@ def create_email(obs, catg):
     if catg == 'g':
         subject = subject + '(General sign-off)'
         tline   = tline   + 'general (non-ACIS) changes:\n\n'
-        #email   = 'wink@head.cfa.harvard.edu arots@head.cfa.harvard.edu mccolml@head.cfa.harvard.edu'
         email   = 'arcops@cfa.harvard.edu'
 #
 #--- acis sign off
@@ -325,14 +324,14 @@ def create_email(obs, catg):
     elif catg == 'sa':
         subject = subject + '(ACIS SI sign-off)'
         tline   = tline   + 'ACIS SI-specific changes:\n\n'
-        email   = 'acisdude@head.cfa.harvard.edu'
+        email   = 'acisdude@cfa.harvard.edu'
 #
 #--- hrc si sign off
 # 
     elif catg == 'sh':
         subject = subject + '(HRC SI sign-off)'
         tline   = tline   + 'HRC SI-specific changes:\n\n'
-        email   = 'kashyap@head.cfa.harvard.edu hrcdude@cfa.harvard.edu'
+        email   = 'vkashyap@cfa.harvard.edu hrcdude@cfa.harvard.edu'
 #
 #--- create a list of obsrev in that category
 #
