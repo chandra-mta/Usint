@@ -19,11 +19,8 @@ import time
 #
 OCAT_DIR = "/data/mta4/CUS/www/Usint/ocat"
 PASS_DIR = "/data/mta4/CUS/www/Usint/Pass_dir"
+OBS_SS = "/data/mta4/obs_ss"
 
-#
-#--- cus common functions
-#
-import cus_common_functions         as ccf
 #
 #--- temp writing file name
 #
@@ -117,7 +114,8 @@ def usint_users():
     output: d_ict   --- a dictionary fo [<email> <full name>]: key: usint user id
     """
     ifile = f"{PASS_DIR}/usint_users"
-    data   = ccf.read_data_file(ifile)
+    with open(ifile) as f:
+        data = [line.strip() for line in f.readlines()]
     d_dict = {}
     for ent in data:
         atemp = re.split('\s+', ent)
@@ -148,7 +146,8 @@ def signoff_status():
 #--- read database
 #
     ifile = f"{OCAT_DIR}/updates_table.list"
-    data   = ccf.read_data_file(ifile)
+    with open(ifile) as f:
+        data = [line.strip() for line in f.readlines()]
     o_dict = {}                 #--- a dict of [<general> <acis> <si> <verify> <inst> <usit>]
     obsrev = []                 #--- a list of obsrev
     usint  = []                 #--- a list of usint user id
@@ -194,8 +193,9 @@ def make_obs_inst_dict():
     input:  none, but trea from <obs_ss>/sot_ocat.out
     output: dict_i  --- a diectionary of obsid <---> instrument
     """
-    ifile  = obs_ss + 'sot_ocat.out'
-    data   = ccf.read_data_file(ifile)
+    ifile = f"{OBS_SS}/sot_ocat.out"
+    with open(ifile) as f:
+        data = [line.strip() for line in f.readlines()]
     dict_i = {}
     for ent in data:
         atemp = re.split('\^', ent)
@@ -273,7 +273,8 @@ def send_email(address, subject, content):
     #cmd = 'cat ' + zspace + '|mailx -s "Subject: TEST!! ' + subject + '\n" ' + tech
     os.system(cmd)
 
-    ccf.rm_files(zspace)
+    if os.path.isfile(zspace):
+        os.remove(zspace)
 
 #---------------------------------------------------------------------------------------
 #-- create_email: create signoff request email                                       ---
@@ -394,7 +395,8 @@ def warning(wline):
     cmd = 'cat ' + zspace + '|mailx -s "Subject: Something failed in signoff_request" ' + tech
     os.system(cmd)
 
-    ccf.rm_files(zspace)
+    if os.path.isfile(zspace):
+        os.remove(zspace)
 
     
 #---------------------------------------------------------------------------------------
