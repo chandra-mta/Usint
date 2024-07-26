@@ -13,13 +13,20 @@
 import re
 import sys
 import os
-import time
+import argparse
+import getpass
 #
 #--- Define Directory Pathing
 #
 OCAT_DIR = "/data/mta4/CUS/www/Usint/ocat"
 PASS_DIR = "/data/mta4/CUS/www/Usint/Pass_dir"
 OBS_SS = "/data/mta4/obs_ss"
+#
+#--- Pull variable used in Website Test
+#
+sys.path.append("/data/mta4/Script/PyUsint/lib/python3.11/site-packages")
+from dotenv import dotenv_values
+USINT_CONFIG = dotenv_values("/data/mta4/CUS/Data/Env/.cxcweb-env")
 
 #
 #--- set a few email addresses
@@ -289,28 +296,28 @@ def create_email(obs, catg):
     if catg == 'g':
         subject = subject + '(General sign-off)'
         tline   = tline   + 'general (non-ACIS) changes:\n\n'
-        email   = 'arcops@cfa.harvard.edu'
+        email   = ['arcops@cfa.harvard.edu']
 #
 #--- acis sign off
 #
     elif catg == 'a':
         subject = subject + '(ACIS sign-off)'
         tline   = tline   + 'ACIS-specific changes:\n\n'
-        email   = 'arcops@cfa.harvard.edu'
+        email   = ['arcops@cfa.harvard.edu']
 #
 #--- acis si sign off
 #
     elif catg == 'sa':
         subject = subject + '(ACIS SI sign-off)'
         tline   = tline   + 'ACIS SI-specific changes:\n\n'
-        email   = 'acisdude@cfa.harvard.edu'
+        email   = ['acisdude@cfa.harvard.edu']
 #
 #--- hrc si sign off
 # 
     elif catg == 'sh':
         subject = subject + '(HRC SI sign-off)'
         tline   = tline   + 'HRC SI-specific changes:\n\n'
-        email   = 'vkashyap@cfa.harvard.edu hrcdude@cfa.harvard.edu'
+        email   = ['vkashyap@cfa.harvard.edu', 'hrcdude@cfa.harvard.edu']
 #
 #--- create a list of obsrev in that category
 #
@@ -318,7 +325,7 @@ def create_email(obs, catg):
         tline   = tline   + '\t' + ent[0]  + '\n'
 
     tline = tline + '\nThese updates may be verified at the following URL:\n\n'
-    tline = tline + 'https://cxc.harvard.edu/mta/CUS/Usint/orupdate.cgi\n'
+    tline += f"{USINT_CONFIG['HTTP_ADDRESS']}\n"
 
     return [email, subject, tline]
 
