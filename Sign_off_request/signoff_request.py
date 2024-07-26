@@ -22,18 +22,11 @@ PASS_DIR = "/data/mta4/CUS/www/Usint/Pass_dir"
 OBS_SS = "/data/mta4/obs_ss"
 
 #
-#--- temp writing file name
-#
-import random
-rtail  = int(time.time() * random.random())
-zspace = '/tmp/zspace' + str(rtail)
-#
 #--- set a few email addresses
 #
 admin  = 'bwargelin@cfa.harvard.edu'
-#tech   = 'lina.pulgarin-duque@cfa.harvard.edu'
 tech   = 'william.aaron@cfa.harvard.edu'
-cus    = 'cus@cfa.harvard.edu'
+CUS    = 'cus@cfa.harvard.edu'
 
 #---------------------------------------------------------------------------------------
 #-- signoff_request: send out singoff request email                                   --
@@ -59,30 +52,30 @@ def signoff_request():
     glist  = find_obs(obsrev, o_dict, 0)
     if len(glist) > 0:
         [email, subject, content] = create_email(glist, 'g')
-        send_email(email, subject, content)
+        send_email(subject, content, {"TO": email, "CC":CUS})
 #
 #---  acis case
 #
     alist  = find_obs(obsrev, o_dict, 1)
     if len(alist) > 0:
         [email, subject, content] = create_email(alist, 'a')
-        send_email(email, subject, content)
+        send_email(subject, content, {"TO": email, "CC":CUS})
 #
 #--- acis si case
 #
     aslist = find_obs(obsrev, o_dict, 2)
     if len(aslist) > 0:
         [email, subject, content] = create_email(aslist, 'sa')
-        send_email(email, subject, content)
+        send_email(subject, content, {"TO": email, "CC":CUS})
 #
 #--- hrc si case
 #
     hslist = find_obs(obsrev, o_dict, 3)
     if len(hslist) > 0:
         [email, subject, content] = create_email(hslist, 'sh')
-        send_email(email, subject, content)
+        send_email(subject, content, {"TO": email, "CC":CUS})
 #
-#--- verificaiton signoff
+#--- verification signoff
 #
     ulist  = find_obs(obsrev, o_dict, 4)
     if len(ulist) > 0:
@@ -93,15 +86,9 @@ def signoff_request():
         [users, so_dict] = group_obs(ulist)
         for user in users:
             obs_list  = so_dict[user]
-
-            try:
-                email = usint_dict[user][0] 
-            except:
-                warning(user)
-                continue
-
+            email = usint_dict[user][0] 
             [subject, content] = verification_email(obs_list)
-            send_email(email, subject, content)
+            send_email(subject, content, {"TO": email, "CC":CUS})
 
 #---------------------------------------------------------------------------------------
 #-- usint_users: create usint user info dictionary                                    --
@@ -253,28 +240,33 @@ def find_obs(obsrev, o_dict, pos):
 #-- send_email: sending email                                                         --
 #---------------------------------------------------------------------------------------
 
-def send_email(address, subject, content):
+def send_email(subject, text, address_dict):
     """
     sending email
-    input:  address     --- email addresses
-            subject     --- subject line
-            content     --- content of the emila
-    output: email set
+    input:  subject      --- subject line
+            test         --- text or template file of text
+            address_dict --- email address dictionary
+    output: email sent
     """
-    with open(zspace, 'w') as fo:
-        fo.write(content)
-#
-#--- adding cus as one of the eamil reciever
-#
-    address = address + ' ' + cus
+    message = ''
+    message += f"TO:{','.join(address_dict['TO'])}\n"
+    if 'CC' in address_dict.keys():
+        message += f"CC:{','.join(address_dict['CC'])}\n"
+    if 'BCC' in address_dict.keys():
+        message += f"BCC:{','.join(address_dict['BCC'])}\n"
 
-    cmd = 'cat ' + zspace + '|mailx -s "Subject: ' + subject + '" -c' + admin 
-    cmd = cmd + ' -b' + tech + ' ' + address
-    #cmd = 'cat ' + zspace + '|mailx -s "Subject: TEST!! ' + subject + '\n" ' + tech
+    message += f"Subject:{subject}\n"
+    
+    if os.path.isfile(text):
+        with open(text) as f:
+            message += f.read()
+    else:
+        message += f"{text}"
+
+    cmd = f"echo '{message}' | sendmail {','.join(address_dict['TO'])}"
+
     os.system(cmd)
 
-    if os.path.isfile(zspace):
-        os.remove(zspace)
 
 #---------------------------------------------------------------------------------------
 #-- create_email: create signoff request email                                       ---
@@ -377,28 +369,6 @@ def group_obs(udata):
             users.append(ent[1])
 
     return [users, u_dict]
-
-#---------------------------------------------------------------------------------------
-#-- warning: sending warning of the process failuare to a tech person                 ---
-#---------------------------------------------------------------------------------------
-
-def warning(wline):
-    """
-    sending warning of the process failuare to a tech person
-    input:  wline   --- clue of failure
-    output: email sent out
-    """
-    line = 'Something wrong with: ' + wline + ' in signoff_request.py.'
-    with open(zspace, 'w') as fo:
-        fo.write(line)
-
-    cmd = 'cat ' + zspace + '|mailx -s "Subject: Something failed in signoff_request" ' + tech
-    os.system(cmd)
-
-    if os.path.isfile(zspace):
-        os.remove(zspace)
-
-    
 #---------------------------------------------------------------------------------------
 
 if __name__ == "__main__":
