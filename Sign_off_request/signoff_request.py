@@ -1,4 +1,4 @@
-#!/usr/bin/env /data/mta/Script/Python3.8/envs/ska3-shiny/bin/python
+#!/proj/sot/ska3/flight/bin/python
 
 #################################################################################################
 #                                                                                               #
@@ -6,34 +6,20 @@
 #                                                                                               #
 #               author: t. isobe (tisobe@cfa.harvard.edu)                                       #
 #                                                                                               #
-#               last update: Sep 27, 2021                                                       #
+#               last update: Jul 26, 2024                                                       #
 #                                                                                               #
 #################################################################################################
 
-import math
 import re
 import sys
 import os
-import string
 import time
-import Chandra.Time
-import numpy
 #
-#--- reading directory list
+#--- Define Directory Pathing
 #
-path = '/data/mta4/CUS/www/Usint/ocat/Info_save/too_dir_list_py3'
-with  open(path, 'r') as f:
-    data = [line.strip() for line in f.readlines()]
+OCAT_DIR = "/data/mta4/CUS/www/Usint/ocat"
+PASS_DIR = "/data/mta4/CUS/www/Usint/Pass_dir"
 
-for ent in data:
-    atemp = re.split(':', ent)
-    var  = atemp[1].strip()
-    line = atemp[0].strip()
-    exec("%s = %s" %(var, line))
-#
-#--- append a path to a privte folder to python directory
-#
-sys.path.append(bin_dir)
 #
 #--- cus common functions
 #
@@ -130,7 +116,7 @@ def usint_users():
     input:  none, but read from <pass_dir>/usint_users
     output: d_ict   --- a dictionary fo [<email> <full name>]: key: usint user id
     """
-    ifile  = pass_dir + 'usint_users'
+    ifile = f"{PASS_DIR}/usint_users"
     data   = ccf.read_data_file(ifile)
     d_dict = {}
     for ent in data:
@@ -161,7 +147,7 @@ def signoff_status():
 #
 #--- read database
 #
-    ifile  = ocat_dir + 'updates_table.list'
+    ifile = f"{OCAT_DIR}/updates_table.list"
     data   = ccf.read_data_file(ifile)
     o_dict = {}                 #--- a dict of [<general> <acis> <si> <verify> <inst> <usit>]
     obsrev = []                 #--- a list of obsrev
