@@ -13,6 +13,7 @@
 import re
 import sys
 import os
+import sqlite3
 import argparse
 import getpass
 #
@@ -31,8 +32,7 @@ USINT_CONFIG = dotenv_values("/data/mta4/CUS/Data/Env/.cxcweb-env")
 #
 #--- set a few email addresses
 #
-admin  = 'bwargelin@cfa.harvard.edu'
-tech   = 'william.aaron@cfa.harvard.edu'
+ADMIN  = 'bwargelin@cfa.harvard.edu'
 CUS    = 'cus@cfa.harvard.edu'
 
 #---------------------------------------------------------------------------------------
@@ -59,28 +59,28 @@ def signoff_request():
     glist  = find_obs(obsrev, o_dict, 0)
     if len(glist) > 0:
         [email, subject, content] = create_email(glist, 'g')
-        send_email(subject, content, {"TO": email, "CC":CUS})
+        send_email(subject, content, {"TO": email, "CC":[CUS, ADMIN]})
 #
 #---  acis case
 #
     alist  = find_obs(obsrev, o_dict, 1)
     if len(alist) > 0:
         [email, subject, content] = create_email(alist, 'a')
-        send_email(subject, content, {"TO": email, "CC":CUS})
+        send_email(subject, content, {"TO": email, "CC":[CUS, ADMIN]})
 #
 #--- acis si case
 #
     aslist = find_obs(obsrev, o_dict, 2)
     if len(aslist) > 0:
         [email, subject, content] = create_email(aslist, 'sa')
-        send_email(subject, content, {"TO": email, "CC":CUS})
+        send_email(subject, content, {"TO": email, "CC":[CUS, ADMIN]})
 #
 #--- hrc si case
 #
     hslist = find_obs(obsrev, o_dict, 3)
     if len(hslist) > 0:
         [email, subject, content] = create_email(hslist, 'sh')
-        send_email(subject, content, {"TO": email, "CC":CUS})
+        send_email(subject, content, {"TO": email, "CC":[CUS, ADMIN]})
 #
 #--- verification signoff
 #
@@ -93,9 +93,9 @@ def signoff_request():
         [users, so_dict] = group_obs(ulist)
         for user in users:
             obs_list  = so_dict[user]
-            email = usint_dict[user][0] 
+            email = usint_dict[user]
             [subject, content] = verification_email(obs_list)
-            send_email(subject, content, {"TO": email, "CC":CUS})
+            send_email(subject, content, {"TO": email, "CC":[CUS, ADMIN]})
 
 #---------------------------------------------------------------------------------------
 #-- usint_users: create usint user info dictionary                                    --
@@ -104,8 +104,8 @@ def signoff_request():
 def usint_users():
     """
     create usint user info dictionary
-    input:  none, but read from <pass_dir>/usint_users
-    output: d_ict   --- a dictionary fo [<email> <full name>]: key: usint user id
+    input:  none, but read from USINT_CONFIG
+    output: d_ict   --- a dictionary of [<email> <full name>]: key: usint user id
     """
     ifile = f"{PASS_DIR}/usint_users"
     with open(ifile) as f:
@@ -184,7 +184,7 @@ def signoff_status():
 def make_obs_inst_dict():
     """
     make a dictionary of obsid <---> instrument
-    input:  none, but trea from <obs_ss>/sot_ocat.out
+    input:  none, but read from <obs_ss>/sot_ocat.out
     output: dict_i  --- a diectionary of obsid <---> instrument
     """
     ifile = f"{OBS_SS}/sot_ocat.out"
@@ -256,11 +256,21 @@ def send_email(subject, text, address_dict):
     output: email sent
     """
     message = ''
-    message += f"TO:{','.join(address_dict['TO'])}\n"
+    if type(address_dict['TO']) == list:
+        message += f"TO:{','.join(address_dict['TO'])}\n"
+    else:
+        message += f"TO:{address_dict['TO']}\n"
+
     if 'CC' in address_dict.keys():
-        message += f"CC:{','.join(address_dict['CC'])}\n"
+        if type(address_dict['CC']) == list:
+            message += f"CC:{','.join(address_dict['CC'])}\n"
+        else:
+            message += f"CC:{address_dict['CC']}\n"
     if 'BCC' in address_dict.keys():
-        message += f"BCC:{','.join(address_dict['BCC'])}\n"
+        if type(address_dict['CC']) == list:
+            message += f"BCC:{','.join(address_dict['BCC'])}\n"
+        else:
+            message += f"BCC:{address_dict['BCC']}\n"
 
     message += f"Subject:{subject}\n"
     
