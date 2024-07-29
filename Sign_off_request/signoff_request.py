@@ -258,9 +258,12 @@ def send_email(subject, text, addresses):
 
     message = ''
     if type(address_dict['TO']) == list:
-        message += f"TO:{','.join(address_dict['TO'])}\n"
+        to_email = f"{','.join(address_dict['TO'])}"
+        message += f"TO:{to_email}\n"
     else:
-        message += f"TO:{address_dict['TO']}\n"
+        to_email = f"{address_dict['TO']}"
+        message += f"TO:{to_email}\n"
+
 
     if 'CC' in address_dict.keys():
         if type(address_dict['CC']) == list:
@@ -281,8 +284,7 @@ def send_email(subject, text, addresses):
     else:
         message += f"{text}"
 
-    cmd = f"echo '{message}' | sendmail {','.join(address_dict['TO'])}"
-
+    cmd = f"echo '{message}' | sendmail {to_email}"
     os.system(cmd)
 
 
