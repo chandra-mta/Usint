@@ -1,4 +1,4 @@
-#!/usr/bin/env /data/mta/Script/Python3.8/envs/ska3-shiny/bin/python
+#!/proj/sot/ska3/flight/bin/python
 
 #################################################################################################
 #                                                                                               #
@@ -6,51 +6,34 @@
 #                                                                                               #
 #               author: t. isobe (tisobe@cfa.harvard.edu)                                       #
 #                                                                                               #
-#               last update: Sep 27, 2021                                                       #
+#               last update: Jul 26, 2024                                                       #
 #                                                                                               #
 #################################################################################################
 
-import math
 import re
 import sys
 import os
-import string
-import time
-import Chandra.Time
-import numpy
+import sqlite3
+import argparse
 #
-#--- reading directory list
+#--- Define Directory Pathing
 #
-path = '/data/mta4/CUS/www/Usint/ocat/Info_save/too_dir_list_py3'
-with  open(path, 'r') as f:
-    data = [line.strip() for line in f.readlines()]
+OCAT_DIR = "/data/mta4/CUS/www/Usint/ocat"
+OBS_SS = "/data/mta4/obs_ss"
+#
+#--- Pull variable used in Website Test
+#
+sys.path.append("/data/mta4/Script/PyUsint/lib/python3.11/site-packages")
+from dotenv import dotenv_values
+USINT_CONFIG = dotenv_values("/data/mta4/CUS/Data/Env/.cxcweb-env")
 
-for ent in data:
-    atemp = re.split(':', ent)
-    var  = atemp[1].strip()
-    line = atemp[0].strip()
-    exec("%s = %s" %(var, line))
-#
-#--- append a path to a privte folder to python directory
-#
-sys.path.append(bin_dir)
-#
-#--- cus common functions
-#
-import cus_common_functions         as ccf
-#
-#--- temp writing file name
-#
-import random
-rtail  = int(time.time() * random.random())
-zspace = '/tmp/zspace' + str(rtail)
 #
 #--- set a few email addresses
 #
-admin  = 'bwargelin@cfa.harvard.edu'
-#tech   = 'lina.pulgarin-duque@cfa.harvard.edu'
-tech   = 'william.aaron@cfa.harvard.edu'
-cus    = 'cus@cfa.harvard.edu'
+ADMIN = 'bwargelin@cfa.harvard.edu'
+CUS = 'cus@cfa.harvard.edu'
+TECH = 'william.aaron@cfa.harvard.edu'
+LIVE_EMAIL = True
 
 #---------------------------------------------------------------------------------------
 #-- signoff_request: send out singoff request email                                   --
@@ -76,30 +59,30 @@ def signoff_request():
     glist  = find_obs(obsrev, o_dict, 0)
     if len(glist) > 0:
         [email, subject, content] = create_email(glist, 'g')
-        send_email(email, subject, content)
+        send_email(subject, content, {"TO": email, "CC":[CUS, ADMIN]})
 #
 #---  acis case
 #
     alist  = find_obs(obsrev, o_dict, 1)
     if len(alist) > 0:
         [email, subject, content] = create_email(alist, 'a')
-        send_email(email, subject, content)
+        send_email(subject, content, {"TO": email, "CC":[CUS, ADMIN]})
 #
 #--- acis si case
 #
     aslist = find_obs(obsrev, o_dict, 2)
     if len(aslist) > 0:
         [email, subject, content] = create_email(aslist, 'sa')
-        send_email(email, subject, content)
+        send_email(subject, content, {"TO": email, "CC":[CUS, ADMIN]})
 #
 #--- hrc si case
 #
     hslist = find_obs(obsrev, o_dict, 3)
     if len(hslist) > 0:
         [email, subject, content] = create_email(hslist, 'sh')
-        send_email(email, subject, content)
+        send_email(subject, content, {"TO": email, "CC":[CUS, ADMIN]})
 #
-#--- verificaiton signoff
+#--- verification signoff
 #
     ulist  = find_obs(obsrev, o_dict, 4)
     if len(ulist) > 0:
@@ -110,15 +93,9 @@ def signoff_request():
         [users, so_dict] = group_obs(ulist)
         for user in users:
             obs_list  = so_dict[user]
-
-            try:
-                email = usint_dict[user][0] 
-            except:
-                warning(user)
-                continue
-
+            email = usint_dict[user]
             [subject, content] = verification_email(obs_list)
-            send_email(email, subject, content)
+            send_email(subject, content, {"TO": email, "CC":[CUS, ADMIN]})
 
 #---------------------------------------------------------------------------------------
 #-- usint_users: create usint user info dictionary                                    --
@@ -127,19 +104,16 @@ def signoff_request():
 def usint_users():
     """
     create usint user info dictionary
-    input:  none, but read from <pass_dir>/usint_users
-    output: d_ict   --- a dictionary fo [<email> <full name>]: key: usint user id
+    input:  none, but read from USINT_CONFIG
+    output: d_ict   --- a dictionary of {username: email}
     """
-    ifile  = pass_dir + 'usint_users'
-    data   = ccf.read_data_file(ifile)
+    con = sqlite3.connect(USINT_CONFIG['DATABASE_URL'].split("///")[1])
+    cur = con.cursor()
+    res = cur.execute("SELECT username, email FROM User")
     d_dict = {}
-    for ent in data:
-        atemp = re.split('\s+', ent)
-        btemp = re.split('#',   ent)
-        name  = btemp[1]
-
-        d_dict[atemp[0]] = [atemp[1], name]
-
+    for ent in res.fetchall():
+        d_dict[ent[0]] = ent[1]
+    con.close()
     return d_dict
 
 #---------------------------------------------------------------------------------------
@@ -161,9 +135,10 @@ def signoff_status():
 #
 #--- read database
 #
-    ifile  = ocat_dir + 'updates_table.list'
-    data   = ccf.read_data_file(ifile)
-    o_dict = {}                 #--- a dict of [<general> <acis> <si> <verify> <inst> <usit>]
+    ifile = f"{OCAT_DIR}/updates_table.list"
+    with open(ifile) as f:
+        data = [line.strip() for line in f.readlines()]
+    o_dict = {}                 #--- a dict of [<general> <acis> <si> <verify> <inst> <usint>]
     obsrev = []                 #--- a list of obsrev
     usint  = []                 #--- a list of usint user id
     for ent in data:
@@ -205,11 +180,12 @@ def signoff_status():
 def make_obs_inst_dict():
     """
     make a dictionary of obsid <---> instrument
-    input:  none, but trea from <obs_ss>/sot_ocat.out
-    output: dict_i  --- a diectionary of obsid <---> instrument
+    input:  none, but read from <obs_ss>/sot_ocat.out
+    output: dict_i  --- a dictionary of obsid <---> instrument
     """
-    ifile  = obs_ss + 'sot_ocat.out'
-    data   = ccf.read_data_file(ifile)
+    ifile = f"{OBS_SS}/sot_ocat.out"
+    with open(ifile) as f:
+        data = [line.strip() for line in f.readlines()]
     dict_i = {}
     for ent in data:
         atemp = re.split('\^', ent)
@@ -233,7 +209,7 @@ def find_obs(obsrev, o_dict, pos):
     """
     find which obsrev's need signoff request email
     input:  obsrev      --- a list of obsrev
-            o_dict      --- a diectionay of [<general> <acis> <si> <verify> <inst> <usit>]
+            o_dict      --- a dictionay of [<general> <acis> <si> <verify> <inst> <usit>]
             pos         --- position of sign off checking (e.g. <acis> for pos 1)
     output: r_list      --- a list of lists of (<bosrev>, <usint>]
     """
@@ -267,27 +243,50 @@ def find_obs(obsrev, o_dict, pos):
 #-- send_email: sending email                                                         --
 #---------------------------------------------------------------------------------------
 
-def send_email(address, subject, content):
+def send_email(subject, text, addresses):
     """
     sending email
-    input:  address     --- email addresses
-            subject     --- subject line
-            content     --- content of the emila
-    output: email set
+    input:  subject      --- subject line
+            test         --- text or template file of text
+            addresses --- email address dictionary
+    output: email sent
     """
-    with open(zspace, 'w') as fo:
-        fo.write(content)
-#
-#--- adding cus as one of the eamil reciever
-#
-    address = address + ' ' + cus
+    if LIVE_EMAIL:
+        address_dict = addresses
+    else:
+        address_dict = {'TO':TECH}
 
-    cmd = 'cat ' + zspace + '|mailx -s "Subject: ' + subject + '" -c' + admin 
-    cmd = cmd + ' -b' + tech + ' ' + address
-    #cmd = 'cat ' + zspace + '|mailx -s "Subject: TEST!! ' + subject + '\n" ' + tech
+    message = ''
+    if type(address_dict['TO']) == list:
+        to_email = f"{','.join(address_dict['TO'])}"
+        message += f"TO:{to_email}\n"
+    else:
+        to_email = f"{address_dict['TO']}"
+        message += f"TO:{to_email}\n"
+
+
+    if 'CC' in address_dict.keys():
+        if type(address_dict['CC']) == list:
+            message += f"CC:{','.join(address_dict['CC'])}\n"
+        else:
+            message += f"CC:{address_dict['CC']}\n"
+    if 'BCC' in address_dict.keys():
+        if type(address_dict['CC']) == list:
+            message += f"BCC:{','.join(address_dict['BCC'])}\n"
+        else:
+            message += f"BCC:{address_dict['BCC']}\n"
+
+    message += f"Subject:{subject}\n"
+    
+    if os.path.isfile(text):
+        with open(text) as f:
+            message += f.read()
+    else:
+        message += f"{text}"
+
+    cmd = f"echo '{message}' | sendmail {to_email}"
     os.system(cmd)
 
-    ccf.rm_files(zspace)
 
 #---------------------------------------------------------------------------------------
 #-- create_email: create signoff request email                                       ---
@@ -310,28 +309,28 @@ def create_email(obs, catg):
     if catg == 'g':
         subject = subject + '(General sign-off)'
         tline   = tline   + 'general (non-ACIS) changes:\n\n'
-        email   = 'arcops@cfa.harvard.edu'
+        email   = ['arcops@cfa.harvard.edu']
 #
 #--- acis sign off
 #
     elif catg == 'a':
         subject = subject + '(ACIS sign-off)'
         tline   = tline   + 'ACIS-specific changes:\n\n'
-        email   = 'arcops@cfa.harvard.edu'
+        email   = ['arcops@cfa.harvard.edu']
 #
 #--- acis si sign off
 #
     elif catg == 'sa':
         subject = subject + '(ACIS SI sign-off)'
         tline   = tline   + 'ACIS SI-specific changes:\n\n'
-        email   = 'acisdude@cfa.harvard.edu'
+        email   = ['acisdude@cfa.harvard.edu']
 #
 #--- hrc si sign off
 # 
     elif catg == 'sh':
         subject = subject + '(HRC SI sign-off)'
         tline   = tline   + 'HRC SI-specific changes:\n\n'
-        email   = 'vkashyap@cfa.harvard.edu hrcdude@cfa.harvard.edu'
+        email   = ['vkashyap@cfa.harvard.edu', 'hrcdude@cfa.harvard.edu']
 #
 #--- create a list of obsrev in that category
 #
@@ -339,18 +338,17 @@ def create_email(obs, catg):
         tline   = tline   + '\t' + ent[0]  + '\n'
 
     tline = tline + '\nThese updates may be verified at the following URL:\n\n'
-    tline = tline + 'https://cxc.harvard.edu/mta/CUS/Usint/orupdate.cgi\n'
+    tline += f"{USINT_CONFIG['HTTP_ADDRESS']}/orupdate/\n"
 
     return [email, subject, tline]
 
 #---------------------------------------------------------------------------------------
-#-- verification_email: create verificaiton request email                             --
-#--  10/18/22 Brad edited 2 URLs for orupdate.cgi: icxc to cxc
+#-- verification_email: create verification request email                             --
 #---------------------------------------------------------------------------------------
 
 def verification_email(obs_list):
     """
-    create verificaiton request email
+    create verification request email
     input:  obs_list    --- a list of obsrev
     output: subject     --- subject line
             tline       --- content of the email
@@ -362,7 +360,7 @@ def verification_email(obs_list):
         tline = tline + '\t' +  ent + '\n'
 
     tline   = tline + '\nPlease sign off these requests at this url:\n\n'
-    tline   = tline + 'https://cxc.harvard.edu/mta/CUS/Usint/orupdate.cgi\n'
+    tline   = tline + f"{USINT_CONFIG['HTTP_ADDRESS']}/orupdate/\n"
     tline   = tline + '\nThis message is generated by a cron job, so no reply is necessary.\n'
     
     return [subject, tline]
@@ -390,29 +388,23 @@ def group_obs(udata):
             users.append(ent[1])
 
     return [users, u_dict]
-
-#---------------------------------------------------------------------------------------
-#-- warning: sending warning of the process failuare to a tech person                 ---
-#---------------------------------------------------------------------------------------
-
-def warning(wline):
-    """
-    sending warning of the process failuare to a tech person
-    input:  wline   --- clue of failure
-    output: email sent out
-    """
-    line = 'Something wrong with: ' + wline + ' in signoff_request.py.'
-    with open(zspace, 'w') as fo:
-        fo.write(line)
-
-    cmd = 'cat ' + zspace + '|mailx -s "Subject: Something failed in signoff_request" ' + tech
-    os.system(cmd)
-
-    ccf.rm_files(zspace)
-
-    
 #---------------------------------------------------------------------------------------
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-m", "--mode", choices = ['flight','test'], required = True, help = "Determine running mode.")
+    parser.add_argument("-p", "--path", required = False, help = "Directory path to determine output location of plot.")
+    args = parser.parse_args()
+#
+#--- Determine if running in test mode and change pathing if so
+#
+    if args.mode == 'test':
+        OCAT_DIR = "/proj/web-cxc/cgi-gen/mta/Obscat/ocat"
+        USINT_CONFIG = dotenv_values("/data/mta4/CUS/Data/Env/.localhostenv")
+        LIVE_EMAIL = False
 
-    signoff_request()
+        signoff_request()
+    
+    elif args.mode == 'flight':
+
+        signoff_request()
