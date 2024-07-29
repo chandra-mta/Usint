@@ -15,12 +15,10 @@ import sys
 import os
 import sqlite3
 import argparse
-import getpass
 #
 #--- Define Directory Pathing
 #
 OCAT_DIR = "/data/mta4/CUS/www/Usint/ocat"
-PASS_DIR = "/data/mta4/CUS/www/Usint/Pass_dir"
 OBS_SS = "/data/mta4/obs_ss"
 #
 #--- Pull variable used in Website Test
@@ -32,8 +30,10 @@ USINT_CONFIG = dotenv_values("/data/mta4/CUS/Data/Env/.cxcweb-env")
 #
 #--- set a few email addresses
 #
-ADMIN  = 'bwargelin@cfa.harvard.edu'
-CUS    = 'cus@cfa.harvard.edu'
+ADMIN = 'bwargelin@cfa.harvard.edu'
+CUS = 'cus@cfa.harvard.edu'
+TECH = 'william.aaron@cfa.harvard.edu'
+LIVE_EMAIL = True
 
 #---------------------------------------------------------------------------------------
 #-- signoff_request: send out singoff request email                                   --
@@ -138,7 +138,7 @@ def signoff_status():
     ifile = f"{OCAT_DIR}/updates_table.list"
     with open(ifile) as f:
         data = [line.strip() for line in f.readlines()]
-    o_dict = {}                 #--- a dict of [<general> <acis> <si> <verify> <inst> <usit>]
+    o_dict = {}                 #--- a dict of [<general> <acis> <si> <verify> <inst> <usint>]
     obsrev = []                 #--- a list of obsrev
     usint  = []                 #--- a list of usint user id
     for ent in data:
@@ -181,7 +181,7 @@ def make_obs_inst_dict():
     """
     make a dictionary of obsid <---> instrument
     input:  none, but read from <obs_ss>/sot_ocat.out
-    output: dict_i  --- a diectionary of obsid <---> instrument
+    output: dict_i  --- a dictionary of obsid <---> instrument
     """
     ifile = f"{OBS_SS}/sot_ocat.out"
     with open(ifile) as f:
@@ -209,7 +209,7 @@ def find_obs(obsrev, o_dict, pos):
     """
     find which obsrev's need signoff request email
     input:  obsrev      --- a list of obsrev
-            o_dict      --- a diectionay of [<general> <acis> <si> <verify> <inst> <usit>]
+            o_dict      --- a dictionay of [<general> <acis> <si> <verify> <inst> <usit>]
             pos         --- position of sign off checking (e.g. <acis> for pos 1)
     output: r_list      --- a list of lists of (<bosrev>, <usint>]
     """
@@ -243,14 +243,19 @@ def find_obs(obsrev, o_dict, pos):
 #-- send_email: sending email                                                         --
 #---------------------------------------------------------------------------------------
 
-def send_email(subject, text, address_dict):
+def send_email(subject, text, addresses):
     """
     sending email
     input:  subject      --- subject line
             test         --- text or template file of text
-            address_dict --- email address dictionary
+            addresses --- email address dictionary
     output: email sent
     """
+    if LIVE_EMAIL:
+        address_dict = addresses
+    else:
+        address_dict = {'TO':TECH}
+
     message = ''
     if type(address_dict['TO']) == list:
         message += f"TO:{','.join(address_dict['TO'])}\n"
@@ -384,5 +389,20 @@ def group_obs(udata):
 #---------------------------------------------------------------------------------------
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-m", "--mode", choices = ['flight','test'], required = True, help = "Determine running mode.")
+    parser.add_argument("-p", "--path", required = False, help = "Directory path to determine output location of plot.")
+    args = parser.parse_args()
+#
+#--- Determine if running in test mode and change pathing if so
+#
+    if args.mode == 'test':
+        OCAT_DIR = "/proj/web-cxc/cgi-gen/mta/Obscat/ocat"
+        USINT_CONFIG = dotenv_values("/data/mta4/CUS/Data/Env/.localhostenv")
+        LIVE_EMAIL = False
 
-    signoff_request()
+        signoff_request()
+    
+    elif args.mode == 'flight':
+
+        signoff_request()
