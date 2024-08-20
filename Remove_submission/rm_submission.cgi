@@ -90,7 +90,6 @@ print "</style>";
 print "</head>";
 
 print "<body style='color:#000000;background-color:#FFFFE0'>";
-
 print start_form();			# starting a form
 
 #---------------------------------------------------------------------
@@ -233,6 +232,7 @@ sub remve_submission{
 	}else{	
 		print "<h2 style='text-decoration:underline'>Obs Data Submission Cancellation Page</h2>";
 	}
+    print "<p>This website is out of date and will cause issues if used. Please use: <a href='https://cxc.cfa.harvard.edu/wsgi/cus/usint/rm_submission/index'>https://cxc.cfa.harvard.edu/wsgi/cus/usint/rm_submission/index</a></p>";
 	print "<h3>If you need to remove an accidental submission, please choose the obsid";
 	print " and click a button from the \"Remove\" side. If it says \"NO ACCESS\", it means that someone already";
 	print " made parameter changes, and cannot remove that submission.</h3>";

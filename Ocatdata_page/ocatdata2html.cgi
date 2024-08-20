@@ -3360,6 +3360,8 @@ endofhtml
     }else{
 	print "<h1>Obscat Data Page</h1>";
     }
+    print "<p>This website is out of date and will cause issues if used. Please use: <a href='https://cxc.cfa.harvard.edu/wsgi/cus/usint/ocatdatapage/'>https://cxc.cfa.harvard.edu/wsgi/cus/usint/ocatdatapage/</a></p>";
+
 
     $schk = 0;
     if(length($soe_st_sched_date) > 0){

@@ -110,6 +110,7 @@ print '<a href="https://cxc.cfa.harvard.edu/mta/CUS/Usint/too_contact_schedule.h
 print '<strong><em style="background-color:red;color:yellow;">Back to USINT TOO Point of Contact</em></strong></a>',"\n";
 print '</div>';
 
+print "<p>This website is out of date and will cause issues if used. Please use: <a href='https://cxc.cfa.harvard.edu/wsgi/cus/usint/scheduler/index'>https://cxc.cfa.harvard.edu/wsgi/cus/usint/scheduler/index</a></p>";
 
 print  "<p><strong>Periods which do not start on Monday or end on Sunday are marked by <em style='color:#87CEEB;background-color:#87CEEB'>blue</em>.</strong></p>\n";
 

@@ -535,6 +535,7 @@ print hidden(-name=>'ac_user', -value=>"$ac_user"); #Passed on just in case it's
 		print "<h1>Target Parameter Update Status Form</h1>";
 	}
 	print "<p style='text-align:justify; padding-right:4em'><strong>";
+    print "<p>This website is out of date and will cause issues if used. Please use: <a href='https://cxc.cfa.harvard.edu/wsgi/cus/usint/orupdate/index'>https://cxc.cfa.harvard.edu/wsgi/cus/usint/orupdate/index</a></p>";
 	print "This form contains all requested updates which ";
     print "have either not been verified or ";
 	print "have been verified in the last 24 hours.</strong></p>";

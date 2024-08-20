@@ -436,6 +436,7 @@ sub input_obsid{
     }else{	
 	print "<h2 style='padding-bottom:20px'>Welcome to Express Approval Page</h2>";
     }
+    print "<p>This website is out of date and will cause issues if used. Please use: <a href='https://cxc.cfa.harvard.edu/wsgi/cus/usint/express/index'>https://cxc.cfa.harvard.edu/wsgi/cus/usint/express/</a></p>";
     print '<h3>Please type all obsids which you want to approve. ';
     print 'You can use <i>comma, colon, semi-colon</i>, "/", or by "  " ';
     print '(&lt;<i> blank space</i>&gt;) to separate them. ';
