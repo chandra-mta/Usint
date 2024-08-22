@@ -284,9 +284,7 @@ def send_email(subject, text, addresses):
     else:
         message += f"{text}"
 
-    cmd = f"echo '{message}' | sendmail {to_email}"
-    os.system(cmd)
-
+    os.system(f"echo '{message}' | sendmail -t")
 
 #---------------------------------------------------------------------------------------
 #-- create_email: create signoff request email                                       ---
