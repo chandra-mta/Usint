@@ -1,4 +1,4 @@
-#!/usr/bin/env /proj/cm/Release/install.DS10.12/ots/bin/perl
+#!/usr/bin/env /home/ascds/DS.release/ots/bin/perl
 
 use strict;
 use CGI qw{ :standard fatalsToBrowser};
@@ -16,7 +16,7 @@ use POSIX;
 
 # Paths
 # expects to find the simcoord clicoord scripts in
-my $program_dir = '/proj/web-icxc/cgi-bin/target_search/';
+my $program_dir = '/proj/web-cxc-secure/cgi-bin/target_search/';
 # expects to find ".targpass" in the $pass_dir
 #my $pass_dir = $program_dir;
 #my $pass_dir = "/proj/web-icxc/cgi-bin/obs_ss/.Pass_dir/";
@@ -27,9 +27,9 @@ my $location = './search.html';
 # paths of other CGIs used in output
 my $target_cgi = 'http://cda.cfa.harvard.edu/chaser/startViewer.do?menuItem=sequenceSummary&obsid=';
 my $target_param_cgi = 'http://cda.cfa.harvard.edu/chaser/startViewer.do?menuItem=details&obsid=';
-my $ocatdata2html = '/mta/CUS/Usint/ocatdata2html.cgi';
+my $ocatdatapage = 'https://cxc.cfa.harvard.edu/wsgi/cus/usint/ocatdatapage';
 my $status_table = '/cgi-bin/op/op_status_table.cgi';
-#my $ads_search = 'http://cxc.harvard.edu/cgi-gen/cda/bib.pl?ADS=search&';
+my $ads_search = 'http://cxc.harvard.edu/cgi-gen/cda/bib.pl?ADS=search&';
 my $prop_search = ' https://icxc.harvard.edu/cgi-bin/cdo/review_report/disp_report.cgi';
 my $sorttable_js = '/incl/sorttable.js';
 
@@ -446,13 +446,13 @@ print '<li>The Sequence Number link will take you to the MP Sequence Number Page
 print '<li>The Proposal Number link will take you to the Peer Review Report / RPS / Science Justification.';
 print '<li>The ObsID link will take you to the Obscat Data Page.';
 print '<li>The Edit link (if available) will take you to the USINT Obscat edit interface.';
-#print '<li>The ADS link (if available) will search for papers relevant to that ObsID.';
+print '<li>The ADS link (if available) will search for papers relevant to that ObsID.';
 print '<li>The Status link (if available) will take you to the relevant Processing Status page. ';
 print '</ul>';
 print '<table class="sortable" border cellpadding=5>';
 print '<tr>';
 for my $col_label ('Sequence Number', 'Proposal Number', 'Target', 'ObsID',
-                   'USINT edit', 'Exp. Time', 'Status',
+                   'USINT edit', 'ADS search', 'Exp. Time', 'Status',
                       'Inst/Grat', 'PI', 'Observer', 'Type',
                       'Sched. Start Time', 'RA', 'Dec'){
     printf('<th align="left">%s%s</th>', 
@@ -506,14 +506,14 @@ print '</tr>';
             || ($status eq 'discarded') || ($status eq 'canceled')) {
             print "<td>&nbsp;</td>";
         }else{
-            print "<td align='center'><a href=\"${ocatdata2html}?$obsid\">Edit</a></td>";
+            print "<td align='center'><a href=\"${ocatdatapage}/$obsid\">Edit</a></td>";
         }
 
-#        if (($status eq 'observed') || ($status eq 'archived')){
-#            print "<td align='center'><a href=\"${ads_search}obsid=${obsid}\">ADS</a></td>";
-#        }else{
-#            print "<td>&nbsp;</td>";
-#        }
+        if (($status eq 'observed') || ($status eq 'archived')){
+            print "<td align='center'><a href=\"${ads_search}obsid=${obsid}\">ADS</a></td>";
+        }else{
+            print "<td>&nbsp;</td>";
+        }
 
         printf "<td align='right'>%.1f</td>", $approved_exposure_time;
         
