@@ -255,40 +255,6 @@ def create_sub_html_page(data_list, lmon, iyear):
     out = head_part + line + tail_part
 
     return out
-
-#---------------------------------------------------------------------------------------
-#-- check_last_update: check whether the data are updated in the last 24 hrs         ---
-#---------------------------------------------------------------------------------------
-
-def check_last_update():
-    """
-    check whether the data are updated in the last 24 hrs 
-    input:  none, but read from <cus_dir>/Save_month_html/last_update
-    output: True/False
-            updated <cus_dir>/Save_month_html/last_update
-        NOT USED IN THIS SCRIPT
-    """
-#
-#--- current time in sec from 1998.1.1
-#
-    ltime = time.strftime('%Y:%j:H:%M:%S', time.gmtime())
-    stime = int(Chandra.Time.DateTime(ltime).secs)
-#
-#--- read the last log
-#
-    ifile = f"{CUS_DIR}/Save_month_html/last_update"
-    with open(ifile, 'r') as f:
-        ptime = f.read().strip()
-        ptime = int(float(ptime))
-
-    diff = stime - ptime
-    if diff > 86400:
-        with open(ifile, 'w') as fo:
-            fo.write(str(stime) + '\n')
-
-        return True
-    else:
-        return False
  
 #---------------------------------------------------------------------------------------
 #-- update_main_page: update main page                                                --
