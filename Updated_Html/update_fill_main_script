@@ -1,0 +1,3 @@
+cd /data/mta4/CUS/www/Usint/
+
+/data/mta4/CUS/www/Usint/update_fill.py -m flight
