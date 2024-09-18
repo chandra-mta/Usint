@@ -1,4 +1,4 @@
-#!/usr/bin/env /data/mta/Script/Python3.8/envs/ska3-shiny/bin/python
+#!/proj/sot/ska3/flight/bin/python
 
 #################################################################################################
 #                                                                                               #
@@ -6,44 +6,27 @@
 #                                                                                               #
 #               author: t. isobe (tisobe@cfa.harvard.edu)                                       #
 #                                                                                               #
-#               last update: Sep 27, 2021                                                       #
+#               last update: Sep 18, 2024                                                       #
 #                                                                                               #
 #################################################################################################
 
-import math
 import re
 import sys
 import os
-import string
 import time
 import Chandra.Time
 import numpy
 #
-#--- reading directory list
+#--- Define Directory Pathing
 #
-path = '/data/mta4/CUS/www/Usint/ocat/Info_save/too_dir_list_py3'
-with  open(path, 'r') as f:
-    data = [line.strip() for line in f.readlines()]
-
-for ent in data:
-    atemp = re.split(':', ent)
-    var  = atemp[1].strip()
-    line = atemp[0].strip()
-    exec("%s = %s" %(var, line))
-#
-#--- append a path to a privte folder to python directory
-#
-sys.path.append(bin_dir)
+CUS_DIR = "/data/mta4/CUS/www/Usint"
+OCAT_DIR = "/data/mta4/CUS/www/Usint/ocat"
+TEMPLATE_DIR = "/data/mta4/CUS/www/Usint/ocat/house_keeping/Updated/Templates"
 #
 #--- cus common functions
 #
 import cus_common_functions         as ccf
-#
-#--- temp writing file name
-#
-import random
-rtail    = int(time.time() * random.random())
-zspace   = '/tmp/zspace' + str(rtail)
+
 
 #---------------------------------------------------------------------------------------
 #-- updated_fill: update updated.html page                                           ---
@@ -53,8 +36,8 @@ def updated_fill():
     """
     update updated.html page
     input:  none
-    output: <cusdir>/updated.html
-            <cusdir>/Save_month_htmll/<Mmm>_<yyyy>.html
+    output: <cus_dir>/updated.html
+            <cus_dir>/Save_month_htmll/<Mmm>_<yyyy>.html
     """
 #
 #--- update main page on 1st of every month
@@ -75,8 +58,8 @@ def updated_fill():
 def update_sub_page():
     """
     update/create sub html pages
-    input:  none, but read from <ocat_dir>/>/udates_table.list
-    output: <cusdir>/Save_month_html/<mmm>_<yyyy>.html
+    input:  none, but read from <ocat_dir>/updates_table.list
+    output: <cus_dir>/Save_month_html/<mmm>_<yyyy>.html
     """
 #
 #--- read updates_table.list; key format of s_dict is <yyyy>_<mm>
@@ -119,8 +102,7 @@ def update_sub_page():
 #
 #--- print out the  page
 #
-            ofile    = cusdir + 'Save_month_html/' + lmon + '_' + iyear + '.html'
-            with open(ofile, 'w') as fo:
+            with open(f"{CUS_DIR}/Save_month_html/{lmon}_{iyear}.html", 'w') as fo:
                 fo.write(hline)
 
 #---------------------------------------------------------------------------------------
@@ -130,12 +112,12 @@ def update_sub_page():
 def extract_data():
     """
     read status data from udates_table.list
-    input:  none, but read from <ocat_dir>/udates_table.list
+    input:  none, but read from <ocat_dir>/updates_table.list
     output: n_list  --- a list of name <yyyy>_<mm>
             s_dict  --- a dictionary of  
     """
-    ifile = ocat_dir + 'updates_table.list'
-    data  = ccf.read_data_file(ifile)
+    with open(f"{OCAT_DIR}/updates_table.list") as f:
+        data = [line.strip() for line in f.readlines()]
 
     s_dict = {}
     n_list = []
@@ -221,15 +203,13 @@ def create_sub_html_page(data_list, lmon, iyear):
 #
 #--- read templates
 #
-    ifile = house_keeping + 'Updated/Templates/header_part'
-    with open(ifile, 'r') as f:
+    with open(f"{TEMPLATE_DIR}/header_part", 'r') as f:
         head_part = f.read()
 
     head_part = head_part.replace('#LMON#',  lmon)
     head_part = head_part.replace('#IYEAR#', iyear)
 
-    ifile = house_keeping + 'Updated/Templates/tail_part'
-    with open(ifile, 'r') as f:
+    with open(f"{TEMPLATE_DIR}/tail_part", 'r') as f:
         tail_part = f.read()
 #
 #--- start creating each line
@@ -249,9 +229,9 @@ def create_sub_html_page(data_list, lmon, iyear):
         seqnum        = atemp[6]
         user          = atemp[7]
 #
-#--- find the file  modificaiton time
+#--- find the file modification time
 #
-        dfile = ocat_dir + 'updates/' + obsrev
+        dfile = f"{OCAT_DIR}/updates/{obsrev}"
         try:
             ftime = time.strftime('%m/%d/%Y', time.gmtime(os.path.getmtime(dfile)))
         except:
@@ -264,8 +244,6 @@ def create_sub_html_page(data_list, lmon, iyear):
 #
         line = line + '<tr>\n'
         line = line + '<td><a href="https://cxc.harvard.edu/mta/CUS/Usint/chkupdata.cgi?' + obsrev + '">'
-        ####line = line + '<td><a href="https://<NEW HTTP ADDRESS>/chkupdata./' + obsrev + '">'
-        
         line = line + obsrev + '</a><br />' + seqnum + '<br />'
         line = line + ftime  + '<br />' + user + '</td>\n'
         line = line + '<td>' + gen_status + '</td><td>' + si_status + '</td><td>'
@@ -285,9 +263,9 @@ def create_sub_html_page(data_list, lmon, iyear):
 def check_last_update():
     """
     check whether the data are updated in the last 24 hrs 
-    input:  none, but read from <cusdir>Save_month_html/last_update
+    input:  none, but read from <cus_dir>/Save_month_html/last_update
     output: True/False
-            updated <cusdir>Save_month_html/last_update
+            updated <cus_dir>/Save_month_html/last_update
         NOT USED IN THIS SCRIPT
     """
 #
@@ -298,7 +276,7 @@ def check_last_update():
 #
 #--- read the last log
 #
-    ifile = cusdir + 'Save_month_html/last_update'
+    ifile = f"{CUS_DIR}/Save_month_html/last_update"
     with open(ifile, 'r') as f:
         ptime = f.read().strip()
         ptime = int(float(ptime))
@@ -320,7 +298,7 @@ def update_main_page():
     """
     update main page
     input:  none
-    output: <cusdir>/updated.html
+    output: <cus_dir>/updated.html
     """
 #
 #--- find today's date
@@ -332,12 +310,10 @@ def update_main_page():
 #
 #--- read templates
 #
-    ifile = house_keeping + 'Updated/Templates/main_page'
-    with open(ifile, 'r') as f:
+    with open(f"{TEMPLATE_DIR}/main_page", 'r') as f:
         head_part = f.read()
 
-    ifile = house_keeping + 'Updated/Templates/main_tail'
-    with open(ifile, 'r') as f:
+    with open(f"{TEMPLATE_DIR}/main_tail", 'r') as f:
         tail_part = f.read()
 #
 #--- start a table part
@@ -374,8 +350,7 @@ def update_main_page():
 #
 #--- print out the page
 #
-    ofile = cusdir + 'updated.html'
-    with open(ofile, 'w') as fo:
+    with open(f"{CUS_DIR}/updated.html", 'w') as fo:
         fo.write(line)
 
 #---------------------------------------------------------------------------------------
