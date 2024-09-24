@@ -14,43 +14,15 @@ import re
 import sys
 import os
 import time
-import Chandra.Time
 import numpy
 from calendar import month_abbr
+import argparse
 #
 #--- Define Directory Pathing
 #
 CUS_DIR = "/data/mta4/CUS/www/Usint"
 OCAT_DIR = "/data/mta4/CUS/www/Usint/ocat"
 TEMPLATE_DIR = "/data/mta4/CUS/www/Usint/ocat/house_keeping/Updated/Templates"
-#
-#--- cus common functions
-#
-import cus_common_functions         as ccf
-
-
-#---------------------------------------------------------------------------------------
-#-- updated_fill: update updated.html page                                           ---
-#---------------------------------------------------------------------------------------
-
-def updated_fill():
-    """
-    update updated.html page
-    input:  none
-    output: <cus_dir>/updated.html
-            <cus_dir>/Save_month_htmll/<Mmm>_<yyyy>.html
-    """
-#
-#--- update main page on 1st of every month
-#
-    mday = time.strftime('%d', time.gmtime())
-    mday = int(float(mday))
-    if mday == 1:
-        update_main_page()
-#
-#--- update sub pages
-#
-    update_sub_page()
 
 #---------------------------------------------------------------------------------------
 #-- update_sub_page: update/create sub html pages                                   ----
@@ -323,8 +295,56 @@ def update_main_page():
 #---------------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    
-    updated_fill()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-m", "--mode", choices = ['flight','test'], required = True, help = "Determine running mode.")
+    parser.add_argument("-p", "--path", required = False, help = "Directory path to determine output location of web files.")
+    parser.add_argument("--main", action=argparse.BooleanOptionalAction, help = "Select whether ot update the main page or not.")
+    args = parser.parse_args()
+
+#
+#--- Select running of main options if running on the frist day of the month
+#
+    if args.main == None:
+        if int(time.strftime('%d', time.gmtime())) == 1:
+            RUN_MAIN = True
+        else:
+            RUN_MAIN_= False
+    else:
+        RUN_MAIN = args.main
+#
+#--- Determine if running in test mode and change pathing if so
+#
+    if args.mode == "test":
+#
+#--- Define Directory Pathing
+#
+        SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+        CUS_DIR = f"{SCRIPT_DIR}/test/outTest"
+        os.makedirs(f"{CUS_DIR}/Save_month_html", exist_ok = True)
+
+        if RUN_MAIN:
+            update_main_page()
+        update_sub_page
+
+    elif args.mode == "flight":
+#
+#--- Create a lock file and exit strategy in case of race conditions
+#
+        import getpass
+        name = os.path.basename(__file__).split(".")[0]
+        user = getpass.getuser()
+        if os.path.isfile(f"/tmp/{user}/{name}.lock"):
+            sys.exit(f"Lock file exists as /tmp/{user}/{name}.lock. Process already running/errored out. Check calling scripts/cronjob/cronlog.")
+        else:
+            os.system(f"mkdir -p /tmp/{user}; touch /tmp/{user}/{name}.lock")
+
+        if RUN_MAIN:
+            update_main_page()
+        update_sub_page
+#
+#--- Remove lock file once process is completed
+#
+        os.system(f"rm /tmp/{user}/{name}.lock")
 
 
 
