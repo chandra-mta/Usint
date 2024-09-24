@@ -16,6 +16,7 @@ import os
 import time
 import Chandra.Time
 import numpy
+from calendar import month_abbr
 #
 #--- Define Directory Pathing
 #
@@ -88,7 +89,7 @@ def update_sub_page():
 #
 #--- extract the data set for the year/month
 #
-            key      = str(year) + '_' + ccf.add_leading_zero(mon)
+            key = f"{year}_{mon:>02}"
             try:
                 data_set = s_dict[key][1]
             except:
@@ -96,7 +97,7 @@ def update_sub_page():
 #
 #--- create a html page content
 #
-            lmon     = ccf.change_month_format(mon)
+            lmon = month_abbr[mon]
             iyear    = str(year)
             hline    = create_sub_html_page(data_set, lmon, iyear)
 #
@@ -293,7 +294,7 @@ def update_main_page():
     yspans = yspan - 1
 
     for mon in range(1, 13):
-        lmon = ccf.change_month_format(mon)
+        lmon = month_abbr[mon]
         line = line + '<tr><th>' + lmon + '</th>\n'
 
         for i in range(0, yspan):
