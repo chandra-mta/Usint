@@ -23,6 +23,7 @@ import argparse
 CUS_DIR = "/data/mta4/CUS/www/Usint"
 OCAT_DIR = "/data/mta4/CUS/www/Usint/ocat"
 TEMPLATE_DIR = "/data/mta4/CUS/www/Usint/ocat/house_keeping/Updated/Templates"
+CHKUPDATA_LINK = "https://cxc.cfa.harvard.edu/wsgi/cus/usint/chkupdata"
 
 #---------------------------------------------------------------------------------------
 #-- update_sub_page: update/create sub html pages                                   ----
@@ -208,7 +209,7 @@ def create_sub_html_page(data_list, lmon, iyear):
 #--- create each html data line
 #
         line = line + '<tr>\n'
-        line = line + '<td><a href="https://cxc.harvard.edu/mta/CUS/Usint/chkupdata.cgi?' + obsrev + '">'
+        line = line + f'<td><a href="{CHKUPDATA_LINK}/{obsrev}">'
         line = line + obsrev + '</a><br />' + seqnum + '<br />'
         line = line + ftime  + '<br />' + user + '</td>\n'
         line = line + '<td>' + gen_status + '</td><td>' + si_status + '</td><td>'
@@ -328,6 +329,7 @@ if __name__ == "__main__":
 #
         SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
         CUS_DIR = f"{SCRIPT_DIR}/test/outTest"
+        TEMPLATE_DIR = f"{SCRIPT_DIR}/Templates"
         os.makedirs(f"{CUS_DIR}/Save_month_html", exist_ok = True)
 
         if RUN_MAIN:
