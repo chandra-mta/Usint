@@ -28,7 +28,7 @@ TEMPLATE_DIR = "/data/mta4/CUS/www/Usint/ocat/house_keeping/Updated/Templates"
 #-- update_sub_page: update/create sub html pages                                   ----
 #---------------------------------------------------------------------------------------
 
-def update_sub_page():
+def update_sub_page(tyear, tmon):
     """
     update/create sub html pages
     input:  none, but read from <ocat_dir>/updates_table.list
@@ -38,14 +38,6 @@ def update_sub_page():
 #--- read updates_table.list; key format of s_dict is <yyyy>_<mm>
 #
     [n_list, s_dict] = extract_data()
-#
-#--- find today's date
-#
-    out    = time.strftime('%Y:%m:%d', time.gmtime())
-    atemp  = re.split(':', out)
-    tyear  = int(float(atemp[0]))
-    tmon   = int(float(atemp[1]))
-    tmday  = int(float(atemp[2]))
 #
 #--- update/create the last one year of the htmls
 #
@@ -299,6 +291,7 @@ if __name__ == "__main__":
     parser.add_argument("-m", "--mode", choices = ['flight','test'], required = True, help = "Determine running mode.")
     parser.add_argument("-p", "--path", required = False, help = "Directory path to determine output location of web files.")
     parser.add_argument("--main", action=argparse.BooleanOptionalAction, help = "Select whether ot update the main page or not.")
+    parser.add_argument("-y", "--year", type=int, required = False, help = "Select year for report generation. Defaults to current year")
     args = parser.parse_args()
 
 #
@@ -308,9 +301,24 @@ if __name__ == "__main__":
         if int(time.strftime('%d', time.gmtime())) == 1:
             RUN_MAIN = True
         else:
-            RUN_MAIN_= False
+            RUN_MAIN= False
     else:
         RUN_MAIN = args.main
+#
+#--- Select year for report generation
+#
+    atemp  = re.split(':', time.strftime('%Y:%m', time.gmtime()))
+    curr_year = int(atemp[0])
+    curr_mon = int(atemp[1])
+    if args.year == None or args.year == curr_year:
+        tyear = curr_year
+        tmon = curr_mon
+    elif args.year < curr_year:
+        tyear = args.year
+        tmon = 12
+    else:
+        parser.error(f"Invalid Year: {args.year}")
+
 #
 #--- Determine if running in test mode and change pathing if so
 #
@@ -324,7 +332,7 @@ if __name__ == "__main__":
 
         if RUN_MAIN:
             update_main_page()
-        update_sub_page
+        update_sub_page(tyear, tmon)
 
     elif args.mode == "flight":
 #
@@ -340,7 +348,7 @@ if __name__ == "__main__":
 
         if RUN_MAIN:
             update_main_page()
-        update_sub_page
+        update_sub_page(tyear, tmon)
 #
 #--- Remove lock file once process is completed
 #
