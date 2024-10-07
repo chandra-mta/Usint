@@ -284,6 +284,8 @@ def send_email(subject, text, addresses):
     else:
         message += f"{text}"
 
+    if not LIVE_EMAIL:
+        print(f"Echoing the following message into sendmail.\n{message}")
     os.system(f"echo '{message}' | sendmail -t")
 
 #---------------------------------------------------------------------------------------
