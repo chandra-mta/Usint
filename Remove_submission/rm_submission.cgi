@@ -1,4 +1,4 @@
-#!/home/ascds/DS.release/ots/bin/perl
+#!/home/ascds/DS.release/bin/perl
 
 BEGIN
 {
@@ -17,8 +17,6 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 #		Last Update: Feb 01, 2023                              		#
 # This script removes an obsid from database.          	                            	#
 #                                           						#
-# Jul 16, 2022 MS                                                                       #
-# /soft/ascds/DS.release/ots/bin/perl -> /home/ascds/DS.release/ots/bin/perl            #
 #########################################################################################
 
 $sot_contact = 'william.aaron@.cfa.harvard.edu';

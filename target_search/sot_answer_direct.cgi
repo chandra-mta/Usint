@@ -1,4 +1,4 @@
-#!/usr/bin/env /home/ascds/DS.release/ots/bin/perl
+#!/home/ascds/DS.release/bin/perl
 
 use strict;
 use CGI qw{ :standard fatalsToBrowser};
