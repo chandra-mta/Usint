@@ -7,6 +7,6 @@ setenv PFILES "${PDIRS}"
 set path = (/home/ascds/DS.release/bin/  $path)
 
 cd /data/mta4/CUS/www/Usint 
-/soft/ascds/DS.release/ots/bin/perl  /data/mta4/CUS/www/Usint/find_too_ddt_email.perl 
+/home/ascds/DS.release/bin/perl  /data/mta4/CUS/www/Usint/find_too_ddt_email.perl 
 
 rm -rf param

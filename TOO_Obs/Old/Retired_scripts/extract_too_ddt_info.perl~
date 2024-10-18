@@ -1,4 +1,4 @@
-#!/soft/ascds/DS.release/ots/bin/perl
+#!/home/ascds/DS.release/bin/perl
 use DBI;
 use DBD::Sybase;
 use CGI qw/:standard :netscape /;

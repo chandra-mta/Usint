@@ -149,7 +149,7 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 #
 #
 #  perl pointing is changed from: /proj/DS.ots/perl-5.10.0.SunOS5.8/bin/perl 
-#	                      to: /soft/ascds/DS.release/ots/bin/perl 
+#	                      to: /home/ascds/DS.release/bin/perl 
 #  to accomodate Solaris 10.
 #   (Apr 23, 2010)
 #
@@ -278,7 +278,7 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 # Reordering the ranks of aciswin in increasing order
 # (Jul 17, 2015)
 #
-#  /soft/ascds/DS.release/ots/bin/perl ---> /usr/bin/perl  (accessible from cxc)
+#  /home/ascds/DS.release/bin/perl ---> /usr/bin/perl  (accessible from cxc)
 #
 # Aimpoint Chipx and Chipy values added
 # (Oct 26, 2015)

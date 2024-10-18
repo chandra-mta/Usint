@@ -101,7 +101,7 @@ use Fcntl qw(:flock SEEK_END); # Import LOCK_* constants
 #    sybase update (/soft/SYBASE15.7)							                        #
 #                                                                                       #
 # T. Isobe Apr 24, 2015                                                                 #
-# /soft/ascds/DS.release/ots/bin/perl ---> /usr/bin/perl (make accessible from cxc)     #
+# /home/ascds/DS.release/bin/perl ---> /usr/bin/perl (make accessible from cxc)     #
 #                                                                                       #
 # T. Isobe Nov 21, 2016                                                                 #
 # archive access user changed from borwer to mtaops_internal/public                     #
