@@ -17,6 +17,10 @@ import time
 import numpy
 from calendar import month_abbr
 import argparse
+import sqlite3 as sq
+from contextlib import closing
+from datetime import datetime
+
 #
 #--- Define Directory Pathing
 #
@@ -36,10 +40,6 @@ def update_sub_page(tyear, tmon):
     output: <cus_dir>/Save_month_html/<mmm>_<yyyy>.html
     """
 #
-#--- read updates_table.list; key format of s_dict is <yyyy>_<mm>
-#
-    [n_list, s_dict] = extract_data()
-#
 #--- update/create the last one year of the htmls
 #
     lyear = tyear - 1
@@ -52,113 +52,55 @@ def update_sub_page(tyear, tmon):
             if (year == tyear) and (mon > tmon):
                 break
 #
-#--- extract the data set for the year/month
+#--- Extract status information from updates table.db
 #
-            key = f"{year}_{mon:>02}"
-            try:
-                data_set = s_dict[key][1]
-            except:
-                continue
+            [rev_start, rev_stop] = find_rev_time_range(year,mon)
+            with closing(sq.connect(f"{OCAT_DIR}/updates_table.db")) as conn: #Auto-closes
+#
+#--- Update the conneciton row factory for values keyed by column names
+#
+                conn.row_factory = sq.Row
+                with conn: #Auto-commits
+                    with closing(conn.cursor()) as cur: #Auto-closes
+                        fetch_result = cur.execute(f"SELECT * FROM revisions WHERE rev_time >= {rev_start} AND rev_time <= {rev_stop} ORDER BY rev_time DESC").fetchall()
+
 #
 #--- create a html page content
 #
             lmon = month_abbr[mon]
             iyear    = str(year)
-            hline    = create_sub_html_page(data_set, lmon, iyear)
+            hline    = create_sub_html_page(fetch_result, lmon, iyear)
 #
 #--- print out the  page
 #
             with open(f"{CUS_DIR}/Save_month_html/{lmon}_{iyear}.html", 'w') as fo:
                 fo.write(hline)
 
-#---------------------------------------------------------------------------------------
-#-- extract_data: read status data from udates_table.list                            ---
-#---------------------------------------------------------------------------------------
 
-def extract_data():
+#--------------------------------------------------------------------------------------------------------------------
+#-- find_rev_time_range: find the start and stopping rev_time for revisions in created in provided month and year  --
+#--------------------------------------------------------------------------------------------------------------------
+
+def find_rev_time_range(year, mon):
     """
-    read status data from udates_table.list
-    input:  none, but read from <ocat_dir>/updates_table.list
-    output: n_list  --- a list of name <yyyy>_<mm>
-            s_dict  --- a dictionary of  
+    Finds the start and stopping rev_time for revisions in created in provided month and year.
+    rev_time is the epoch time number for when the revison was ssubmitted and the revision file was created.
+    This number is recorded in the updates_table.db database in the rev_time column.
+    input:  year ---- numerical year
+            mon --- numerical month
     """
-    with open(f"{OCAT_DIR}/updates_table.list") as f:
-        data = [line.strip() for line in f.readlines()]
-
-    s_dict = {}
-    n_list = []
-    for ent in data:
-        atemp = re.split('\t+', ent)
-        if len(atemp) < 8:
-            continue
-        if atemp[5] == 'NA':
-            continue
-
-        btemp = re.split('\s+', atemp[5])
-        vdate = re.split('\/',  btemp[1])
-#
-#--- format for the year is <yy> e.g., 99 for 1999, or 20 for 2020
-#
-        try:
-            val   = float(vdate[2])
-        except:
-            continue
-
-        if val == 99:
-            name  = '19' + vdate[2] + '_' + vdate[0]
-            ltime = int(float('19' + vdate[2] + vdate[1] + vdate[0]))
-        else:
-            name  = '20' + vdate[2] + '_' + vdate[0]
-            ltime = int(float('20' + vdate[2] + vdate[1] + vdate[0]))
-#
-#--- saveing data in a dictionary form. key: <yyyy>_<mm>. It also save time in <yyyy><mm><dd> format
-#
-        try:
-            out   = s_dict[name]
-            out[0].append(ltime)
-            out[1].append(ent)
-            s_dict[name] = out
-
-        except:
-            s_dict[name] = [[ltime],[ent]]
-
-        n_list.append(name)
-#
-#--- remove duplicated names and sort in time order
-#
-    n_list = sorted(list(set(n_list)))
-#
-#--- sort each data set in the time order
-#
-    for name in n_list:
-        s_dict[name] = sort_data_by_date(s_dict[name])
-
-    return [n_list, s_dict]
-
-#---------------------------------------------------------------------------------------
-#-- sort_data_by_date: sort the list by time                                          --
-#---------------------------------------------------------------------------------------
-
-def sort_data_by_date(alist):
-    """
-    sort the list by time
-    input:  alist   --- a list of lists: [[time list], [data list]]
-    ouput:  time sorted list of lists
-    """
-    t_array = numpy.array(alist[0])     #--- a list of time 
-    d_array = numpy.array(alist[1])     #--- a list of data
-
-    idx     = numpy.argsort(t_array)
-    t_list  = list(t_array[idx])
-    d_list  = list(d_array[idx])
-
-    return [t_list, d_list]
+    start = int(datetime(year,mon,1,0,0).timestamp())
+    if mon == 12:
+        stop = int(datetime(year+1,1,1,0,0).timestamp())
+    else:
+        stop = int(datetime(year,mon+1,1,0,0).timestamp())
+    return [start, stop]
 
 #---------------------------------------------------------------------------------------
 #-- create_sub_html_page: create a html page content                                  --
 #---------------------------------------------------------------------------------------
 
-def create_sub_html_page(data_list, lmon, iyear):
+def create_sub_html_page(fetch_result, lmon, iyear):
     """
     create a html page content
     input:  data_list   --- a list of data
@@ -181,40 +123,48 @@ def create_sub_html_page(data_list, lmon, iyear):
 #--- start creating each line
 #
     line = ''
-    data_list.reverse()
-    for ent in data_list:
-        atemp         = re.split('\t+', ent)
-        obsrev        = atemp[0]
-        gen_status    = atemp[1]
-        acis_status   = atemp[2]
-        if gen_status == 'NULL':
-            gen_status = acis_status
-        si_status     = atemp[3]
-        hrc_si_status = atemp[4]
-        dsi_status    = atemp[5]
-        seqnum        = atemp[6]
-        user          = atemp[7]
-#
-#--- find the file modification time
-#
-        dfile = f"{OCAT_DIR}/updates/{obsrev}"
-        try:
-            ftime = time.strftime('%m/%d/%Y', time.gmtime(os.path.getmtime(dfile)))
-        except:
+    
+    for entry in fetch_result:
+        if entry['rev_time'] != 0:
+            ftime = datetime.fromtimestamp(entry['rev_time']).strftime('%m/%d/%Y')
+        else:
             ftime = 'missing'
         
-        if dsi_status == 'NA':
+        if entry['usint_verification'] == 'NA':
             continue
 #
 #--- create each html data line
 #
-        line = line + '<tr>\n'
-        line = line + f'<td><a href="{CHKUPDATA_LINK}/{obsrev}">'
-        line = line + obsrev + '</a><br />' + seqnum + '<br />'
-        line = line + ftime  + '<br />' + user + '</td>\n'
-        line = line + '<td>' + gen_status + '</td><td>' + si_status + '</td><td>'
-        line = line + hrc_si_status + '</td><td style="color=#005C00">' + dsi_status + '</td>\n'
-        line = line + '</tr>\n'
+        line += f'<tr>\n<td><a href="{CHKUPDATA_LINK}/{entry["obsidrev"]}">{entry["obsidrev"]}</a>'
+        line += f'<br/>{entry["sequence"]}<br/>{ftime}<br/>{entry["submitter"]}</td>\n'
+
+        if entry['general_signoff'] == None:
+            if entry['acis_signoff'] == None:
+                line += f'<td>NULL</td>'
+            elif entry['acis_signoff'] == 'N/A':
+                line += f'<td>N/A</td>'
+            else:
+                line += f'<td>{entry["acis_signoff"]} {entry["acis_date"]}</td>'
+        elif entry['general_signoff'] == 'N/A':
+            line += f'<td>N/A</td>'
+        else:
+            line += f'<td>{entry["general_signoff"]} {entry["general_date"]}</td>'
+
+        if entry['acis_si_mode_signoff'] == None:
+            line += f'<td>NULL</td>'
+        elif entry['acis_si_mode_signoff'] == 'N/A':
+            line += f'<td>N/A</td>'
+        else:
+            line += f'<td>{entry["acis_si_mode_signoff"]} {entry["acis_si_mode_date"]}</td>'
+        
+        if entry['hrc_si_mode_signoff'] == None:
+            line += f'<td>NULL</td>'
+        elif entry['hrc_si_mode_signoff'] == 'N/A':
+            line += f'<td>N/A</td>'
+        else:
+            line += f'<td>{entry["hrc_si_mode_signoff"]} {entry["hrc_si_mode_date"]}</td>'
+        
+        line += f'<td>{entry["usint_verification"]} {entry["usint_date"]}</td>\n</tr>\n'
 #
 #--- combine header body and tail to crate a page
 #
@@ -296,7 +246,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
 #
-#--- Select running of main options if running on the frist day of the month
+#--- Select running of main options if running on the first day of the month
 #
     if args.main == None:
         if int(time.strftime('%d', time.gmtime())) == 1:
